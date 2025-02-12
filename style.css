@@ -1,0 +1,732 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #24243e; /* Cor de fundo */
+  overflow-x: hidden; /* Evita o scroll horizontal */
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-image: url('image.webp');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.container {
+  border: 1px solid #999;
+  color: #c9c9da;
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #29254091;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  transition: all ease .2s;
+  max-width: 600px;
+  width: 100%;
+  margin: 20px;
+}
+
+
+/* Estilos para caixas de entrada de texto */
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #27243e80;
+  color: #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra ao focar */
+}
+
+/* Estilos para caixas de seleção (checkbox) */
+input[type="checkbox"] {
+  appearance: none; /* Remove o estilo padrão do sistema operacional */
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #27243e80;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra ao focar */
+}
+
+input[type="checkbox"]:checked {
+  background-color: #4CAF50; /* Cor de fundo quando marcado */
+  border: 1px solid #4CAF50;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✔'; /* Marca de verificação */
+  color: white;
+  font-size: 16px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input[type="checkbox"]:focus {
+  border: 1px solid rgb(255, 255, 255);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Sombra ao focar */
+  outline: none; /* Remove a borda de foco padrão */
+}
+
+/* Estilo quando o input está em foco */
+input:focus {
+  border: 1px solid rgb(255, 255, 255);
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  outline: none; /* Remove a borda de foco padrão */
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Sombra ao focar */
+}
+
+/* Estilo para o dropdown do select */
+select::-ms-expand {
+  display: none; /* Esconde o ícone de dropdown no Internet Explorer */
+  background-color: #3e2424;
+}
+
+select {
+  /* Estilos gerais do select */
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: #ccc;
+  text-align-last: center;
+  border-radius: 4px;
+  font-size: 16px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra ao focar */
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #27243e80;
+  appearance: none; /* Remove o estilo padrão do sistema operacional */
+  cursor: pointer; /* Altera o cursor ao passar o mouse */
+  box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+}
+
+/* Estilo para a lista suspensa das opções */
+select option {
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #28243e80;
+  color: #ccc;
+}
+
+/* Estilo quando o mouse passa por cima de uma opção */
+select option:hover {
+  background-color: #f0f0f0; /* Cor de fundo ao passar o mouse */
+  color: #000; /* Cor do texto ao passar o mouse */
+}
+
+/* Estilo quando o select está em foco */
+select:focus {
+  border: 1px solid rgba(250, 243, 243, 0.923);
+  background-color: #27243e;
+  outline: none; /* Remove a borda de foco padrão */
+  box-shadow: 0 0 5px rgba(240, 237, 237, 0.5); /* Sombra ao focar */
+}
+
+/* Estilo para o dropdown aberto */
+select:focus option:checked {
+  background-color: #07101a94; /* Cor de fundo das opções selecionadas ao focar */
+  color: #fff; /* Cor do texto das opções selecionadas ao focar */
+}
+
+
+.tabs, .subtabs {
+  display: flex;
+  cursor: pointer;
+  color: #8684a1;
+  background-color: #27254091;  
+  margin-bottom: 10px;
+}
+
+.tab, .subtab {
+  flex: 1;
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  background-color: #9790b390;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #28254091;
+  transition: all ease .2s;
+  max-width: 350px;
+}
+
+.tab.active, .subtab.active {
+  background-color: #7d76a6b8;
+  color: #25243e;
+  border-bottom: none;
+}
+
+.content, .subcontent {
+  border: 1px solid #bebdca6b;
+  text-align: center;
+  padding: 20px;
+  display: none;
+}
+
+.content.active, .subcontent.active {
+  display: block;
+}
+
+.status-info {
+  display: block;
+  justify-content: space-between;
+}
+
+.status-column {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+}
+
+.status-item {
+  margin: 10px;
+}
+
+.status-info2 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.status-column2 {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+}
+
+button {
+  margin: 5px 5px;
+  color: #29243e;
+  background-color: #9690b390;
+  border: 1px solid #ebe0e0;
+  border-radius: 0.5rem;
+  padding: 10px 20px;
+}
+
+#status-info, #dano-total {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  white-space: pre-wrap;
+}
+
+#status-info, #teste-habilidade {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  white-space: pre-wrap;
+}
+
+.status-pericias {
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #29254091;
+  padding: 10px;
+  border-radius: 0.5rem;
+  margin-top: 20px;
+}
+
+.status-tracos {
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #29254091;
+  padding: 10px;
+  border-radius: 0.5rem;
+  margin-top: 20px;
+}
+
+.collapsible {
+  cursor: pointer;
+}
+.content-collapsed {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+}
+.content-expanded {
+  max-height: 10000px; /* Ajuste conforme necessário */
+  transition: max-height 0.12s ease-in;
+}
+
+.status-bar {
+  position: relative;
+  height: 20px;
+  background-color: #cccccc06;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.status-bar-fill {
+  height: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #28254091;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+.status-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-column3 {
+  margin: 20px 0;
+}
+
+.status-column4 {
+  flex: 1;
+  min-width: 100%;
+  text-align: center;
+  padding-top: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #28254091;
+  border-radius: 0.5rem;
+}
+
+.status-column4 .status-item {
+  margin: 10px;
+  text-align: left;
+  padding: 10px;
+  padding-bottom: -10px;
+}
+
+.atributos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.atributo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #2b254091;
+}
+
+.atributo-item label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.atributo-item span {
+  display: block;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #28254091;
+  border-radius: 5px;
+  width: 100%;
+  text-align: center;
+}
+
+.navbar {
+  background-color: #4CAF50; /* Defina a cor de fundo desejada */
+  color: white; /* Cor do texto */
+  padding: 10px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Estilos para a barra de rolagem */
+::-webkit-scrollbar {
+  width: 8px; /* Largura da barra de rolagem */
+  background-color: #2b254091; /* Cor de fundo da barra de título */
+}
+
+/* Track (parte de fundo da barra de rolagem) */
+::-webkit-scrollbar-track {
+  background-color: #29254091; /* Cor de fundo da barra de título */
+}
+
+/* Thumb (parte deslizante da barra de rolagem) */
+::-webkit-scrollbar-thumb {
+  background-color: #25254091; /* Cor de fundo da barra de título */
+  border-radius: 4px; /* Borda arredondada do thumb */
+}
+
+/* Hover state do thumb */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.553)52591; /* Cor de fundo da barra de título */
+}
+.dialog-container {
+  border: 1px solid #999999;
+  border-radius: 0.5rem;
+  color: #c9c9da;
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  padding: 20px;
+  background-color: rgba(37, 50, 64, 0.167); /* Opacidade ajustada para 80% */
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  transition: all ease 0.5s;
+  width: 80vw; /* Largura igual a 80% da largura da tela */
+  max-width: 600px; /* Largura máxima para manter o tamanho controlado */
+  height: 155px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed; /* Fixa o container na tela */
+  top: 70%; /* Ajusta a distância do topo para 70% da altura da tela */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; /* Garante que o diálogo fique acima de outros elementos */
+  overflow: hidden; /* Garante que a rolagem é controlada pela mensagem e não pelo container */
+}
+
+.dialog-message {
+  margin-bottom: 20px;
+  text-align: center;
+  overflow-y: auto; /* Permite rolagem vertical se o texto ultrapassar o limite */
+  max-height: 80px; /* Define uma altura máxima para a área de texto */
+  width: 100%; /* Garante que o texto use toda a largura disponível */
+  padding: 5px; /* Adiciona algum preenchimento interno */
+  box-sizing: border-box; /* Inclui o padding e border no cálculo da largura e altura */
+}
+
+.dialog-buttons button {
+  margin: 5px 5px;
+  color: #24263e;
+  background-color: #9095b3;
+  border: 1px solid #e1e0eb;
+  border-radius: 0.5rem;
+  padding: 10px 20px;
+}
+
+.dialog-buttons button:hover {
+  background-color: #9390b3;
+}
+
+#blur-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(10px); /* Efeito de blur */
+  z-index: 999; /* Z-index menor que o diálogo para que fique atrás dele */
+  display: none; /* Inicialmente oculto */
+}
+
+/* Estilos para áreas de texto */
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #26243e80;
+  color: #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra ao focar */
+  resize: vertical; /* Permite redimensionar verticalmente */
+  height: auto; /* Altura inicial */
+  max-height: 550px; /* Altura máxima */
+  overflow-y: auto; /* Adiciona barra de rolagem vertical quando necessário */
+}
+
+/* Estilo quando a área de texto está em foco */
+textarea:focus {
+  border: 1px solid rgb(255, 255, 255);
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  outline: none; /* Remove a borda de foco padrão */
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Sombra ao focar */
+}
+
+/* Estilos para a aba de informações essenciais */
+#essential-info {
+  left: 6%; /* Centraliza horizontalmente */
+  transform: translate(-50%, -50%); /* Ajusta para centralizar corretamente */
+  position: fixed;
+  top: 50%; /* Posição inicial no meio da tela */
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: block;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  color: #c9c9da;
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  background-color: #2b254091;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  transition: top 0.5s ease; /* Adiciona uma transição suave para a propriedade 'top' */
+  max-width: 200px;
+  width: 50%;
+  margin: 20px;
+}
+
+.teste-habilidade-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 0.5rem;
+  background-color: #29254091;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra ao focar */
+  padding: 10px;
+  width: fit-content;
+}
+
+.teste-habilidade-container select,
+.teste-habilidade-container input {
+  padding: 5px;
+  font-size: 14px;
+  position: center;
+  padding-top: 10px;
+}
+
+/* Estilos para a aba de informações essenciais */
+#essential-info2 {
+  left: 71.5%; /* Centraliza horizontalmente */
+  text-align: center;
+  transform: translate(-50%, -50%); /* Ajusta para centralizar corretamente */
+  position: fixed;
+  top: 50%; /* Posição inicial no meio da tela */
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: block;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  color: #c9c9da;
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  background-color: #2b254091;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  transition: top 0.5s ease; /* Adiciona uma transição suave para a propriedade 'top' */
+  max-width: 350px;
+  width: 50%;
+  margin: 20px;
+}
+
+#status-img {
+  height: 100%; /* Ajusta a altura da imagem para 100% do contêiner pai */
+  width: 100%; /* Mantém a proporção da largura */
+}
+
+#essential-info.scrolled {
+  top: 50px; /* Ajuste a posição vertical conforme necessário */
+}
+
+#essential-info2.scrolled {
+  top: 50px; /* Ajuste a posição vertical conforme necessário */
+}
+
+#essential-info.hidden {
+  display: none;
+}
+
+#essential-info2.hidden {
+  display: none;
+}
+
+/* Apenas para desktop */
+@media (min-width: 1024px) {
+  #essential-info {
+      display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  #essential-info2 {
+      display: block;
+  }
+}
+
+.item-icon {
+  width: 50px;
+  height: 50px;
+  object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
+}
+
+#inventory-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  align-items: start;
+}
+
+/* Estilos para o modal */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  overflow: visible; /* Permitir que o modal extrapole */
+}
+
+.modal-content {
+  border: 1px solid #999; 
+  color: #c9c9da;
+  position: fixed; /* Alterado para fixed */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centraliza o modal */
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #292540b6;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  transition: all ease .2s;
+  width: 80%; /* Largura fixada */
+  max-width: 600px; /* Largura máxima */
+  text-align: center; /* Texto centralizado */
+  overflow: visible;
+}
+
+/* Container fixo no canto superior direito */
+#toggle-atualizar {
+  position: flex;
+  top: 10px;
+  right: 130px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Estilos para o toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+/* Esconde o checkbox padrão */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Estilo do slider inspirado na checkbox */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #27243e80; /* Mesmo fundo da checkbox */
+  border: 1px solid rgba(255, 255, 255, 0.222); /* Mesma borda */
+  border-radius: 4px; /* Mesma borda arredondada */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra semelhante */
+  transition: 0.4s;
+}
+
+/* Círculo interno (knob) */
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 20px; /* Tamanho similar ao da checkbox */
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+/* Quando marcado, utiliza a cor da checkbox marcada */
+.switch input:checked + .slider {
+  background-color: #4CAF50;
+  border: 1px solid #4CAF50;
+}
+
+/* Move o knob para a direita quando marcado */
+.switch input:checked + .slider:before {
+  transform: translateX(26px); /* Ajuste: 50px (largura total) - 20px (knob) - 4px (margens) */
+}
+
+/* Efeito de foco, utilizando a mesma lógica da checkbox */
+.switch input:focus + .slider {
+  border: 1px solid rgb(255, 255, 255);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  outline: none;
+}
+
+/* Estilo para a label do toggle */
+.toggle-label {
+  font-family: sans-serif;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.inventory-preview {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #27243e80; /* Pode usar o mesmo fundo da checkbox */
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  border-radius: 4px;
+}
+
+.slider-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.slider-container .inventory-item {
+  flex: 0 0 auto;
+  width: 80px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #dbdbeb7f;
+  border-radius: 4px;
+  padding: 5px;
+  background-color: #31356340;
+}
+
+.slider-container .inventory-item img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 5px;
+}
+
+.slider-container .inventory-item p {
+  font-size: 12px;
+  margin: 0;
+}
+
+.slider-container .inventory-item.selected {
+  border: 2px solid #4CAF50;
+  background-color: #e6ffe6;
+}
+
+
+/* Custom scrollbar styles */
+.slider-container::-webkit-scrollbar {
+  height: 12px;
+}
+
+.slider-container::-webkit-scrollbar-track {
+  background: #aaaaba;
+  border-radius: 4px;
+}
+
+.slider-container::-webkit-scrollbar-thumb {
+  background: #7e7b96;
+  border-radius: 4px;
+}
+
+.slider-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

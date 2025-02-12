@@ -1,0 +1,52 @@
+{
+    "habilidades": [
+        {
+            "nome": "Azazel",
+            "id": "1",
+            "dano": "4d12+2, 1d20",
+            "cooldown": 2 ,
+            "custo": 20,
+            "descricao": "Azazel [2° - 20] Possesão, Mordred é possesso por demônios ou por sua entidade, nesse momento berserk ele se mantém com o objetivo de matar um inimigo escolhido, recebendo um buff temporários de regeneração de 4d12 + 2 cada ataque recebido, e rolar 1d20 para saber uma benção recebido do demônio. 1-5 [Bênção 1] 6-10 [Bênção 2] 11-20 [Bênção 3] Tanka 2."
+        },
+        {
+            "nome": "Azazel - Recursivo",
+            "id": "6",
+            "dano": "4d12+2, 1d20",
+            "cooldown": 2 ,
+            "custo": 0,
+            "descricao": "Azazel [2° - 20] Possesão, Mordred é possesso por demônios ou por sua entidade, nesse momento berserk ele se mantém com o objetivo de matar um inimigo escolhido, recebendo um buff temporários de regeneração de 4d12 + 2 cada ataque recebido, e rolar 1d20 para saber uma benção recebido do demônio. 1-5 [Bênção 1] 6-10 [Bênção 2] 11-20 [Bênção 3] Tanka 2."
+        },
+        {
+            "nome": "Mammon (Passiva)",
+            "id": "2",
+            "dano": "1d20",
+            "cooldown": 0,
+            "custo": 0,
+            "descricao": "Em Mammon, Mordred controla um espaço separado onde todos os danos, habilidades, buffs e debuffs que são Tankados são absorvidos. Este espaço pode conter até quatro cargas desses efeitos. Além disso, pessoas também podem ser aprisionadas nesse local, porém o processo de absorção de uma pessoa pode levar dias. Uma vez absorvidos, é possível liberar esses fragmentos de dano ou habilidade para uso próprio, limitado ao quanto foi consumido inicialmente, determinado por um teste de 1d20. Existe também a possibilidade de assimilar esses efeitos ao longo do tempo, com uma chance proporcional ao que foi consumido. Alternativamente, os fragmentos podem ser consumidos para transformar em potencial de dano adicional, cura significativa ou aumento de perícia, oferecendo benefícios como +2d de dano, 4d12 de cura ou +3 de perícia por carga consumida."
+        },
+        {
+            "nome": "Armadura Amaldiçoada",
+            "id": "3",
+            "dano": "",
+            "cooldown": 1,
+            "custo": 12,
+            "descricao": "3/4 de dano físicas 1/2 de elemento de maldição."
+        },
+        {
+            "nome": "Expansão de Dominínio Beelzebub Lago de Lama",
+            "id": "4",
+            "dano": "",
+            "cooldown": 3,
+            "custo": 25,
+            "descricao": "Expansão de Domínio Belzebub Lago da Lama [3° - 25] Visulmente: 3° circulo do inferno de Dante. Os inimigos são imersos em lamaçais onde testes de defesas, escudos são ignorados e danos são tomados integralmente, recebem 1/2 da vida retirada inimiga. -> Aliados tem desvantagem em teste de defesa, escudos e armaduras são ignoradas -> Não pode ser atingido durante a conjuração"
+        },
+        {
+            "nome": "Nutrição Temporal",
+            "id": "5",
+            "dano": "",
+            "cooldown": 3,
+            "custo": 15,
+            "descricao": "Concede a si mesmo ou a um aliado mais uma ação padrão durante a sua rodada, este efeito perde-se quando o alvo entra em estado de “morrendo”."
+        }
+    ]
+}
