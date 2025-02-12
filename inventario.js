@@ -49,6 +49,7 @@ let selectedAttackItem = null;
     currentInventoryKey = inventoryKey;
     updateInventoryDisplay(inventory, inventoryKey);
     updateInventoryPreview(inventory, inventoryKey);
+    updateTotalWeight(inventory);  // Atualiza o peso total
   }
 
   // Função para salvar o inventário no localStorage com a chave definida
@@ -126,6 +127,8 @@ let selectedAttackItem = null;
 
       container.appendChild(itemDiv);
     });
+
+    updateTotalWeight(inventory);
   }
 
   // Função para atualizar a pré-visualização do inventário (slider na subtab "Ações")
@@ -180,7 +183,7 @@ let selectedAttackItem = null;
   const inputIcon = document.getElementById('item-icon');
   const inputDamage = document.getElementById('item-damage');
   const inputDescription = document.getElementById('item-description');
-  const inputCost = document.getElementById('item-cost');
+  const inputpeso = document.getElementById('item-peso');
   const inputQuantity = document.getElementById('item-quantity');
   const inputSingleUse = document.getElementById('item-single-use'); // Checkbox para item de uso único
 
@@ -188,7 +191,7 @@ let selectedAttackItem = null;
   const detailItemIcon = document.getElementById('detail-item-icon');
   const detailItemDamage = document.getElementById('detail-item-damage');
   const detailItemDescription = document.getElementById('detail-item-description');
-  const detailItemCost = document.getElementById('detail-item-cost');
+  const detailItempeso = document.getElementById('detail-item-peso');
   const detailItemQuantity = document.getElementById('detail-item-quantity');
 
   let selectedItemIndex = null;
@@ -200,7 +203,7 @@ let selectedAttackItem = null;
     inputIcon.value = '';
     inputDamage.value = '';
     inputDescription.value = '';
-    inputCost.value = '';
+    inputpeso.value = '';
     inputQuantity.value = '';
     inputSingleUse.checked = false;
   }
@@ -217,7 +220,7 @@ let selectedAttackItem = null;
     detailItemIcon.src = item.icon;
     detailItemDamage.textContent = item.damage;
     detailItemDescription.textContent = item.description;
-    detailItemCost.textContent = item.cost;
+    detailItempeso.textContent = item.peso;
     detailItemQuantity.textContent = item.quantity;
     itemDetailsModal.style.display = 'block';
     // Atualiza as variáveis globais para uso posterior
@@ -264,17 +267,17 @@ let selectedAttackItem = null;
     const icon = inputIcon.value.trim();
     const damage = inputDamage.value.trim(); // Agora, damage é uma string como "1d20"
     const description = inputDescription.value.trim();
-    const cost = parseFloat(inputCost.value);
+    const peso = parseFloat(inputpeso.value);
     const quantity = parseInt(inputQuantity.value, 10);
     const singleUse = inputSingleUse.checked; // Verifica se o item é de uso único
 
-    if (name && icon && !isNaN(cost) && !isNaN(quantity)) {
+    if (name && icon && !isNaN(peso) && !isNaN(quantity)) {
       const newItem = {
         name,
         icon,
         damage,
         description,
-        cost,
+        peso,
         quantity,
         singleUse
       };
@@ -344,4 +347,15 @@ let selectedAttackItem = null;
     }
     await loadInventory();
   });
+
+  function updateTotalWeight(inventory) {
+    // Calcula o peso total multiplicando o peso de cada item pela sua quantidade
+    const totalWeight = inventory.reduce((acc, item) => acc + (item.peso * item.quantity), 0);
+    // Seleciona o elemento de exibição do peso total
+    const totalWeightDisplay = document.getElementById('total-weight');
+    if (totalWeightDisplay) {
+      totalWeightDisplay.textContent = "Peso total do inventário: " + totalWeight;
+    }
+  }
+  
 })();

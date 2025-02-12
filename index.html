@@ -512,6 +512,7 @@
                 <!-- Os itens serão adicionados dinamicamente aqui -->
                 </div>
                 <button id="open-add-item">Adicionar Item</button>
+                <div id="total-weight"></div>
             </div>
             
             <!-- Modal para adicionar novo item -->
@@ -531,8 +532,8 @@
                 <label for="item-description">Descrição:</label>
                 <textarea id="item-description" placeholder="Descrição do item"></textarea>
                 
-                <label for="item-cost">Custo:</label>
-                <input type="number" id="item-cost" placeholder="Custo">
+                <label for="item-peso">Peso:</label>
+                <input type="number" id="item-peso" placeholder="Peso">
                 
                 <label for="item-quantity">Quantidade:</label>
                 <input type="number" id="item-quantity" placeholder="Quantidade">
@@ -554,7 +555,7 @@
                 <img id="detail-item-icon" src="" alt="Ícone do Item" class="item-icon">
                 <p><strong>Dano:</strong> <span id="detail-item-damage"></span></p>
                 <p><strong>Descrição:</strong> <span id="detail-item-description"></span></p>
-                <p><strong>Custo:</strong> <span id="detail-item-cost"></span></p>
+                <p><strong>Peso:</strong> <span id="detail-item-peso"></span></p>
                 <p><strong>Quantidade:</strong> <span id="detail-item-quantity"></span></p>
                 <div class="modal-buttons">
                     <button id="use-item-button">Usar</button>
