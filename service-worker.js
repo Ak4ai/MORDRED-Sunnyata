@@ -5,7 +5,8 @@ self.addEventListener('install', function(event) {
           '/',
           '/index.html',
           '/style.css', // Adicione todos os arquivos necessários para o offline
-          '/script.js'
+          '/script.js',
+          '/inventario.js'
         ]);
       })
     );
