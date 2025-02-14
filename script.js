@@ -1686,29 +1686,24 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function enviarFeedback(topico, resultado, valores, formula) {
-    const webhookURL = "https://discord.com/api/webhooks/1336717324383817801/7MNz4oN0WD5wmlxqtaIHlIZyQRlDOULqo8hhl9BlciL5K8UpqY6SxTW-JfHortQWikNd"; // Cole a URL do webhook aqui
-
     const payload = {
-        embeds: [
-            {
-                color: 0x2F3136, // Cor de fundo do embed (cinza escuro)
-                title: ">>> " + window.nomepersonagem + " - " + topico,
-                description: "```ansi\n[0;34m" + resultado + "[0m ← [" + valores.join(", ") + "]" + formula + "\n```",
-                footer: {
-                    text: "M.O.R.D.R.E.D 🔥",
-                },
-            },
-        ],
+      topico,
+      resultado,
+      valores,
+      formula,
+      nomepersonagem: window.nomepersonagem // Certifique-se que essa variável está definida
     };
-
-    fetch(webhookURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+  
+    // Use o URL completo do endpoint do Vercel
+    fetch("https://backmordred.vercel.app/api/enviarFeedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     })
-    .then(response => console.log("Rolagem enviada!"))
-    .catch(error => console.error("Erro ao enviar a rolagem:", error));
-}
+      .then(response => response.json())
+      .then(data => console.log("Feedback enviado!", data))
+      .catch(error => console.error("Erro ao enviar feedback:", error));
+  }  
 
 function atualizarDescricaoHabilidade(descricaoMarkdown) {
     const md = window.markdownit({
