@@ -1394,7 +1394,7 @@ function executarEsquiva() {
     window.topico = 'Esquiva';
     let numeroVantagens = parseInt(document.getElementById('vantagens-esquiva').value);
     let modificador = parseInt(document.getElementById('modificador-esquiva').value);
-    let resultado = acao('agilidade', 'acrobacia', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
+    let resultado = acao('agilidade', 'destreza', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
     
     // Exibir o resultado em um mostrarMensagem
     let mensagem = (`Resultado do Ataque: ${resultado}`);
