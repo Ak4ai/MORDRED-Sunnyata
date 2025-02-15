@@ -47,6 +47,24 @@ input {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra ao focar */
 }
 
+#check-defesa-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+#check-defesa {
+  position: relative;
+  top: 5px;
+  right: -65px;
+  z-index: 998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Estilos para caixas de seleção (checkbox) */
 input[type="checkbox"] {
   appearance: none; /* Remove o estilo padrão do sistema operacional */
@@ -57,6 +75,7 @@ input[type="checkbox"] {
   border-radius: 4px;
   cursor: pointer;
   position: relative;
+  top: 2.5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra ao focar */
 }
 

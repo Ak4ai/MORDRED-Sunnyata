@@ -578,17 +578,36 @@ function rolarDano(expressao) {
         let quantidade = 1; // Valor padrão
         let faces = 0;
         let modificador = 0;
+        
+        // Variáveis novas para modificador percentual
+        let isPercentage = false;         // indica se há modificador percentual
+        let percentageValue = 0;          // armazena o valor percentual (ex.: 50 para 50%)
+        let modText = '';                 // texto original para exibição
 
         // Extrair quantidade e faces do dado
         if (indexD !== -1) {
             quantidade = parseInt(termo.slice(0, indexD)) || 1;
             const restante = termo.slice(indexD + 1);
 
-            // Procurar por modificadores após as faces
-            const match = restante.match(/^(\d+)([+-]\d+)?$/);
-            if (match) {
-                faces = parseInt(match[1]) || 0;
-                modificador = parseInt(match[2]) || 0;
+            // Nova lógica: verificar se há um modificador percentual (ex.: +50%)
+            if (restante.includes('%')) {
+                isPercentage = true;
+                const matchPercentage = restante.match(/^(\d+)([+-]\d+)%$/);
+                if (matchPercentage) {
+                    faces = parseInt(matchPercentage[1]) || 0;
+                    percentageValue = parseInt(matchPercentage[2]) || 0;
+                    modText = (percentageValue >= 0 ? '+' : '') + percentageValue + '%';
+                } else {
+                    throw new Error(`Expressão inválida: ${termo}`);
+                }
+            } else {
+                // Código original para modificador fixo (ex.: +3)
+                const match = restante.match(/^(\d+)([+-]\d+)?$/);
+                if (match) {
+                    faces = parseInt(match[1]) || 0;
+                    modificador = parseInt(match[2]) || 0;
+                    modText = modificador !== 0 ? (modificador > 0 ? '+' : '') + modificador : '';
+                }
             }
         } else {
             // Se não houver 'd', considerar o termo como apenas um número fixo
@@ -611,15 +630,25 @@ function rolarDano(expressao) {
             valoresIndividuais.push(rolagem);
         }
 
+        // Se for modificador percentual, calcular bônus para cada rolagem
+        if (isPercentage) {
+            let bonusTotal = 0;
+            rolagens.forEach(rolagem => { // aqui, "rolagem" é o parâmetro da função callback
+                bonusTotal += Math.floor(rolagem * (percentageValue / 100));
+            });
+            // Atribuir o bônus à variável modificador para usar o código original
+            modificador = bonusTotal;
+        }
+        
         // Adicionar o modificador, se houver
         totalTermo += modificador;
 
         // Adicionar ao total de dano
         totalDano += totalTermo;
 
-        // Armazenar as rolagens deste termo para exibição
+        // Armazenar as rolagens deste termo para exibição, utilizando o modText adequado
         rolagensTotais.push({
-            expressao: `${quantidade}d${faces}${modificador !== 0 ? (modificador > 0 ? '+' : '') + modificador : ''}`,
+            expressao: `${quantidade}d${faces}${modText}`,
             rolagens: rolagens.join(', '),
             totalTermo: totalTermo
         });
@@ -642,6 +671,7 @@ function rolarDano(expressao) {
     // Retornar o total de dano calculado
     return mensagem + "Dano total: " + totalDano;
 }
+
 
 function rolarDadosSimples(expressao) {
     // Remover espaços em branco e converter para minúsculas
@@ -1316,26 +1346,46 @@ function executarDefesa() {
     window.topico = 'Defesa';
     let numeroVantagens = parseInt(document.getElementById('vantagens-defesa').value);
     let modificador = parseInt(document.getElementById('modificador-defesa').value);
-    let resultado = acao('fortitude', 'resistencia', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
     
+    // Chama a função acao e captura a string retornada
+    let resultadoAcao = acao('fortitude', 'vigor', numeroVantagens, modificador); // Exemplo de retorno:
+    // "Resultado do Ataque: Resultado rolado: 1d20: 20 | 1d6: 6Resultado Final: 26"
+
+    // Extrair apenas o valor numérico após "Resultado Final:" usando regex
+    let match = resultadoAcao.match(/Resultado Final:\s*(\d+)/);
+    let resultado = match ? Number(match[1]) : NaN;
+    if (isNaN(resultado)) {
+         mostrarMensagem("Erro: Não foi possível extrair o resultado final.");
+         resultado = 0;
+    }
+    
+    // Se o checkbox estiver marcado, soma o valor do escudo ao resultado
+    let checkboxEscudo = document.getElementById('checkDefesa');
+    if (checkboxEscudo && checkboxEscudo.checked) {
+        let escudo = Number(personagem.escudo); // Converte o valor de escudo para número
+        mostrarMensagem(`Escudo: ${escudo}`);
+        mostrarMensagem(`Resultado antes do escudo: ${resultado}`);
+        resultado += escudo; // Soma o valor do escudo
+    }
+
     // Exibir o resultado em um mostrarMensagem
     let mensagem = (`Resultado do Ataque: ${resultado}`);
 
-        // Verifica se há um item selecionado para tiro
-        if (window.selectedAttackItem) {
-            // Obtém o padrão de dano do item (por exemplo, "1d20+3")
-            let danoItem = window.selectedAttackItem.damage;
-            let nomeItem = window.selectedAttackItem.name;
-            window.topico = 'Dano - ' + nomeItem;
-            
-            // Rola o dano utilizando a função rolarDano (definida em script.js)
-            let resultadoDano = rolarDano(danoItem);
-            
-            // Acrescenta o resultado da rolagem do dano à mensagem
-            mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
-          } else {
-            mensagem += `\nNenhum item selecionado para tiro.`;
-          }
+    // Verifica se há um item selecionado para tiro
+    if (window.selectedAttackItem) {
+        // Obtém o padrão de dano do item (por exemplo, "1d20+3")
+        let danoItem = window.selectedAttackItem.damage;
+        let nomeItem = window.selectedAttackItem.name;
+        window.topico = 'Dano - ' + nomeItem;
+        
+        // Rola o dano utilizando a função rolarDano (definida em script.js)
+        let resultadoDano = rolarDano(danoItem);
+        
+        // Acrescenta o resultado da rolagem do dano à mensagem
+        mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
+    } else {
+        mensagem += `\nNenhum item selecionado para tiro.`;
+    }
 
     mostrarMensagem(mensagem);
 }

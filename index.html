@@ -68,7 +68,7 @@
         </div>
         <div class="status-item">
             <div class="status-label">
-                <label>Escudo:</label>
+                <label>Defesa:</label>
                 <span id="status-escudo1">0 / 100</span>
             </div>
             <div class="status-bar">
@@ -114,7 +114,7 @@
                   </div>
                   <div class="status-item">
                       <div class="status-label">
-                          <label>Escudo:</label>
+                          <label>Defesa:</label>
                           <span id="status-escudo">0 / 100</span>
                       </div>
                       <div class="status-bar">
@@ -324,9 +324,9 @@
                         <label for="almaMax">Alma Max:</label>
                         <input type="number" id="almaMax" name="almaMax" min="0">
                         <br>
-                        <label for="escudo">Escudo:</label>
+                        <label for="escudo">Defesa:</label>
                         <input type="number" id="escudo" name="escudo" min="0">
-                        <label for="escudoMax">Escudo Max:</label>
+                        <label for="escudoMax">Defesa Max:</label>
                         <input type="number" id="escudoMax" name="escudoMax" min="0">
                         <br>
                         <label for="fortitude">Fortitude:</label>
@@ -448,7 +448,7 @@
                             <option value="força">Força</option>
                             <option value="agilidade">Agilidade</option>
                             <option value="conhecimento">Conhecimento</option>
-                            <option value="espirito">Presenca</option>
+                            <option value="espirito">Espirito</option>
                             <option value="fortitude">Fortitude</option>
                             <!-- Adicione mais opções conforme necessário -->
                         </select>
@@ -609,7 +609,11 @@
                 <label for="modificador-defesa">Modificador:</label>
                 <input type="number" id="modificador-defesa" value="0">
                 <br>
+                <div id="check-defesa">
                 <button onclick="executarDefesa()">Executar Defesa</button>
+                    <input type="checkbox" id="checkDefesa">
+                    <label for="checkDefesa">Defesa Total</label>
+                </div>
                 
                 <h2>Esquivar</h2>
                 <label for="vantagens-esquiva">Número de Vantagens:</label>
@@ -638,10 +642,10 @@
                   <input type="text" id="ajuste-vida" />
                   <button onclick="ajustarVida(1)">Adicionar Vida</button>
                   <button onclick="ajustarVida(-1)">Reduzir Vida</button>
-                  <h2>Ajuste Escudo:</h2>
+                  <h2>Ajuste Defesa:</h2>
                   <input type="text" id="ajuste-escudo" />
-                  <button onclick="ajustarEscudo(1)">Adicionar Escudo</button>
-                  <button onclick="ajustarEscudo(-1)">Reduzir Escudo</button>
+                  <button onclick="ajustarEscudo(1)">Adicionar Defesa</button>
+                  <button onclick="ajustarEscudo(-1)">Reduzir Defesa</button>
                   <!-- Outros elementos da interface, se houver -->
                   <h2>Sair:</h2>
                   <button onclick="sairAjustes()">Sair dos Ajustes</button>
@@ -659,7 +663,7 @@
                     <option value="força">Força</option>
                     <option value="agilidade">Agilidade</option>
                     <option value="conhecimento">Conhecimento</option>
-                    <option value="espirito">Presenca</option>
+                    <option value="espirito">Espirito</option>
                     <option value="fortitude">Fortitude</option>
                     <!-- Adicione mais opções conforme necessário -->
                 </select><br><br>
