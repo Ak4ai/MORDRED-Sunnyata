@@ -49,6 +49,7 @@ let selectedAttackItem = null;
     currentInventoryKey = inventoryKey;
     updateInventoryDisplay(inventory, inventoryKey);
     updateInventoryPreview(inventory, inventoryKey);
+    updateInventoryPreviewTeste(inventory, inventoryKey);
     updateTotalWeight(inventory);  // Atualiza o peso total
   }
 
@@ -98,6 +99,7 @@ let selectedAttackItem = null;
         saveInventory(inventory, inventoryKey);
         updateInventoryDisplay(inventory, inventoryKey);
         updateInventoryPreview(inventory, inventoryKey);
+        updateInventoryPreviewTeste(inventory, inventoryKey);
       };
 
       // Botão para remover uma unidade
@@ -113,6 +115,7 @@ let selectedAttackItem = null;
           saveInventory(inventory, inventoryKey);
           updateInventoryDisplay(inventory, inventoryKey);
           updateInventoryPreview(inventory, inventoryKey);
+          updateInventoryPreviewTeste(inventory, inventoryKey);
         }
       };
 
@@ -158,12 +161,67 @@ let selectedAttackItem = null;
       
       // Evento de clique: seleciona o item para atacar
       itemDiv.addEventListener('click', function() {
-        const siblings = container.querySelectorAll('.inventory-item');
-        siblings.forEach(sib => sib.classList.remove('selected'));
-        itemDiv.classList.add('selected');
-        selectedAttackItem = item;
-        window.selectedAttackItem = item;
-     });     
+        if (itemDiv.classList.contains('selected')) {
+          // Se já está selecionado, deseleciona
+          itemDiv.classList.remove('selected');
+          selectedAttackItem = null;
+          window.selectedAttackItem = null;
+        } else {
+          // Remove seleção dos irmãos e seleciona este item
+          const siblings = container.querySelectorAll('.inventory-item');
+          siblings.forEach(sib => sib.classList.remove('selected'));
+          itemDiv.classList.add('selected');
+          selectedAttackItem = item;
+          window.selectedAttackItem = item;
+        }
+      });
+        
+      
+      container.appendChild(itemDiv);
+    });
+  }
+
+  function updateInventoryPreviewTeste(inventory, inventoryKey) {
+    const container = document.querySelector('#inventory-preview-testes .slider-container');
+    if (!container) {
+      console.warn("Container da pré-visualização não encontrado");
+      return;
+    }
+    container.innerHTML = ''; // Limpa o container antes de adicionar os itens
+    
+    inventory.forEach((item, index) => {
+      // Cria o container do item
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('inventory-item');
+      
+      // Cria e adiciona o ícone do item
+      const icon = document.createElement('img');
+      icon.src = item.icon;
+      icon.alt = item.name;
+      itemDiv.appendChild(icon);
+      
+      // Cria e adiciona o nome do item
+      const name = document.createElement('p');
+      name.textContent = item.name;
+      itemDiv.appendChild(name);
+      
+      // Evento de clique: seleciona o item para atacar
+      itemDiv.addEventListener('click', function() {
+        if (itemDiv.classList.contains('selected')) {
+          // Se já está selecionado, deseleciona
+          itemDiv.classList.remove('selected');
+          selectedAttackItem = null;
+          window.selectedAttackItemteste = null;
+        } else {
+          // Remove seleção dos irmãos e seleciona este item
+          const siblings = container.querySelectorAll('.inventory-item');
+          siblings.forEach(sib => sib.classList.remove('selected'));
+          itemDiv.classList.add('selected');
+          selectedAttackItem = item;
+          window.selectedAttackItemteste = item;
+        }
+      });
+        
       
       container.appendChild(itemDiv);
     });
@@ -285,6 +343,7 @@ let selectedAttackItem = null;
       saveInventory(inventory, inventoryKey);
       updateInventoryDisplay(inventory, inventoryKey);
       updateInventoryPreview(inventory, inventoryKey);
+      updateInventoryPreviewTeste(inventory, inventoryKey);
       hideAddItemModal();
       // Atualiza as variáveis globais para preservar os itens já carregados
       currentInventory = inventory;
@@ -319,6 +378,7 @@ let selectedAttackItem = null;
         saveInventory(inventory, currentInventoryKey);
         updateInventoryDisplay(inventory, currentInventoryKey);
         updateInventoryPreview(inventory, currentInventoryKey);
+        updateInventoryPreviewTeste(inventory, inventoryKey);
       } else if (!item.singleUse) {
         // Se não for de uso único, talvez apenas use o item sem removê-lo
         alert('Item usado (não consumido).');

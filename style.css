@@ -677,6 +677,14 @@ textarea:focus {
   border-radius: 4px;
 }
 
+.inventory-preview-testes {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #27243e80; /* Pode usar o mesmo fundo da checkbox */
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  border-radius: 4px;
+}
+
 .slider-container {
   display: flex;
   overflow-x: auto;
@@ -729,4 +737,36 @@ textarea:focus {
 
 .slider-container::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+#popup-alert {
+  position: fixed;
+  top: -100px;             /* Inicia fora da tela (acima) */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(37, 50, 64, 0.568); /* Opacidade ajustada para 80% */
+  border: 1px solid #999999;
+  border-radius: 0.5rem;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  transition: all ease 0.5s;
+  color: #c9c9da;
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  opacity: 0;
+  z-index: 1000;
+  transition: top 0.5s ease, opacity 0.5s ease;
+}
+
+/* Classe para mostrar o popup */
+#popup-alert.show {
+  top: 10px;               /* Desce até 20px do topo */
+  opacity: 1;
+}
+
+/* Classe para esconder o popup (fade out) */
+#popup-alert.hide {
+  opacity: 0;
 }

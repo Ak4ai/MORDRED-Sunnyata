@@ -20,7 +20,7 @@
       </style>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="styles.css">
+      <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <script>
@@ -479,10 +479,10 @@
                     <input type="number" id="cooldownHabilidade" name="cooldownHabilidade" required>
                     <br>
                     <label for="custoHabilidade">Custo:</label>
-                    <input type="number" id="custoHabilidade" name="custoHabilidade" required>
+                    <input type="text" id="custoHabilidade" name="custoHabilidade" required>
                     <br>
                     <label for="custoVida">Custo Vida:</label>
-                    <input type="number" id="custoVidaHabilidade" name="custoVida" required>
+                    <input type="text" id="custoVidaHabilidade" name="custoVida" required>
                     <br> 
                     <label for="descricaoHabilidade">Descrição:</label>
                     <textarea id="descricaoHabilidade" name="descricaoHabilidade" required></textarea>
@@ -590,6 +590,15 @@
                 <br>
                 <button onclick="executarAtaque()">Executar Ataque</button>
 
+                <h2>Atirar</h2>
+                <label for="vantagens-tiro">Número de Vantagens:</label>
+                <input type="number" id="vantagens-tiro" value="0">
+                <br>
+                <label for="modificador-tiro">Modificador:</label>
+                <input type="number" id="modificador-tiro" value="0">
+                <br>
+                <button onclick="executarTiro()">Executar Tiro</button>
+
                 <h2>Defender</h2>
                 <label for="vantagens-defesa">Número de Vantagens:</label>
                 <input type="number" id="vantagens-defesa" value="0">
@@ -635,8 +644,15 @@
                   <button onclick="sairAjustes()">Sair dos Ajustes</button>
               </div>
               <div id="testes" class="subcontent">
+                <!-- Pré-visualização do Inventário -->
+                <div id="inventory-preview-testes" class="inventory-preview">
+                    <h3>Selecione o item para atacar</h3>
+                    <div class="slider-container">
+                    <!-- Os itens do inventário serão inseridos dinamicamente aqui -->
+                    </div>
+                </div>
                 <label for="atributo">Atributo:</label>
-                <select id="atributoSelect">
+                <select id="atributoSelect1">
                     <option value="força">Força</option>
                     <option value="agilidade">Agilidade</option>
                     <option value="conhecimento">Conhecimento</option>
@@ -646,7 +662,7 @@
                 </select><br><br>
             
                 <label for="pericia">Perícia:</label>
-                <select id="periciaSelect">
+                <select id="periciaSelect1">
                     <option value="destreza">Destreza</option>
                     <option value="pontaria">Pontaria</option>
                     <option value="tecnica">Técnica</option>
@@ -664,10 +680,10 @@
                 </select><br><br>
             
                 <label for="vantagens">Vantagens:</label>
-                <input type="number" id="vantagensInput" value="0"><br><br>
+                <input type="number" id="vantagensInput1" value="0"><br><br>
             
                 <label for="modificador">Modificador:</label>
-                <input type="number" id="modificadorInput" value="0"><br><br>
+                <input type="number" id="modificadorInput1" value="0"><br><br>
             
                 <button onclick="executarAcao()">Executar Ação</button>
             </div>
@@ -759,6 +775,9 @@
             </div>            
                       
       </div>
+      <div id="popup-alert">
+        <span id="popup-alert-text"></span>
+      </div>      
       <script src="script.js"></script>
       <script src="inventario.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>  </body>
