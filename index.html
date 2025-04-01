@@ -88,7 +88,6 @@
             <div class="tab" onclick="openTab('actions')">Actions</div>
             <div class="tab" onclick="openTab('inventory')">Inventory</div>
             <div class="tab" onclick="openTab('config')">Config</div>
-            <div class="tab" onclick="openTab('Google')">Google</div>
         </div>  
         
         <div id="info" class="content active">
@@ -299,6 +298,7 @@
                     <div class="subtab active" onclick="openSubtab('config', 'status1')">Status</div>
                     <div class="subtab" onclick="openSubtab('config', 'habilidades1')">Habilidades</div>
                     <div class="subtab" onclick="openSubtab('config', 'habilidades2')">SaveData</div>
+                    <div class="subtab" onclick="openSubtab('config', 'Google')">Google</div>
                 </div>
                 <div id="status1" class="subcontent active">
                     <div id="toggle-atualizar">
@@ -511,7 +511,6 @@
                         <button type="button" onclick="removerHabilidade()">Remover Habilidade</button>
                     </div>
                 </div>
-                 
                 <div id="habilidades2" class="subcontent">
                     <h2>Exportar e Importar Data</h2>
                     <br>
@@ -525,7 +524,33 @@
                     <button type="button" onclick="removerArquivo()">Remover Arquivo</button>
                     <br><br>
                     <button type="button" onclick="listarArquivos()">Listar Arquivos no LocalStorage</button>
-                </div>                                                                                                                          
+                </div>  
+                <div id="Google" class="content">
+                    <div class="title">Backup To Google Drive</div>
+
+                    <div id="loader" class="loader-overlay">
+                        <div class="loader"></div>
+                    </div>                
+                    
+                    <!-- Botões de autenticação -->
+                    <div class="auth-buttons">
+                        <button class="signin">Sign In</button>
+                        <button class="signout" style="display: none;">Sign Out</button>
+                    </div>
+                    
+                    <!-- Adicionado: exibição do nome e imagem do usuário -->
+                    <div class="user-info" style="display: none; margin-top: 10px;">
+                        <img src="" alt="User Icon" class="user-icon" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 5px;">
+                        <span class="user-name"></span>
+                    </div>
+                
+                    <!-- Botão de sincronização separado -->
+                    <div class="sync-container">
+                        <button class="sync">Sincronizar</button>
+                        <button class="restore">Restaurar backup</button>
+                    </div>
+                    <p class="last-sync" style="display: none; margin-top: 10px; font-size: 14px; color: #555;"></p>
+                </div>                                                                                                                           
             </div>            
             
             <!-- Seção de Inventário -->
@@ -801,35 +826,7 @@
 
 
                 </div> 
-            </div>           
-        
-            
-            <div id="Google" class="content">
-                <div class="title">Backup To Google Drive</div>
-
-                <!-- <div id="loader" class="loader-overlay">
-                    <div class="loader"></div>
-                </div> -->  
-                
-                <!-- Botões de autenticação -->
-                <div class="auth-buttons">
-                    <button class="signin">Sign In</button>
-                    <button class="signout" style="display: none;">Sign Out</button>
-                </div>
-                
-                <!-- Adicionado: exibição do nome e imagem do usuário -->
-                <div class="user-info" style="display: none; margin-top: 10px;">
-                    <img src="" alt="User Icon" class="user-icon" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 5px;">
-                    <span class="user-name"></span>
-                </div>
-            
-                <!-- Botão de sincronização separado -->
-                <div class="sync-container">
-                    <button class="sync">Sincronizar</button>
-                    <button class="restore">Restaurar backup</button>
-                </div>
-                <p class="last-sync" style="display: none; margin-top: 10px; font-size: 14px; color: #555;"></p>
-            </div>                                       
+            </div>                                               
         </div> 
         <script src="https://apis.google.com/js/api.js" defer></script>
         <script>

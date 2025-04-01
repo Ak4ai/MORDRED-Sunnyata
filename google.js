@@ -31,10 +31,9 @@ function checkIfEverythingLoaded() {
     const userInfoDiv = document.querySelector('.user-info');
     
     if (gapiInited && gisInited && userInfoDiv.style.display === 'flex' && userIcon.src && userName.textContent) {
-        hideLoader(); // Agora o loader só some quando tudo está realmente pronto.
+        hideLoader();
     }
 }
-
 
 var CLIENT_ID = '607317652690-jukucl3pro5ts8agt3cpndm9teosg1c7.apps.googleusercontent.com';
 var API_KEY = 'AIzaSyC3-6BvwRHqP7cEtyv9A9Oqhu-67UcKJbI';
@@ -98,11 +97,10 @@ function maybeEnableButtons() {
             syncButton.style.display = 'none';
             restoreButton.style.display = 'none';
             userInfoDiv.style.display = 'none';
-            // Remova o hideLoader() daqui!
+            hideLoader(); // Ocultar loader caso o usuário não esteja autenticado
         }
     }
 }
-
 
 // Autenticação
 signinButton.onclick = () => {
