@@ -362,6 +362,7 @@ let selectedAttackItem = null;
       const item = inventory[selectedItemIndex];
   
       // Chama a função rolarDano com o padrão de dano do item
+      window.topico = "Rolagem de Item: " + item.name;
       const resultadoRolagem = rolarDano(item.damage);
       // Exibe o resultado da rolagem (pode ser um alert ou atualizar algum elemento na tela)
       alert("Resultado da rolagem:\n" + resultadoRolagem);

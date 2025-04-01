@@ -2,6 +2,7 @@ let personagem; // Declaracao global do objeto personagem
 let habilidadesData;
 let habilidade;
 let atualizarStatusCheck = false;
+let atualizarHabilidadeCheck = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -211,6 +212,8 @@ function atualizarInfoPersonagem(Personagem) {
     const imgElement = document.getElementById('status-img');
     if (imgElement) {
         imgElement.src = personagem.img || ''; // Define a URL da imagem ou uma string vazia
+        window.imgpersonagem = personagem.img || ''; // Armazena a URL da imagem na variável global
+        console.log(`Imagem do personagem: ${window.imgpersonagem}`);
     } else {
         console.error('Elemento com ID "status-img" não encontrado no DOM.');
     }
@@ -572,54 +575,40 @@ function rolarDano(expressao) {
 
     // Iterar sobre cada termo de dano
     termos.forEach(termo => {
-        // Encontrar a posição do primeiro 'd'
         const indexD = termo.indexOf('d');
-        
         let quantidade = 1; // Valor padrão
         let faces = 0;
-        let modificador = 0;
-        
-        // Variáveis novas para modificador percentual
-        let isPercentage = false;         // indica se há modificador percentual
-        let percentageValue = 0;          // armazena o valor percentual (ex.: 50 para 50%)
-        let modText = '';                 // texto original para exibição
+        let modificadoresFixos = 0;
+        let modificadoresPercentuais = 0;
+        let modText = '';
 
-        // Extrair quantidade e faces do dado
         if (indexD !== -1) {
             quantidade = parseInt(termo.slice(0, indexD)) || 1;
             const restante = termo.slice(indexD + 1);
 
-            // Nova lógica: verificar se há um modificador percentual (ex.: +50%)
-            if (restante.includes('%')) {
-                isPercentage = true;
-                const matchPercentage = restante.match(/^(\d+)([+-]\d+)%$/);
-                if (matchPercentage) {
-                    faces = parseInt(matchPercentage[1]) || 0;
-                    percentageValue = parseInt(matchPercentage[2]) || 0;
-                    modText = (percentageValue >= 0 ? '+' : '') + percentageValue + '%';
-                } else {
-                    throw new Error(`Expressão inválida: ${termo}`);
-                }
-            } else {
-                // Código original para modificador fixo (ex.: +3)
-                const match = restante.match(/^(\d+)([+-]\d+)?$/);
-                if (match) {
-                    faces = parseInt(match[1]) || 0;
-                    modificador = parseInt(match[2]) || 0;
-                    modText = modificador !== 0 ? (modificador > 0 ? '+' : '') + modificador : '';
-                }
+            const match = restante.match(/^(\d+)(([+-]\d+|[+-]\d+%)*)$/);
+            if (match) {
+                faces = parseInt(match[1]) || 0;
+
+                const modificadores = match[2].match(/([+-]\d+%?|[+-]\d+)/g) || [];
+                modificadores.forEach(mod => {
+                    if (mod.endsWith('%')) {
+                        modificadoresPercentuais += parseInt(mod.slice(0, -1)) || 0;
+                        modText += mod;
+                    } else {
+                        modificadoresFixos += parseInt(mod) || 0;
+                        modText += mod;
+                    }
+                });
             }
         } else {
-            // Se não houver 'd', considerar o termo como apenas um número fixo
             faces = parseInt(termo) || 0;
         }
 
-        // Validar os dados extraídos
         if (faces <= 0 || quantidade <= 0) {
             throw new Error(`Expressão inválida: ${termo}`);
         }
 
-        // Gerar as rolagens para este termo de dano
         let rolagens = [];
         let totalTermo = 0;
 
@@ -630,23 +619,15 @@ function rolarDano(expressao) {
             valoresIndividuais.push(rolagem);
         }
 
-        // Se for modificador percentual, calcular bônus para cada rolagem
-        if (isPercentage) {
-            let bonusTotal = 0;
-            rolagens.forEach(rolagem => { // aqui, "rolagem" é o parâmetro da função callback
-                bonusTotal += Math.floor(rolagem * (percentageValue / 100));
-            });
-            // Atribuir o bônus à variável modificador para usar o código original
-            modificador = bonusTotal;
-        }
-        
-        // Adicionar o modificador, se houver
-        totalTermo += modificador;
+        totalTermo += modificadoresFixos;
 
-        // Adicionar ao total de dano
+        if (modificadoresPercentuais !== 0) {
+            const bonusPercentual = Math.floor(totalTermo * (modificadoresPercentuais / 100));
+            totalTermo += bonusPercentual;
+        }
+
         totalDano += totalTermo;
 
-        // Armazenar as rolagens deste termo para exibição, utilizando o modText adequado
         rolagensTotais.push({
             expressao: `${quantidade}d${faces}${modText}`,
             rolagens: rolagens.join(', '),
@@ -654,21 +635,17 @@ function rolarDano(expressao) {
         });
     });
 
-    // Montar a mensagem final com todas as rolagens
     let mensagem = '';
     rolagensTotais.forEach(termo => {
         mensagem += `Dano rolado (${termo.expressao}): ${termo.totalTermo} (${termo.rolagens})\n`;
     });
 
-    // Exibir mensagem com os resultados (se função mostrarMensagem existir)
     if (typeof mostrarMensagem === 'function') {
         mostrarMensagem(mensagem);
     }
 
-    // Enviar feedback
     enviarFeedback(topico, totalDano, valoresIndividuais, expressao);
 
-    // Retornar o total de dano calculado
     return mensagem + "Dano total: " + totalDano;
 }
 
@@ -679,19 +656,68 @@ function rolarDadosSimples(expressao) {
   
     // Se a expressão for somente um número, retorne-o diretamente.
     if (/^-?\d+$/.test(expressao)) {
-      const totalDano = parseInt(expressao, 10);
-      if (typeof mostrarMensagem === 'function') {
-      }
-      return totalDano;
+        const totalDano = parseInt(expressao, 10);
+        if (typeof mostrarMensagem === 'function') {
+            mostrarMensagem(`Dano: ${totalDano}`);
+        }
+        return totalDano;
     }
   
     // Verificar se há um termo 'max' no início
     let maximo = false;
     if (expressao.startsWith('max')) {
-      maximo = true;
-      expressao = expressao.slice(3);
+        maximo = true;
+        expressao = expressao.slice(3);
     }
-  
+
+    // Verificar se a expressão contém um valor percentual seguido de vidaMax, almaMax ou escudoMax
+    let percentual = 0;
+    let negativo = false;
+    let atributo = null;
+    const matchPercentual = expressao.match(/^(-)?(\d+)%\s*(vidamax|almamax|escudomax)$/);
+
+    if (matchPercentual) {
+        negativo = !!matchPercentual[1];
+        percentual = parseFloat(matchPercentual[2]);
+        atributo = matchPercentual[3];
+
+        // Determinar o valor máximo com base no atributo
+        let valorMaximo = 0;
+        switch (atributo) {
+            case 'vidamax':
+                valorMaximo = personagem.vidaMax;
+                break;
+            case 'almamax':
+                valorMaximo = personagem.almaMax;
+                break;
+            case 'escudomax':
+                valorMaximo = personagem.escudoMax;
+                break;
+        }
+
+        // Calcular o ajuste percentual
+        let ajuste = (percentual / 100) * valorMaximo;
+        if (negativo) ajuste = -ajuste;
+
+        // Aplicar o ajuste ao personagem
+        switch (atributo) {
+            case 'vidamax':
+                personagem.adicionarVida(ajuste);
+                break;
+            case 'almamax':
+                personagem.adicionarAlma(ajuste);
+                break;
+            case 'escudomax':
+                personagem.adicionarEscudo(ajuste);
+                break;
+        }
+
+        const acao = negativo ? 'reduzida' : 'aumentada';
+        mostrarMensagem(`${atributo.replace('max', '')} ${acao} em ${percentual}%: ${ajuste}`);
+        mostrarPopup(ajuste);
+        return ajuste;
+    }
+
     // Separar os termos de dano por vírgula
     const termos = expressao.split(',');
   
@@ -702,86 +728,70 @@ function rolarDadosSimples(expressao) {
   
     // Iterar sobre cada termo de dano
     termos.forEach(origTermo => {
-      let termo = origTermo;
-      // Verificar se o termo começa com '-' para indicar que o resultado será negativo
-      let negativeTerm = false;
-      if (termo.startsWith('-')) {
-        negativeTerm = true;
-        termo = termo.slice(1);
-      }
-  
-      // Encontrar a posição do primeiro 'd'
-      const indexD = termo.indexOf('d');
-      
-      let quantidade = 1; // Valor padrão
-      let faces = 0;
-      let modificador = 0;
-  
-      // Extrair quantidade e faces do dado
-      if (indexD !== -1) {
-        quantidade = parseInt(termo.slice(0, indexD)) || 1;
-        const restante = termo.slice(indexD + 1);
-  
-        // Procurar por modificadores após as faces
-        const match = restante.match(/^(\d+)([+-]\d+)?$/);
-        if (match) {
-          faces = parseInt(match[1]) || 0;
-          modificador = parseInt(match[2]) || 0;
+        let termo = origTermo;
+        let negativeTerm = false;
+        if (termo.startsWith('-')) {
+            negativeTerm = true;
+            termo = termo.slice(1);
         }
-      } else {
-        // Se não houver 'd', considerar o termo como apenas um número fixo
-        faces = parseInt(termo) || 0;
-      }
-  
-      // Validar os dados extraídos
-      if (faces <= 0 || quantidade <= 0) {
-        throw new Error(`Expressão inválida: ${origTermo}`);
-      }
-  
-      // Gerar as rolagens para este termo de dano
-      let rolagens = [];
-      let totalTermo = 0;
-  
-      for (let i = 0; i < quantidade; i++) {
-        const rolagem = maximo ? faces : Math.floor(Math.random() * faces) + 1;
-        rolagens.push(rolagem);
-        totalTermo += rolagem;
-        valoresIndividuais.push(rolagem);
-      }
-  
-      // Adicionar o modificador, se houver
-      totalTermo += modificador;
-  
-      // Se o termo for negativo, inverte o valor total
-      if (negativeTerm) {
-        totalTermo = -totalTermo;
-      }
-  
-      // Acumular no total de dano
-      totalDano += totalTermo;
-  
-      // Construir a expressão para exibição
-      let expStr = `${quantidade}d${faces}`;
-      if (modificador !== 0) {
-        expStr += (modificador > 0 ? '+' : '') + modificador;
-      }
-      if (negativeTerm) {
-        expStr = '-' + expStr;
-      }
-      
-      // Armazenar as rolagens deste termo para exibição
-      rolagensTotais.push({
-        expressao: expStr,
-        rolagens: rolagens.join(', '),
-        totalTermo: totalTermo
-      });
+
+        const indexD = termo.indexOf('d');
+        let quantidade = 1;
+        let faces = 0;
+        let modificador = 0;
+
+        if (indexD !== -1) {
+            quantidade = parseInt(termo.slice(0, indexD)) || 1;
+            const restante = termo.slice(indexD + 1);
+
+            const match = restante.match(/^(\d+)([+-]\d+)?$/);
+            if (match) {
+                faces = parseInt(match[1]) || 0;
+                modificador = parseInt(match[2]) || 0;
+            }
+        } else {
+            faces = parseInt(termo) || 0;
+        }
+
+        if (faces <= 0 || quantidade <= 0) {
+            throw new Error(`Expressão inválida: ${origTermo}`);
+        }
+
+        let rolagens = [];
+        let totalTermo = 0;
+
+        for (let i = 0; i < quantidade; i++) {
+            const rolagem = maximo ? faces : Math.floor(Math.random() * faces) + 1;
+            rolagens.push(rolagem);
+            totalTermo += rolagem;
+            valoresIndividuais.push(rolagem);
+        }
+
+        totalTermo += modificador;
+        if (negativeTerm) {
+            totalTermo = -totalTermo;
+        }
+
+        totalDano += totalTermo;
+
+        let expStr = `${quantidade}d${faces}`;
+        if (modificador !== 0) {
+            expStr += (modificador > 0 ? '+' : '') + modificador;
+        }
+        if (negativeTerm) {
+            expStr = '-' + expStr;
+        }
+
+        rolagensTotais.push({
+            expressao: expStr,
+            rolagens: rolagens.join(', '),
+            totalTermo: totalTermo
+        });
     });
-  
-    // Retornar o total de dano calculado
-    
+
     mostrarPopup(totalDano);
     return totalDano;
-  }  
+}
 
 function atualizarAlma(custo, cooldown) {
     personagem.alma -= custo;
@@ -916,6 +926,10 @@ function ajustarAlma(multiplicador) {
     if (multiplicador === -1 && !expressao.startsWith('-')) {
       expressao = '-' + expressao;
     }
+    // Se houver '%' e nenhum atributo definido, anexa "almamax"
+    if (expressao.includes('%') && !/(vidamax|almamax|escudomax)/i.test(expressao)) {
+        expressao += 'almamax';
+    }
     
     let valorAjuste = rolarDadosSimples(expressao);
     if (isNaN(valorAjuste)) {
@@ -926,21 +940,24 @@ function ajustarAlma(multiplicador) {
     if (multiplicador === 1) {
       personagem.adicionarAlma(valorAjuste);
     } else if (multiplicador === -1) {
-      // Usamos Math.abs para garantir que a redução seja aplicada como um valor positivo.
+      // Garante que a redução seja aplicada como valor positivo
       personagem.reduzirAlma(Math.abs(valorAjuste));
     } else {
       mostrarMensagem("Operação inválida para ajuste de alma");
       return;
     }
     
-    // Atualiza informações na aba "Info"
-    atualizarInfoPersonagem(Personagem);
-  }
+    atualizarInfoPersonagem(personagem);
+}
   
-  function ajustarEscudo(multiplicador) {
+function ajustarEscudo(multiplicador) {
     let expressao = document.getElementById('ajuste-escudo').value.trim();
     if (multiplicador === -1 && !expressao.startsWith('-')) {
       expressao = '-' + expressao;
+    }
+    // Se houver '%' e nenhum atributo definido, anexa "escudomax"
+    if (expressao.includes('%') && !/(vidamax|almamax|escudomax)/i.test(expressao)) {
+        expressao += 'escudomax';
     }
     
     let valorAjuste = rolarDadosSimples(expressao);
@@ -958,13 +975,17 @@ function ajustarAlma(multiplicador) {
       return;
     }
     
-    atualizarInfoPersonagem(Personagem);
-  }
+    atualizarInfoPersonagem(personagem);
+}
   
-  function ajustarVida(multiplicador) {
+function ajustarVida(multiplicador) {
     let expressao = document.getElementById('ajuste-vida').value.trim();
     if (multiplicador === -1 && !expressao.startsWith('-')) {
       expressao = '-' + expressao;
+    }
+    // Se houver '%' e nenhum atributo definido, anexa "vidamax"
+    if (expressao.includes('%') && !/(vidamax|almamax|escudomax)/i.test(expressao)) {
+        expressao += 'vidamax';
     }
     
     let valorAjuste = rolarDadosSimples(expressao);
@@ -982,8 +1003,8 @@ function ajustarAlma(multiplicador) {
       return;
     }
     
-    atualizarInfoPersonagem(Personagem);
-  }
+    atualizarInfoPersonagem(personagem);
+}
   
 
 function rolarDadosCalculo(atributo, pericia, vantagem, modificador) {
@@ -1248,8 +1269,10 @@ function executarAcao() {
     let atributo = document.getElementById('atributoSelect1').value;
     let pericia = document.getElementById('periciaSelect1').value;
     window.topico = 'Acao - ' + atributo + ' + ' + pericia;
-    let numeroVantagens = parseInt(document.getElementById('vantagensInput1').value);
-    let modificador = parseInt(document.getElementById('modificadorInput1').value);
+
+    // Obtém os valores de vantagens e modificador, considerando 0 se forem inválidos
+    let numeroVantagens = parseInt(document.getElementById('vantagensInput1').value) || 0;
+    let modificador = parseInt(document.getElementById('modificadorInput1').value) || 0;
 
     let resultado = acao(atributo, pericia, numeroVantagens, modificador);
     
@@ -1268,9 +1291,9 @@ function executarAcao() {
         
         // Acrescenta o resultado da rolagem do dano à mensagem
         mensagem += `\nDano com ${window.selectedAttackItemteste.name}: ${resultadoDano}`;
-        } else {
+    } else {
         mensagem += `\nNenhum item selecionado para tiro.`;
-        }
+    }
 
     mostrarMensagem(mensagem);
 }
@@ -1278,10 +1301,12 @@ function executarAcao() {
 // Em script.js
 async function executarAtaque() {
     window.topico = 'Ataque';
-    let numeroVantagens = parseInt(document.getElementById('vantagens-ataque').value);
-    let modificador = parseInt(document.getElementById('modificador-ataque').value);
+
+    // Obtém os valores de vantagens e modificador, considerando 0 se forem inválidos
+    let numeroVantagens = parseInt(document.getElementById('vantagens-ataque').value) || 0;
+    let modificador = parseInt(document.getElementById('modificador-ataque').value) || 0;
     
-    // Rola o teste de ataque (ex: usando acao para comparar pericia e modificadores)
+    // Rola o teste de ataque
     let resultadoAtaque = acao('força', 'luta', numeroVantagens, modificador);
     
     // Monta a mensagem do teste de ataque
@@ -1291,30 +1316,28 @@ async function executarAtaque() {
     
     // Verifica se há um item selecionado para ataque
     if (window.selectedAttackItem) {
-      // Obtém o padrão de dano do item (por exemplo, "1d20+3")
       let danoItem = window.selectedAttackItem.damage;
       let nomeItem = window.selectedAttackItem.name;
       window.topico = 'Dano - ' + nomeItem;
       
-      // Rola o dano utilizando a função rolarDano (definida em script.js)
       let resultadoDano = rolarDano(danoItem);
-      
-      // Acrescenta o resultado da rolagem do dano à mensagem
       mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
     } else {
       mensagem += `\nNenhum item selecionado para ataque.`;
     }
     
-    // Exibe a mensagem com os resultados
     mostrarMensagem(mensagem);
-}  
+}
+
 
 async function executarTiro() {
     window.topico = 'Atirar';
-    let numeroVantagens = parseInt(document.getElementById('vantagens-tiro').value);
-    let modificador = parseInt(document.getElementById('modificador-tiro').value);
+
+    // Obtém os valores de vantagens e modificador, considerando 0 se forem inválidos
+    let numeroVantagens = parseInt(document.getElementById('vantagens-tiro').value) || 0;
+    let modificador = parseInt(document.getElementById('modificador-tiro').value) || 0;
     
-    // Rola o teste de tiro (ex: usando acao para comparar pericia e modificadores)
+    // Rola o teste de tiro
     let resultadoTiro = acao('agilidade', 'pontaria', numeroVantagens, modificador);
     
     // Monta a mensagem do teste de tiro
@@ -1324,42 +1347,38 @@ async function executarTiro() {
     
     // Verifica se há um item selecionado para tiro
     if (window.selectedAttackItem) {
-      // Obtém o padrão de dano do item (por exemplo, "1d20+3")
       let danoItem = window.selectedAttackItem.damage;
       let nomeItem = window.selectedAttackItem.name;
       window.topico = 'Dano - ' + nomeItem;
       
-      // Rola o dano utilizando a função rolarDano (definida em script.js)
       let resultadoDano = rolarDano(danoItem);
-      
-      // Acrescenta o resultado da rolagem do dano à mensagem
       mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
     } else {
       mensagem += `\nNenhum item selecionado para tiro.`;
     }
     
-    // Exibe a mensagem com os resultados
     mostrarMensagem(mensagem);
-}  
+}
+ 
 
 function executarDefesa() {
     window.topico = 'Defesa';
-    let numeroVantagens = parseInt(document.getElementById('vantagens-defesa').value);
-    let modificador = parseInt(document.getElementById('modificador-defesa').value);
-    
-    // Chama a função acao e captura a string retornada
-    let resultadoAcao = acao('fortitude', 'vigor', numeroVantagens, modificador); // Exemplo de retorno:
-    // "Resultado do Ataque: Resultado rolado: 1d20: 20 | 1d6: 6Resultado Final: 26"
 
-    // Extrair apenas o valor numérico após "Resultado Final:" usando regex
+    // Obtém os valores de vantagens e modificador, considerando 0 se forem inválidos
+    let numeroVantagens = parseInt(document.getElementById('vantagens-defesa').value) || 0;
+    let modificador = parseInt(document.getElementById('modificador-defesa').value) || 0;
+    
+    let resultadoAcao = acao('fortitude', 'vigor', numeroVantagens, modificador); // Exemplo de retorno:
+
+    // Extrair o valor numérico do resultado
     let match = resultadoAcao.match(/Resultado Final:\s*(\d+)/);
     let resultado = match ? Number(match[1]) : NaN;
     if (isNaN(resultado)) {
-         mostrarMensagem("Erro: Não foi possível extrair o resultado final.");
-         resultado = 0;
+        mostrarMensagem("Erro: Não foi possível extrair o resultado final.");
+        resultado = 0;
     }
-    
-    // Se o checkbox estiver marcado, soma o valor do escudo ao resultado
+
+    // Se o checkbox de escudo estiver marcado, soma o valor do escudo
     let checkboxEscudo = document.getElementById('checkDefesa');
     if (checkboxEscudo && checkboxEscudo.checked) {
         let escudo = Number(personagem.escudo); // Converte o valor de escudo para número
@@ -1368,83 +1387,74 @@ function executarDefesa() {
         resultado += escudo; // Soma o valor do escudo
     }
 
-    // Exibir o resultado em um mostrarMensagem
-    let mensagem = (`Resultado do Ataque: ${resultado}`);
+    let mensagem = (`Resultado da Defesa: ${resultado}`);
 
-    // Verifica se há um item selecionado para tiro
     if (window.selectedAttackItem) {
-        // Obtém o padrão de dano do item (por exemplo, "1d20+3")
         let danoItem = window.selectedAttackItem.damage;
         let nomeItem = window.selectedAttackItem.name;
         window.topico = 'Dano - ' + nomeItem;
         
-        // Rola o dano utilizando a função rolarDano (definida em script.js)
         let resultadoDano = rolarDano(danoItem);
-        
-        // Acrescenta o resultado da rolagem do dano à mensagem
         mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
     } else {
-        mensagem += `\nNenhum item selecionado para tiro.`;
+        mensagem += `\nNenhum item selecionado para defesa.`;
     }
 
     mostrarMensagem(mensagem);
 }
 
+
 function executarEsquiva() {
     window.topico = 'Esquiva';
-    let numeroVantagens = parseInt(document.getElementById('vantagens-esquiva').value);
-    let modificador = parseInt(document.getElementById('modificador-esquiva').value);
-    let resultado = acao('agilidade', 'destreza', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
-    
-    // Exibir o resultado em um mostrarMensagem
-    let mensagem = (`Resultado do Ataque: ${resultado}`);
 
-        // Verifica se há um item selecionado para tiro
-        if (window.selectedAttackItem) {
-            // Obtém o padrão de dano do item (por exemplo, "1d20+3")
-            let danoItem = window.selectedAttackItem.damage;
-            let nomeItem = window.selectedAttackItem.name;
-            window.topico = 'Dano - ' + nomeItem;
-            
-            // Rola o dano utilizando a função rolarDano (definida em script.js)
-            let resultadoDano = rolarDano(danoItem);
-            
-            // Acrescenta o resultado da rolagem do dano à mensagem
-            mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
-          } else {
-            mensagem += `\nNenhum item selecionado para tiro.`;
-          }
+    // Obtém os valores de vantagens e modificador, considerando 0 se forem inválidos
+    let numeroVantagens = parseInt(document.getElementById('vantagens-esquiva').value) || 0;
+    let modificador = parseInt(document.getElementById('modificador-esquiva').value) || 0;
+    
+    let resultado = acao('agilidade', 'destreza', numeroVantagens, modificador);
+
+    let mensagem = (`Resultado da Esquiva: ${resultado}`);
+
+    if (window.selectedAttackItem) {
+        let danoItem = window.selectedAttackItem.damage;
+        let nomeItem = window.selectedAttackItem.name;
+        window.topico = 'Dano - ' + nomeItem;
+        
+        let resultadoDano = rolarDano(danoItem);
+        mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
+    } else {
+        mensagem += `\nNenhum item selecionado para esquiva.`;
+    }
 
     mostrarMensagem(mensagem);
 }
+
 
 function executarContraAtaque() {
     window.topico = 'Contra-ataque';
-    let numeroVantagens = parseInt(document.getElementById('vantagens-contraataque').value);
-    let modificador = parseInt(document.getElementById('modificador-contraataque').value);
-    let resultado = acao('força', 'luta', numeroVantagens, modificador); // Passa personagem.periciaLuta como valor numerico
-    
-    // Exibir o resultado em um mostrarMensagem
-    let mensagem = (`Resultado do Ataque: ${resultado}`);
 
-        // Verifica se há um item selecionado para tiro
-        if (window.selectedAttackItem) {
-            // Obtém o padrão de dano do item (por exemplo, "1d20+3")
-            let danoItem = window.selectedAttackItem.damage;
-            let nomeItem = window.selectedAttackItem.name;
-            window.topico = 'Dano - ' + nomeItem;
-            
-            // Rola o dano utilizando a função rolarDano (definida em script.js)
-            let resultadoDano = rolarDano(danoItem);
-            
-            // Acrescenta o resultado da rolagem do dano à mensagem
-            mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
-          } else {
-            mensagem += `\nNenhum item selecionado para tiro.`;
-          }
+    // Obtém os valores de vantagens e modificador, considerando 0 se forem inválidos
+    let numeroVantagens = parseInt(document.getElementById('vantagens-contraataque').value) || 0;
+    let modificador = parseInt(document.getElementById('modificador-contraataque').value) || 0;
+    
+    let resultado = acao('força', 'luta', numeroVantagens, modificador);
+
+    let mensagem = (`Resultado do Contra-ataque: ${resultado}`);
+
+    if (window.selectedAttackItem) {
+        let danoItem = window.selectedAttackItem.damage;
+        let nomeItem = window.selectedAttackItem.name;
+        window.topico = 'Dano - ' + nomeItem;
+        
+        let resultadoDano = rolarDano(danoItem);
+        mensagem += `\nDano com ${window.selectedAttackItem.name}: ${resultadoDano}`;
+    } else {
+        mensagem += `\nNenhum item selecionado para contra-ataque.`;
+    }
 
     mostrarMensagem(mensagem);
 }
+
 
 function atualizarStatus() {
     document.getElementById('status').innerText = personagem.obterStatus();
@@ -1657,6 +1667,10 @@ async function carregarStatus() {
     document.getElementById('status-nome').textContent = window.nomepersonagem || 'Nome do Personagem';
     mostrarMensagem(nome);
 
+    window.imgpersonagem = document.getElementById('img').value.trim();
+    mostrarMensagem(window.imgpersonagem || 'Imagem do Personagem');
+    console.log('MyAppLog: Imagem do personagem:', window.imgpersonagem);
+
     carregarHabilidades(nome);
     try {
         const data = localStorage.getItem(`${nome}-personagem`);
@@ -1677,8 +1691,8 @@ async function carregarStatus() {
 
 async function carregarHabilidades2() {
     // Obter os dados de entrada do usuário
-    const nomePersonagem = document.getElementById('nomeCarregarHab').value;
-    const nomeHabilidade = document.getElementById('nomeHabilidade').value;
+    const nomePersonagem = document.getElementById('nomeCarregarHab').value.trim();
+    const nomeHabilidade = document.getElementById('nomeHabilidade').value.trim();
     const dano = document.getElementById('danoHabilidade').value;
     const cooldown = document.getElementById('cooldownHabilidade').value;
     const custo = document.getElementById('custoHabilidade').value;
@@ -1689,16 +1703,19 @@ async function carregarHabilidades2() {
     const atributo = document.getElementById('atributoSelect').value;
     const vantagens = document.getElementById('vantagensInput').value;
     const modificador = document.getElementById('modificadorInput').value;
-
-    // Verificar se todos os campos foram preenchidos
-    if (!nomePersonagem || !nomeHabilidade || !dano || !cooldown || !custo || !descricao || !custoVida) {
-        mostrarMensagem('Por favor, preencha todos os campos.');
+    
+    // Verificar se os campos obrigatórios foram preenchidos:
+    // Se atualizarHabilidadeCheck for true, exigir apenas nomePersonagem e nomeHabilidade.
+    // Caso contrário, exigir todos os campos.
+    if (!nomePersonagem || !nomeHabilidade || 
+        (!atualizarHabilidadeCheck && (!dano || !cooldown || !custo || !descricao || !custoVida))) {
+        mostrarMensagem('Por favor, preencha os campos obrigatórios.');
         return;
     }
 
-    // Chamar a funcao adicionarHabilidade com os dados capturados
+    // Chamar a função adicionarHabilidade com os dados capturados
     try {
-        await adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldown, custo, descricao, custoVida, toggle, pericia, atributo, vantagens, modificador);
+        await adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldown, custo, descricao, custoVida, toggle, pericia, atributo, vantagens, modificador, atualizarHabilidadeCheck);
     } catch (error) {
         console.error('Erro ao adicionar habilidade:', error);
         alert('Erro ao adicionar habilidade.');
@@ -1706,10 +1723,16 @@ async function carregarHabilidades2() {
 }
 
 
-async function adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldown, custo, descricao, custoVida, toggle, pericia, atributo, vantagens, modificador) {
+async function adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldown, custo, descricao, custoVida, toggle, pericia, atributo, vantagens, modificador, atualizarHabilidadeCheck) {
     try {
         const key = `${nomePersonagem}-habilidades`;
         let habilidadesData = { habilidades: [] };
+
+        // Verificar se os campos obrigatórios foram preenchidos
+        if (!nomePersonagem || !nomeHabilidade) {
+            mostrarMensagem('Por favor, insira o nome do personagem e o nome da habilidade.');
+            return;
+        }
 
         // Verificar se já existem habilidades salvas
         const data = localStorage.getItem(key);
@@ -1717,41 +1740,120 @@ async function adicionarHabilidade(nomePersonagem, nomeHabilidade, dano, cooldow
             habilidadesData = JSON.parse(data);
         }
 
-        // Determinar o próximo ID
-        const nextId = (habilidadesData.habilidades.reduce((maxId, habilidade) => Math.max(maxId, parseInt(habilidade.id) || 0), 0) + 1).toString();
+        if (atualizarHabilidadeCheck) {
+            // Caso seja atualização, encontrar a habilidade correspondente e atualizar apenas os campos alterados
+            const habilidadeExistente = habilidadesData.habilidades.find(h => h.nome === nomeHabilidade);
 
-        // Adicionar a nova habilidade com ID
-        const novaHabilidade = {
-            nome: nomeHabilidade,
-            id: nextId,
-            dano: dano,
-            cooldown: cooldown,
-            custo: custo,
-            descricao: descricao,
-            custoVida: custoVida,
-            toggle: toggle,
-            pericia: pericia,
-            atributo: atributo,
-            vantagens: vantagens,
-            modificador: modificador
-        };
+            if (habilidadeExistente) {
+                const camposAtualizaveis = {
+                    dano,
+                    cooldown,
+                    custo,
+                    descricao,
+                    custoVida,
+                    toggle,
+                    pericia,
+                    atributo,
+                    vantagens,
+                    modificador
+                };
 
-        habilidadesData.habilidades.push(novaHabilidade);
+                for (const campo in camposAtualizaveis) {
+                    if (camposAtualizaveis[campo] !== "" && camposAtualizaveis[campo] !== null && camposAtualizaveis[campo] !== undefined) {
+                        habilidadeExistente[campo] = camposAtualizaveis[campo];
+                    }
+                }
+
+                mostrarMensagem('Habilidade atualizada com sucesso!');
+            } else {
+                mostrarMensagem('Habilidade não encontrada para atualização.');
+                return;
+            }
+        } else {
+            // Exigir preenchimento de todos os campos ao adicionar uma nova habilidade
+            if (!dano || !cooldown || !custo || !descricao || !custoVida) {
+                mostrarMensagem('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            // Determinar o próximo ID
+            const nextId = (habilidadesData.habilidades.reduce((maxId, habilidade) => Math.max(maxId, parseInt(habilidade.id) || 0), 0) + 1).toString();
+
+            // Adicionar a nova habilidade com ID
+            const novaHabilidade = {
+                nome: nomeHabilidade,
+                id: nextId,
+                dano,
+                cooldown,
+                custo,
+                descricao,
+                custoVida,
+                toggle,
+                pericia,
+                atributo,
+                vantagens,
+                modificador
+            };
+
+            habilidadesData.habilidades.push(novaHabilidade);
+            mostrarMensagem('Habilidade adicionada com sucesso!');
+        }
 
         // Salvar no localStorage
-        console.log('MyAppLog: Salvando habilidades no localStorage.');
         localStorage.setItem(key, JSON.stringify(habilidadesData, null, 2));
-        console.log('MyAppLog: Habilidade adicionada com sucesso!');
-        mostrarMensagem('Habilidade adicionada com sucesso!');
-
-        // Atualizar a lista de habilidades
         listarArquivos();
         carregarHabilidades(nomePersonagem);
     } catch (error) {
-        console.error('MyAppLog: Erro ao adicionar habilidade:', JSON.stringify(error));
-        mostrarMensagem('Erro ao adicionar habilidade.');
+        console.error('MyAppLog: Erro ao adicionar ou atualizar habilidade:', JSON.stringify(error));
+        mostrarMensagem('Erro ao adicionar ou atualizar habilidade.');
     }
 }
+
+async function removerHabilidade() {
+    // Obter os dados de entrada dos novos campos para remoção
+    const nomePersonagem = document.getElementById('nomeRemoverHab').value.trim();
+    const nomeHabilidade = document.getElementById('nomeRemoverHabilidade').value.trim();
+
+    // Verificar se os campos obrigatórios foram preenchidos
+    if (!nomePersonagem || !nomeHabilidade) {
+        mostrarMensagem('Por favor, insira o nome do personagem e o nome da habilidade.');
+        return;
+    }
+
+    try {
+        const key = `${nomePersonagem}-habilidades`;
+        const data = localStorage.getItem(key);
+        
+        if (!data) {
+            mostrarMensagem('Nenhuma habilidade encontrada para esse personagem.');
+            return;
+        }
+
+        let habilidadesData = JSON.parse(data);
+
+        // Encontrar o índice da habilidade que será removida
+        const index = habilidadesData.habilidades.findIndex(h => h.nome === nomeHabilidade);
+
+        if (index === -1) {
+            mostrarMensagem('Habilidade não encontrada.');
+            return;
+        }
+
+        // Remover a habilidade do array
+        habilidadesData.habilidades.splice(index, 1);
+
+        // Atualizar o localStorage com o novo conjunto de habilidades
+        localStorage.setItem(key, JSON.stringify(habilidadesData, null, 2));
+
+        mostrarMensagem('Habilidade removida com sucesso!');
+        listarArquivos();
+        carregarHabilidades(nomePersonagem);
+    } catch (error) {
+        console.error('MyAppLog: Erro ao remover habilidade:', JSON.stringify(error));
+        mostrarMensagem('Erro ao remover habilidade.');
+    }
+}
+
 
 async function carregarHabilidades(nomePersonagem) {
     try {
@@ -1995,7 +2097,8 @@ function enviarFeedback(topico, resultado, valores, formula) {
       resultado,
       valores,
       formula,
-      nomepersonagem: window.nomepersonagem // Certifique-se que essa variável está definida
+      nomepersonagem: window.nomepersonagem, // Certifique-se que essa variável está definida
+      imagemURL: window.imgpersonagem // Agora enviando a URL da imagem como parte do payload
     };
   
     // Use o URL completo do endpoint do Vercel
@@ -2007,7 +2110,7 @@ function enviarFeedback(topico, resultado, valores, formula) {
       .then(response => response.json())
       .then(data => console.log("Feedback enviado!", data))
       .catch(error => console.error("Erro ao enviar feedback:", error));
-  }  
+}  
 
 function atualizarDescricaoHabilidade(descricaoMarkdown) {
     const md = window.markdownit({
@@ -2024,6 +2127,12 @@ document.getElementById("atualizar-checkbox").addEventListener("change", functio
   // Aqui você pode adicionar qualquer lógica adicional que dependa do estado do toggle
 });
 
+document.getElementById("atualizarhabilidade-checkbox").addEventListener("change", function() {
+    atualizarHabilidadeCheck = this.checked;
+    console.log("Valor de Atualizar Habilidade:", atualizarHabilidadeCheck);
+    // Aqui você pode adicionar qualquer lógica adicional que dependa do estado do toggle
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const textareas = document.querySelectorAll('textarea');
     
@@ -2035,32 +2144,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const anotacoesTextarea = document.getElementById('anotacoes');
+
+    // Carregar as anotações salvas ao carregar a página
+    const savedAnotacoes = localStorage.getItem('anotacoes');
+    if (savedAnotacoes) {
+        anotacoesTextarea.value = savedAnotacoes;
+        anotacoesTextarea.style.height = 'auto';
+        anotacoesTextarea.style.height = (anotacoesTextarea.scrollHeight) + 'px';
+    }
+
+    // Ajustar altura dinâmica do textarea
+    anotacoesTextarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+        salvarAnotacoes(); // Salvar no localStorage automaticamente
+    });
+});
+
 function salvarAnotacoes() {
     const anotacoes = document.getElementById('anotacoes').value;
     localStorage.setItem('anotacoes', anotacoes);
 }
 
-// Carregar as anotações salvas ao carregar a página
-window.onload = function() {
-    const savedAnotacoes = localStorage.getItem('anotacoes');
-    const anotacoesTextarea = document.getElementById('anotacoes');
-    if (savedAnotacoes) {
-        anotacoesTextarea.value = savedAnotacoes;
-        // Ajustar a altura da textarea com base no conteúdo
-        anotacoesTextarea.style.height = 'auto';
-        anotacoesTextarea.style.height = (anotacoesTextarea.scrollHeight) + 'px';
-    }
-};
 
-document.addEventListener('DOMContentLoaded', function() {
-    const textareas = document.querySelectorAll('textarea');
-    
-    textareas.forEach(textarea => {
-      textarea.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-        // Salvar o conteúdo no localStorage sempre que houver uma entrada
-        salvarAnotacoes();
-      });
-    });
+document.querySelectorAll('button').forEach(button => {
+  button.addEventListener('mousemove', function(e) {
+    const rect = button.getBoundingClientRect();
+    // Define as variáveis CSS --mouse-x e --mouse-y com a posição do mouse relativa ao botão
+    button.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px');
+    button.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
+  });
 });

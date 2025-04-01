@@ -225,11 +225,46 @@ select:focus option:checked {
 
 button {
   margin: 5px 5px;
+  padding: 10px 20px;
   color: #29243e;
   background-color: #9690b390;
   border: 1px solid #ebe0e0;
   border-radius: 0.5rem;
-  padding: 10px 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.4s ease, transform 0.4s ease;
+}
+
+/* Pseudo-elemento para o efeito ripple */
+button::after {
+  content: "";
+  position: absolute;
+  top: var(--mouse-y, 50%);
+  left: var(--mouse-x, 50%);
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.648) 0%, transparent 60%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+}
+
+button:hover {
+  background-color: #9390b3;
+  transform: scale(1.05);
+}
+
+button:hover::after {
+  width: 300%;
+  height: 300%;
+  opacity: 1;
+}
+
+/* Efeito de clique: encolher um pouco */
+button:active {
+  transform: scale(0.95);
 }
 
 #status-info, #dano-total {
@@ -788,4 +823,140 @@ textarea:focus {
 /* Classe para esconder o popup (fade out) */
 #popup-alert.hide {
   opacity: 0;
+}
+
+/* Estilos gerais para o container principal */
+#Google {
+  max-width: 400px !important;
+  margin: 30px auto !important;
+  padding: 20px !important;
+  background-color: #f9f9f971 !important;
+  border: 1px solid #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  font-family: Arial, sans-serif !important;
+  text-align: center !important;
+  align-items: flex !important;
+}
+
+/* Título da seção */
+/* Título da seção */
+#Google .title {
+  font-size: 28px; /* Aumentado para melhor visibilidade */
+  font-weight: 700; /* Mais grosso para destaque */
+  text-align: center;
+  margin-bottom: 20px;
+  color: white; /* Mudança para branco para contraste com fundo escuro */
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.252); /* Adiciona um leve brilho para destacar */
+  font-family: 'Google Sans', Arial, sans-serif !important; /* Fonte do Google Drive */
+}
+
+
+/* Botões de autenticação */
+#Google .auth-buttons {
+  text-align: center !important;
+  align-items: center !important;
+  justify-content: center !important;
+  display: flex !important;
+  margin-bottom: 15px !important;
+}
+
+#Google button {
+  padding: 10px 20px !important;
+  font-size: 16px !important;
+  border: 1px solid #ffffff !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  margin: 0 5px !important;
+  transition: background-color 0.3s ease !important;
+}
+
+/* Botão de Sign In */
+#Google .signin {
+  background-color: #4285f4 !important;
+  color: #fff !important;
+}
+
+#Google .signin:hover {
+  background-color: #357ae8 !important;
+}
+
+/* Botão de Sign Out */
+#Google .signout {
+  background-color: #db4437 !important;
+  color: #fff !important;
+}
+
+#Google .signout:hover {
+  background-color: #c33d2d !important;
+}
+
+.user-info {
+  display: none; /* Escondido por padrão */
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  color: #ffffff;
+}
+
+.user-icon {
+  width: 100px !important;
+  height: 100px !important;
+  margin-bottom: 15px !important;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover; /* Para garantir que a imagem preencha o círculo */
+}
+
+/* Container do botão de sincronização */
+#Google .sync-container {
+  text-align: center !important;
+  justify-content: center !important;
+  display: flex !important;
+  margin-top: 15px !important;
+}
+
+/* Botão de sincronização */
+#Google .sync {
+  background-color: #0F9D58 !important;
+  color: #fff !important;
+  display: none;
+  border: 1px solid #ffffff !important;
+}
+
+/* Botão de sincronização */
+#Google .restore {
+  color: #fff !important;
+  border: 1px solid #ffffff !important;
+}
+
+#Google .sync:hover {
+  background-color: #0b7e42 !important;
+}
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loader {
+  border: 8px solid #f3f3f3; /* Cor de fundo do loader */
+  border-top: 8px solid #3498db; /* Cor principal do loader */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
