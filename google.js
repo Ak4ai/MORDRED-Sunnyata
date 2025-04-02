@@ -335,20 +335,7 @@ function synchronizeWithDrive() {
 
         for (let i = 0; i < localStorage.length; i++) {
             let key = localStorage.key(i);
-            
-            // Se desejar filtrar apenas determinados arquivos, descomente o bloco abaixo:
-            /*
-            if (!(
-                key.includes('-personagem') ||
-                key.includes('-habilidades') ||
-                key.includes('-inventário') ||
-                key.includes('-inventario')
-            )) {
-                arquivosProcessados++;
-                continue;
-            }
-            */
-            
+
             let fileContent = localStorage.getItem(key);
             // Para cada arquivo, procura se ele já existe na pasta e atualiza ou cria conforme necessário
             uploadOrUpdateFileToDrive(key, fileContent, folderId, () => {
@@ -362,8 +349,11 @@ function synchronizeWithDrive() {
                 }
             });
         }
+    }).catch(error => {
+        mostrarMensagem('Erro ao sincronizar. Por favor, faça sign out, sign in novamente e, se o problema persistir, use o botão "Apagar dados e recarregar".');
     });
 }
+
 
 // Função para atualizar a mensagem de última sincronização
 function updateLastSyncMessage() {
@@ -460,14 +450,16 @@ function downloadFilesFromDrive() {
                     console.error("Erro ao baixar o arquivo " + file.name, error);
                     processedFiles++;
                     if (processedFiles === totalFiles) {
-                        alert('Processo de restauração concluído, verifique os erros no console.');
+                        mostrarMensagem('Erro ao restaurar backup. Por favor, faça sign out, sign in novamente e, se o problema persistir, use o botão "Apagar dados e recarregar".');
                     }
                 });
             });
         }).catch(error => {
             console.error("Erro ao listar arquivos na pasta MORDREDDADOS:", error);
+            mostrarMensagem('Erro ao listar arquivos do Drive. Por favor, faça sign out, sign in novamente e, se o problema persistir, use o botão "Apagar dados e recarregar".');
         });
     });
 }
+
 
 
