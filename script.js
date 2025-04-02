@@ -2169,3 +2169,25 @@ document.querySelectorAll('button').forEach(button => {
     button.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
   });
 });
+
+document.getElementById('clear-data-btn').addEventListener('click', function() {
+    // Apagar todos os cookies
+    document.cookie.split(";").forEach((cookie) => {
+        const nome = cookie.split("=")[0].trim();
+        document.cookie = nome + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    });
+
+    // Limpar o LocalStorage e o SessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Limpar o Cache da Página
+    if ('caches' in window) {
+        caches.keys().then(function(names) {
+            for (let name of names) caches.delete(name);
+        });
+    }
+
+    // Forçar Hard Refresh (recarregar sem cache)
+    location.reload(true);
+});

@@ -28,7 +28,7 @@ body {
   backdrop-filter: blur(20px);
   transition: all ease .2s;
   max-width: 600px;
-  width: 100%;
+  width: 80%;
   margin: 20px;
 }
 
