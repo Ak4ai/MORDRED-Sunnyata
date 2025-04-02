@@ -28,14 +28,19 @@ function checkIfEverythingLoaded() {
     const userIcon = document.querySelector('.user-icon');
     const userName = document.querySelector('.user-name');
     const userInfoDiv = document.querySelector('.user-info');
-    
-    if (gapiInited && gisInited && userInfoDiv.style.display === 'flex' && userIcon.src && userName.textContent) {
-        hideLoader();
-    } else {
-        // Define um timeout para esconder o loader caso demore muito
-        setTimeout(hideLoader, 5000); // 5 segundos
-    }
+
+    // Oculta o loader após 5 segundos, independentemente do carregamento
+    setTimeout(hideLoader, 5000); // Timeout único, não fica se repetindo
+
+    // Verifica continuamente se tudo foi carregado
+    const interval = setInterval(() => {
+        if (gapiInited && gisInited && userInfoDiv.style.display === 'flex' && userIcon.src && userName.textContent) {
+            hideLoader();
+            clearInterval(interval); // Para de verificar após sucesso
+        }
+    }, 100); // Verifica a cada 100ms
 }
+
 
 var CLIENT_ID = '607317652690-jukucl3pro5ts8agt3cpndm9teosg1c7.apps.googleusercontent.com';
 var API_KEY = 'AIzaSyC3-6BvwRHqP7cEtyv9A9Oqhu-67UcKJbI';
