@@ -65,6 +65,20 @@ input {
   gap: 8px;
 }
 
+/* Ajusta a posição para dispositivos móveis ficar no centro */
+@media (max-width: 768px) {
+  #check-defesa {
+    justify-content: center;
+    right: 0;
+    top: 0;
+  }
+
+  #check-defesa label,
+  #check-defesa span {
+    display: none;
+  }
+}
+
 /* Estilos para caixas de seleção (checkbox) */
 input[type="checkbox"] {
   appearance: none; /* Remove o estilo padrão do sistema operacional */

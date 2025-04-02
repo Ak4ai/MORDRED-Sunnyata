@@ -3,7 +3,7 @@
   <head>
       <link rel="icon" type="image/png" href="android-icon-192x192.png">
       <link rel="manifest" href="manifest.json">
-      <link rel="stylesheet" href="style.css?v=1.0.1">
+      <link rel="stylesheet" href="style.css?v=1.0.2">
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>M.O.R.D.R.E.D-Sunnyata</title>
@@ -659,16 +659,8 @@
                 <br>
                 <div id="check-defesa">
                 <button onclick="executarDefesa()">Executar Defesa</button>
-                    <div class="hide-on-mobile">
-                        <label for="checkDefesa">Defesa Total</label>
-                    </div>
-                    <style>
-                        @media (max-width: 768px) {
-                            .hide-on-mobile {
-                                display: none;
-                            }
-                        }
-                    </style>  
+                    <input type="checkbox" id="checkDefesa" checked>
+                    <label for="checkDefesa">Defesa Total</label>  </div>
                 <h2>Esquivar</h2>
                 <label for="vantagens-esquiva">Número de Vantagens:</label>
                 <input type="number" id="vantagens-esquiva" value="0">
