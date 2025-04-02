@@ -321,22 +321,29 @@ function uploadOrUpdateFileToDrive(fileName, content, folderId, callback) {
   });
 }
 
-// Função para sincronizar cada item do localStorage com o Google Drive
 function synchronizeWithDrive() {
     if (localStorage.length === 0) {
         alert('Não há arquivos no localStorage para sincronizar.');
         return;
     }
 
+    // Chaves que **não** devem ser sincronizadas
+    const EXCLUDED_KEYS = [ACCESS_TOKEN_KEY, 'user_icon', 'user_name', 'last_sync'];
+
     // Garante que a pasta MORDREDDADOS exista
     findOrCreateFolder(function(folderId) {
-        let totalArquivos = localStorage.length;
+        let totalArquivos = 0;
         let arquivosProcessados = 0;
 
         for (let i = 0; i < localStorage.length; i++) {
             let key = localStorage.key(i);
 
+            // Pula chaves que não devem ser salvas
+            if (EXCLUDED_KEYS.includes(key)) continue;
+
+            totalArquivos++;
             let fileContent = localStorage.getItem(key);
+
             // Para cada arquivo, procura se ele já existe na pasta e atualiza ou cria conforme necessário
             uploadOrUpdateFileToDrive(key, fileContent, folderId, () => {
                 arquivosProcessados++;
@@ -349,7 +356,15 @@ function synchronizeWithDrive() {
                 }
             });
         }
-    }).catch(error => {
+
+        // Se nenhum arquivo relevante foi encontrado, ainda precisamos atualizar a última sincronização
+        if (totalArquivos === 0) {
+            const now = new Date();
+            localStorage.setItem('last_sync', now.toISOString());
+            updateLastSyncMessage();
+            alert('Nada para sincronizar. Nenhum dado relevante encontrado.');
+        }
+    }, function(error) {
         mostrarMensagem('Erro ao sincronizar. Por favor, faça sign out, sign in novamente e, se o problema persistir, use o botão "Apagar dados e recarregar".');
     });
 }
