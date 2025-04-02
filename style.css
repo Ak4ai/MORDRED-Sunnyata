@@ -179,6 +179,15 @@ select:focus option:checked {
   max-width: 350px;
 }
 
+/* Ajuste para dispositivos móveis */
+@media (max-width: 768px) {
+  .tab, .subtab {
+    padding: 8px;
+    font-size: 14px;
+    max-width: 100%;
+  }
+}
+
 .tab.active, .subtab.active {
   background-color: #7d76a6b8;
   color: #25243e;
