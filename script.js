@@ -207,7 +207,7 @@ class Personagem {
     }
 }
 
-function atualizarInfoPersonagem(personagem) {
+function atualizarInfoPersonagem(Personagem) {
     if (!personagem) {
         console.error('O objeto "personagem" está indefinido ou nulo.');
         return;
@@ -221,40 +221,52 @@ function atualizarInfoPersonagem(personagem) {
     } else {
         console.error('Elemento com ID "status-img" não encontrado no DOM.');
     }
+    document.getElementById('status-vida1').innerText = personagem.vida;
+    document.getElementById('status-vida').innerText = personagem.vida;
+    document.getElementById('status-alma1').innerText = personagem.alma;
+    document.getElementById('status-alma').innerText = personagem.alma;
+    document.getElementById('status-escudo1').innerText = personagem.escudo;
+    document.getElementById('status-escudo').innerText = personagem.escudo;
+    document.getElementById('status-fortitude').innerText = personagem.fortitude;
+    document.getElementById('status-conhecimento').innerText = personagem.conhecimento;
+    document.getElementById('status-espirito').innerText = personagem.espirito;
+    document.getElementById('status-forca').innerText = personagem.forca;
+    document.getElementById('status-agilidade').innerText = personagem.agilidade;
 
-    document.getElementById('status-vida1').innerText = personagem.vida || '0';
-    document.getElementById('status-vida').innerText = personagem.vida || '0';
-    document.getElementById('status-alma1').innerText = personagem.alma || '0';
-    document.getElementById('status-alma').innerText = personagem.alma || '0';
-    document.getElementById('status-escudo1').innerText = personagem.escudo || '0';
-    document.getElementById('status-escudo').innerText = personagem.escudo || '0';
-    document.getElementById('status-fortitude').innerText = personagem.fortitude || '0';
-    document.getElementById('status-conhecimento').innerText = personagem.conhecimento || '0';
-    document.getElementById('status-espirito').innerText = personagem.espirito || '0';
-    document.getElementById('status-forca').innerText = personagem.forca || '0';
-    document.getElementById('status-agilidade').innerText = personagem.agilidade || '0';
+    // Dentro de atualizarInfoPersonagem(Personagem)
+    document.getElementById('status-bar-vida1').style.width = (personagem.vida / personagem.vidaMax) * 100 + '%';
+    document.getElementById('status-bar-vida').style.width = (personagem.vida / personagem.vidaMax) * 100 + '%';
+    document.getElementById('status-bar-alma1').style.width = (personagem.alma / personagem.almaMax) * 100 + '%';
+    document.getElementById('status-bar-alma').style.width = (personagem.alma / personagem.almaMax) * 100 + '%';
+    document.getElementById('status-bar-escudo1').style.width = (personagem.escudo / personagem.escudoMax) * 100 + '%';
+    document.getElementById('status-bar-escudo').style.width = (personagem.escudo / personagem.escudoMax) * 100 + '%';
 
-    // Atualiza as barras de status
-    if (personagem.vidaMax) {
-        document.getElementById('status-bar-vida1').style.width = (personagem.vida / personagem.vidaMax) * 100 + '%';
-        document.getElementById('status-bar-vida').style.width = (personagem.vida / personagem.vidaMax) * 100 + '%';
-    }
-    if (personagem.almaMax) {
-        document.getElementById('status-bar-alma1').style.width = (personagem.alma / personagem.almaMax) * 100 + '%';
-        document.getElementById('status-bar-alma').style.width = (personagem.alma / personagem.almaMax) * 100 + '%';
-    }
-    if (personagem.escudoMax) {
-        document.getElementById('status-bar-escudo1').style.width = (personagem.escudo / personagem.escudoMax) * 100 + '%';
-        document.getElementById('status-bar-escudo').style.width = (personagem.escudo / personagem.escudoMax) * 100 + '%';
-    }
+    const pericias = personagem.getPericias();
+    document.getElementById('status-pericia-destreza').innerText = pericias.destreza;
+    document.getElementById('status-pericia-pontaria').innerText = pericias.pontaria;
+    document.getElementById('status-pericia-tecnica').innerText = pericias.tecnica;
+    document.getElementById('status-pericia-furtividade').innerText = pericias.furtividade;
+    document.getElementById('status-pericia-mente').innerText = pericias.mente;
+    document.getElementById('status-pericia-vigor').innerText = pericias.vigor;
+    document.getElementById('status-pericia-observacao').innerText = pericias.observacao;
+    document.getElementById('status-pericia-inteligencia').innerText = pericias.inteligencia;
+    document.getElementById('status-pericia-luta').innerText = pericias.luta;
+    document.getElementById('status-pericia-iniciativa').innerText = pericias.iniciativa;
+    document.getElementById('status-pericia-diplomacia').innerText = pericias.diplomacia;
+    document.getElementById('status-pericia-sorte').innerText = pericias.sorte;
+    document.getElementById('status-pericia-medicina').innerText = pericias.medicina;
+    document.getElementById('status-pericia-vontade').innerText = pericias.vontade;
 
-    // Atualiza perícias e traços, se existirem
-    const pericias = personagem.getPericias ? personagem.getPericias() : {};
-    document.getElementById('status-pericia-destreza').innerText = pericias.destreza || '0';
-    document.getElementById('status-pericia-pontaria').innerText = pericias.pontaria || '0';
-
-    const tracos = personagem.getTracos ? personagem.getTracos() : {};
-    document.getElementById('status-traco-raiz').innerText = tracos.raiz || 'Desconhecido';
+    const tracos = personagem.getTracos();
+    document.getElementById('status-traco-raiz').innerText = tracos.raiz;
+    document.getElementById('status-traco-raca').innerText = tracos.raca;
+    document.getElementById('status-traco-cultura').innerText = tracos.cultura;
+    document.getElementById('status-traco-corpo').innerText = tracos.corpo;
+    document.getElementById('status-traco-defeitos').innerText = tracos.defeitos;
+    document.getElementById('status-traco-efeitos').innerText = tracos.efeitos;
+    document.getElementById('status-traco-peso').innerText = tracos.peso;
+    document.getElementById('status-traco-subraiz').innerText = tracos.subraiz;
+    document.getElementById('status-traco-historia').innerText = tracos.historia;
 }
 
 
