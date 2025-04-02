@@ -2177,10 +2177,6 @@ document.getElementById('clear-data-btn').addEventListener('click', function() {
         document.cookie = nome + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     });
 
-    // Limpar o LocalStorage e o SessionStorage
-    localStorage.clear();
-    sessionStorage.clear();
-
     // Limpar o Cache da Página
     if ('caches' in window) {
         caches.keys().then(function(names) {
