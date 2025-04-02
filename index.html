@@ -659,9 +659,16 @@
                 <br>
                 <div id="check-defesa">
                 <button onclick="executarDefesa()">Executar Defesa</button>
-                    <input type="checkbox" id="checkDefesa" checked>
-                    <label for="checkDefesa">Defesa Total</label>  </div>
-                
+                    <div class="hide-on-mobile">
+                        <label for="checkDefesa">Defesa Total</label>
+                    </div>
+                    <style>
+                        @media (max-width: 768px) {
+                            .hide-on-mobile {
+                                display: none;
+                            }
+                        }
+                    </style>  
                 <h2>Esquivar</h2>
                 <label for="vantagens-esquiva">Número de Vantagens:</label>
                 <input type="number" id="vantagens-esquiva" value="0">
