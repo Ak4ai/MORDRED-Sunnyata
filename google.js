@@ -23,7 +23,6 @@ function hideLoader() {
     }
 }
 
-
 // Função para verificar se tudo foi carregado
 function checkIfEverythingLoaded() {
     const userIcon = document.querySelector('.user-icon');
@@ -32,6 +31,9 @@ function checkIfEverythingLoaded() {
     
     if (gapiInited && gisInited && userInfoDiv.style.display === 'flex' && userIcon.src && userName.textContent) {
         hideLoader();
+    } else {
+        // Define um timeout para esconder o loader caso demore muito
+        setTimeout(hideLoader, 5000); // 5 segundos
     }
 }
 
