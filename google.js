@@ -14,7 +14,11 @@ window.onload = function() {
     } else {
         console.error("Google Identity Services (GIS) não carregado corretamente.");
     }
+
+    // Esconde o loader automaticamente após 5 segundos
+    setTimeout(hideLoader, 5000);
 };
+
 
 function hideLoader() {
     const loader = document.getElementById('loader');
@@ -28,9 +32,6 @@ function checkIfEverythingLoaded() {
     const userIcon = document.querySelector('.user-icon');
     const userName = document.querySelector('.user-name');
     const userInfoDiv = document.querySelector('.user-info');
-
-    // Oculta o loader após 5 segundos, independentemente do carregamento
-    setTimeout(hideLoader, 5000); // Timeout único, não fica se repetindo
 
     // Verifica continuamente se tudo foi carregado
     const interval = setInterval(() => {
