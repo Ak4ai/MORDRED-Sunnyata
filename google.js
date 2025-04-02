@@ -445,6 +445,7 @@ function downloadFilesFromDrive() {
                     // Quando todos os arquivos forem processados, exibe uma mensagem
                     if (processedFiles === totalFiles) {
                         alert('Arquivos restaurados do Drive para o localStorage.');
+                        location.reload(true);
                     }
                 }).catch(error => {
                     console.error("Erro ao baixar o arquivo " + file.name, error);

@@ -881,16 +881,13 @@ textarea:focus {
   align-items: center !important;
   justify-content: center !important;
   display: flex !important;
-  margin-bottom: 15px !important;
 }
 
 #Google button {
-  padding: 10px 20px !important;
   font-size: 16px !important;
   border: 1px solid #ffffff !important;
   border-radius: 4px !important;
   cursor: pointer !important;
-  margin: 0 5px !important;
   transition: background-color 0.3s ease !important;
 }
 
@@ -912,7 +909,7 @@ textarea:focus {
 
 #Google .signout:hover {
   background-color: #c33d2d !important;
-}
+} 
 
 .user-info {
   display: none; /* Escondido por padrão */
@@ -933,28 +930,38 @@ textarea:focus {
 
 /* Container do botão de sincronização */
 #Google .sync-container {
-  text-align: center !important;
-  justify-content: center !important;
   display: flex !important;
-  margin-top: 15px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
 }
 
 /* Botão de sincronização */
 #Google .sync {
   background-color: #0F9D58 !important;
   color: #fff !important;
-  display: none;
   border: 1px solid #ffffff !important;
-}
-
-/* Botão de sincronização */
-#Google .restore {
-  color: #fff !important;
-  border: 1px solid #ffffff !important;
+  text-align: center !important;
+  padding: 10px 20px !important;
+  border-radius: 4px !important;
+  width: auto !important; /* Garante que o botão não fique expandido */
+  max-width: 90% !important; /* Evita que o botão ultrapasse a tela */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 #Google .sync:hover {
   background-color: #0b7e42 !important;
+}
+
+
+/* Botão de sincronização */
+#Google .restore {
+  color: #fff !important;
+  justify-content: center !important;
+  text-align: center !important;
+  border: 1px solid #ffffff !important;
 }
 
 .loader-overlay {
