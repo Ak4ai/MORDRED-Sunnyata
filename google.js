@@ -93,7 +93,7 @@ function maybeEnableButtons() {
             gapi.client.setToken({ access_token: savedToken });
             signinButton.style.display = 'none';
             signoutButton.style.display = 'block';
-            syncButton.style.display = 'block';
+            syncButton.style.display = 'flex';
             restoreButton.style.display = 'block';
             
             getUserInfo(savedToken);
@@ -139,7 +139,7 @@ function handleAuthClick() {
 
         signinButton.style.display = 'none';
         signoutButton.style.display = 'block';
-        syncButton.style.display = 'block';
+        syncButton.style.display = 'flex';
         restoreButton.style.display = 'block'; // Esconde o botão de restore
 
 
