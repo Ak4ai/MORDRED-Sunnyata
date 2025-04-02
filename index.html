@@ -21,7 +21,7 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <link rel="stylesheet" href="style.css">
-      <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://apis.google.com https://www.gstatic.com https://accounts.google.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; connect-src https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com ws://127.0.0.1:5501 https://backmordred.vercel.app https://apis.google.com; img-src 'self' https://i.pinimg.com https://csi.gstatic.com https://lh3.googleusercontent.com data:; frame-src https://accounts.google.com https://content.googleapis.com https://content-people.googleapis.com;">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://apis.google.com https://www.gstatic.com https://accounts.google.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; connect-src https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com ws://127.0.0.1:5501 https://backmordred.vercel.app https://apis.google.com https://www.google.com; img-src 'self' https://i.pinimg.com https://csi.gstatic.com https://lh3.googleusercontent.com data:; frame-src https://accounts.google.com https://content.googleapis.com https://content-people.googleapis.com;">
     </head>
   <body>
     <script>
@@ -264,456 +264,202 @@
               </div>
           </div>
           
-            <!-- Skills Section with Subtabs -->
-            <div id="skills" class="content">
-                <div class="subtabs">
-                    <div class="subtab active" onclick="openSubtab('skills', 'habilidades')">Habilidades</div>
-                    <div class="subtab" onclick="openSubtab('skills', 'escolha')">Escolha</div>
-                </div>
-                <div id="escolha" class="subcontent">
-                    <h2>Escolha uma habilidade:</h2>
-                    <div id="escolha-habilidades">
-                    </div>
-                </div>
-                <div id="habilidades" class="subcontent active">
-                    <h2 id="habilidade-nome"></h2>
-                    <p id="habilidade-descricao"></p>
-                    <div id="botoes-habilidade">
-                        <button id="usar-habilidade" onclick="usarHabilidade()">Usar Habilidade</button>
-                        <button onclick="sair()">Sair</button>
-                    </div>
-                    <div id="dano-total"></div>
-                    <div id="teste-habilidade"></div>
-                    <br>
-                    <div id="status">
-                        <!-- Aqui será inserido o status dinamicamente -->
-                    </div>
-                    <p id="texto-nenhuma-habilidade" style="display: none;">Escolha uma habilidade na aba Escolha</p>
-                </div>                
+        <!-- Skills Section with Subtabs -->
+        <div id="skills" class="content">
+            <div class="subtabs">
+                <div class="subtab active" onclick="openSubtab('skills', 'habilidades')">Habilidades</div>
+                <div class="subtab" onclick="openSubtab('skills', 'escolha')">Escolha</div>
             </div>
-
-
-            <div id="config" class="content">
-                <div class="subtabs">
-                    <div class="subtab active" onclick="openSubtab('config', 'status1')">Status</div>
-                    <div class="subtab" onclick="openSubtab('config', 'habilidades1')">Habilidades</div>
-                    <div class="subtab" onclick="openSubtab('config', 'habilidades2')">SaveData</div>
-                    <div class="subtab" onclick="openSubtab('config', 'Google')">Google</div>
+            <div id="escolha" class="subcontent">
+                <h2>Escolha uma habilidade:</h2>
+                <div id="escolha-habilidades">
                 </div>
-                <div id="status1" class="subcontent active">
-                    <div id="toggle-atualizar">
-                        <label class="switch">
-                          <input type="checkbox" id="atualizar-checkbox">
-                          <span class="slider round"></span>
-                        </label>
-                        <span class="toggle-label">Atualizar</span>
-                    </div>
-                    <h2>Atualizar Status</h2>
-                    <form id="status-form">
-                        <label for="nome">Nome do Personagem:</label>
-                        <input type="text" id="nome" name="nome" required>
-                        <br>
-                        <label for="img">Imagem do Personagem:</label>
-                        <input type="text" id="img" name="imagem" required>
-                        <br>
-                        <label for="vida">Vida:</label>
-                        <input type="number" id="vida" name="vida" min="0">
-                        <label for="vidaMax">Vida Max:</label>
-                        <input type="number" id="vidaMax" name="vidaMax" min="0">
-                        <br>
-                        <label for="alma">Alma:</label>
-                        <input type="number" id="alma" name="alma" min="0">
-                        <label for="almaMax">Alma Max:</label>
-                        <input type="number" id="almaMax" name="almaMax" min="0">
-                        <br>
-                        <label for="escudo">Defesa:</label>
-                        <input type="number" id="escudo" name="escudo" min="0">
-                        <label for="escudoMax">Defesa Max:</label>
-                        <input type="number" id="escudoMax" name="escudoMax" min="0">
-                        <br>
-                        <label for="fortitude">Fortitude:</label>
-                        <input type="number" id="fortitude" name="fortitude" min="0">
-                        <br>
-                        <label for="conhecimento">Conhecimento:</label>
-                        <input type="number" id="conhecimento" name="conhecimento" min="0">
-                        <br>
-                        <label for="espirito">Espirito:</label>
-                        <input type="number" id="espirito" name="espirito" min="0">
-                        <br>
-                        <label for="forca">Força:</label>
-                        <input type="number" id="forca" name="forca" min="0">
-                        <br>
-                        <label for="agilidade">Agilidade:</label>
-                        <input type="number" id="agilidade" name="agilidade" min="0">
-                        <br>
-                        <label for="periciaDestreza">Perícia Destreza:</label>
-                        <input type="number" id="periciaDestreza" name="periciaDestreza" min="0">
-                        <br>
-                        <label for="periciaPontaria">Perícia Pontaria:</label>
-                        <input type="number" id="periciaPontaria" name="periciaPontaria" min="0">
-                        <br>
-                        <label for="periciaTecnica">Perícia Técnica:</label>
-                        <input type="number" id="periciaTecnica" name="periciaTecnica" min="0">
-                        <br>
-                        <label for="periciaFurtividade">Perícia Furtividade:</label>
-                        <input type="number" id="periciaFurtividade" name="periciaFurtividade" min="0">
-                        <br>
-                        <label for="periciaLuta">Perícia Luta:</label>
-                        <input type="number" id="periciaLuta" name="periciaLuta" min="0">
-                        <br>
-                        <label for="periciaMente">Perícia Mente:</label>
-                        <input type="number" id="periciaMente" name="periciaMente" min="0">
-                        <br>
-                        <label for="periciaInteligencia">Perícia Inteligência:</label>
-                        <input type="number" id="periciaInteligencia" name="periciaInteligencia" min="0">
-                        <br>
-                        <label for="periciaIniciativa">Perícia Iniciativa:</label>
-                        <input type="number" id="periciaIniciativa" name="periciaIniciativa" min="0">
-                        <br>
-                        <label for="periciaVigor">Perícia Vigor:</label>
-                        <input type="number" id="periciaVigor" name="periciaVigor" min="0">
-                        <br>
-                        <label for="periciaObservacao">Perícia Observação:</label>
-                        <input type="number" id="periciaObservacao" name="periciaObservacao" min="0">
-                        <br>
-                        <label for="periciaDiplomacia">Perícia Diplomacia:</label>
-                        <input type="number" id="periciaDiplomacia" name="periciaDiplomacia" min="0">
-                        <br>
-                        <label for="periciaSorte">Perícia Sorte:</label>
-                        <input type="number" id="periciaSorte" name="periciaSorte" min="0">
-                        <br>
-                        <label for="periciaMedicina">Perícia Medicina:</label>
-                        <input type="number" id="periciaMedicina" name="periciaMedicina" min="0">
-                        <br>
-                        <label for="periciaVontade">Perícia Vontade:</label>
-                        <input type="number" id="periciaVontade" name="periciaVontade" min="0">
-                        <br>
-                        <label for="tracoRaiz">Traço Raiz:</label>
-                        <input type="text" id="tracoRaiz" name="tracoRaiz">
-                        <br>
-                        <label for="tracoRaca">Traço Raça:</label>
-                        <input type="text" id="tracoRaca" name="tracoRaca">
-                        <br>
-                        <label for="tracoCultura">Traço Cultura:</label>
-                        <input type="text" id="tracoCultura" name="tracoCultura">
-                        <br>
-                        <label for="tracoCorpo">Traço Corpo:</label>
-                        <input type="text" id="tracoCorpo" name="tracoCorpo">
-                        <br>
-                        <label for="tracoDefeitos">Traço Defeitos:</label>
-                        <input type="text" id="tracoDefeitos" name="tracoDefeitos">
-                        <br>
-                        <label for="tracoEfeitos">Traço Efeitos:</label>
-                        <input type="text" id="tracoEfeitos" name="tracoEfeitos">
-                        <br>
-                        <label for="tracoPeso">Traço Peso:</label>
-                        <input type="text" id="tracoPeso" name="tracoPeso">
-                        <br>
-                        <label for="tracoSubraiz">Traço Subraiz:</label>
-                        <input type="text" id="tracoSubraiz" name="tracoSubraiz">
-                        <br>
-                        <label for="tracoHistoria">Traço História:</label>
-                        <textarea id="tracoHistoria" name="tracoHistoria"></textarea>  
-                        <br>
-                        <label for="personagemInicial">Personagem de Inicialização:</label>
-                        <br>
-                        <input type="checkbox" id="personagemInicial" name="personagemInicial">
-                        <br>
-                        <button type="button" onclick="salvarStatus()">Salvar</button>
-                    </form>
-                        <h2>Carregar Status</h2>
-                        <label for="nomeCarregar">Nome do Personagem:</label>
-                        <input type="text" id="nomeCarregar" name="nomeCarregar" required>
-                        <br>
-                        <button type="button" onclick="carregarStatus()">Carregar</button>
-                        <h2>Listar Arquivos</h2>
-                        <button type="button" onclick="listarArquivos()">Listar Arquivos Salvos</button>
+            </div>
+            <div id="habilidades" class="subcontent active">
+                <h2 id="habilidade-nome"></h2>
+                <p id="habilidade-descricao"></p>
+                <div id="botoes-habilidade">
+                    <button id="usar-habilidade" onclick="usarHabilidade()">Usar Habilidade</button>
+                    <button onclick="sair()">Sair</button>
                 </div>
-                <div id="habilidades1" class="subcontent">
-                    <h2>Carregar Habilidades</h2>
-                    <div id="toggle-atualizar">
-                        <label class="switch">
-                            <input type="checkbox" id="atualizarhabilidade-checkbox">
-                            <span class="slider round"></span>
-                        </label>
-                        <span class="toggle-label">Atualizar</span>
-                    </div>
-                    <label for="nomeCarregarHab">Nome do Personagem:</label>
-                    <input type="text" id="nomeCarregarHab" name="nomeCarregarHab" required>
-                    <br>
-                    <label for="nomeHabilidade">Nome da Habilidade:</label>
-                    <input type="text" id="nomeHabilidade" name="nomeHabilidade" required>
-                    <br>
-                
-                    <label for="testeHabilidade">Teste de Habilidade:</label>
-                    <div class="teste-habilidade-container">
-                        <div id="toggle-atualizar">
-                            <input type="checkbox" id="toggleHabilidade">
-                        </div>
-                
-                        <select id="atributoSelect">
-                            <option value="força">Força</option>
-                            <option value="agilidade">Agilidade</option>
-                            <option value="conhecimento">Conhecimento</option>
-                            <option value="espirito">Espirito</option>
-                            <option value="fortitude">Fortitude</option>
-                            <!-- Adicione mais opções conforme necessário -->
-                        </select>
-                
-                        <select id="periciaSelect">
-                            <option value="destreza">Destreza</option>
-                            <option value="pontaria">Pontaria</option>
-                            <option value="tecnica">Técnica</option>
-                            <option value="furtividade">Furtividade</option>
-                            <option value="luta">Luta</option>
-                            <option value="mente">Mente</option>
-                            <option value="inteligencia">Inteligência</option>
-                            <option value="iniciativa">Iniciativa</option>
-                            <option value="vigor">Vigor</option>
-                            <option value="observacao">Observação</option>
-                            <option value="diplomacia">Diplomacia</option>
-                            <option value="sorte">Sorte</option>
-                            <option value="medicina">Medicina</option>
-                            <option value="vontade">Vontade</option>
-                        </select>
-                
-                        <input type="number" id="vantagensInput" placeholder="Vantagens">
-                        <input type="number" id="modificadorInput" placeholder="Modificador">
-                    </div>
-                
-                    <br>
-                    <label for="danoHabilidade">Dano:</label>
-                    <input type="text" id="danoHabilidade" name="danoHabilidade" required>
-                    <br>
-                    <label for="cooldownHabilidade">Cooldown:</label>
-                    <input type="number" id="cooldownHabilidade" name="cooldownHabilidade" required>
-                    <br>
-                    <label for="custoHabilidade">Custo:</label>
-                    <input type="text" id="custoHabilidade" name="custoHabilidade" required>
-                    <br>
-                    <label for="custoVida">Custo Vida:</label>
-                    <input type="text" id="custoVidaHabilidade" name="custoVida" required>
-                    <br>
-                    <label for="descricaoHabilidade">Descrição:</label>
-                    <textarea id="descricaoHabilidade" name="descricaoHabilidade" required></textarea>
-                    <br>
-                    <button type="button" onclick="carregarHabilidades2()">Carregar Habilidade</button>
-                
-                    <!-- Nova seção para remover habilidade -->
-                    <div id="removerHabilidadeContainer" style="margin-top:20px; padding-top:10px; border-top:1px solid #ccc;">
-                        <h3>Remover Habilidade</h3>
-                        <label for="nomeRemoverHab">Nome do Personagem:</label>
-                        <input type="text" id="nomeRemoverHab" name="nomeRemoverHab" required>
-                        <br>
-                        <label for="nomeRemoverHabilidade">Nome da Habilidade:</label>
-                        <input type="text" id="nomeRemoverHabilidade" name="nomeRemoverHabilidade" required>
-                        <br>
-                        <button type="button" onclick="removerHabilidade()">Remover Habilidade</button>
-                    </div>
+                <div id="dano-total"></div>
+                <div id="teste-habilidade"></div>
+                <br>
+                <div id="status">
+                    <!-- Aqui será inserido o status dinamicamente -->
                 </div>
-                <div id="habilidades2" class="subcontent">
-                    <h2>Exportar e Importar Data</h2>
-                    <br>
-                    <input type="text" id="nomeArquivoExportar" placeholder="Nome do arquivo para exportar">
-                    <button type="button" onclick="exportarArquivo()">Exportar Arquivo</button>
-                    <br><br>
-                    <input type="file" id="inputArquivoImportar">
-                    <button type="button" onclick="importarArquivo()">Importar Arquivo</button>
-                    <br><br>
-                    <input type="text" id="nomeArquivoRemover" placeholder="Nome do arquivo para remover">
-                    <button type="button" onclick="removerArquivo()">Remover Arquivo</button>
-                    <br><br>
-                    <button type="button" onclick="listarArquivos()">Listar Arquivos no LocalStorage</button>
-                </div>  
-                <div id="Google" class="content">
-                    <div class="title">Backup To Google Drive</div>
+                <p id="texto-nenhuma-habilidade" style="display: none;">Escolha uma habilidade na aba Escolha</p>
+            </div>                
+        </div>
 
-                    <div id="loader" class="loader-overlay">
-                        <div class="loader"></div>
-                    </div>                
-                    
-                    <!-- Botões de autenticação -->
-                    <div class="auth-buttons">
-                        <button class="signin">Sign In</button>
-                        <button class="signout" style="display: none;">Sign Out</button>
-                    </div>
-                    
-                    <!-- Adicionado: exibição do nome e imagem do usuário -->
-                    <div class="user-info" style="display: none; margin-top: 10px;">
-                        <img src="" alt="User Icon" class="user-icon" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 5px;">
-                        <span class="user-name"></span>
-                    </div>
-                
-                    <!-- Botão de sincronização separado -->
-                    <div class="sync-container">
-                        <button class="sync">Sincronizar</button>
-                        <button class="restore">Restaurar backup</button>
-                    </div>
-                    <p class="last-sync" style="display: none; margin-top: 10px; font-size: 14px; color: #555;"></p>
-                </div>                                                                                                                           
-            </div>            
+        <div id="config" class="content">
+            <div class="subtabs">
+                <div class="subtab active" onclick="openSubtab('config', 'status1')">Status</div>
+                <div class="subtab" onclick="openSubtab('config', 'habilidades1')">Skills</div>
+                <div class="subtab" onclick="openSubtab('config', 'habilidades2')">SaveData</div>
+                <div class="subtab" onclick="openSubtab('config', 'Google')">Google</div>
+            </div>
+            <div id="status1" class="subcontent active">
+                <div id="toggle-atualizar">
+                    <label class="switch">
+                        <input type="checkbox" id="atualizar-checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">Atualizar</span>
+                </div>
+                <h2>Atualizar Status</h2>
+                <form id="status-form">
+                    <label for="nome">Nome do Personagem:</label>
+                    <input type="text" id="nome" name="nome" required>
+                    <br>
+                    <label for="img">Imagem do Personagem:</label>
+                    <input type="text" id="img" name="imagem" required>
+                    <br>
+                    <label for="vida">Vida:</label>
+                    <input type="number" id="vida" name="vida" min="0">
+                    <label for="vidaMax">Vida Max:</label>
+                    <input type="number" id="vidaMax" name="vidaMax" min="0">
+                    <br>
+                    <label for="alma">Alma:</label>
+                    <input type="number" id="alma" name="alma" min="0">
+                    <label for="almaMax">Alma Max:</label>
+                    <input type="number" id="almaMax" name="almaMax" min="0">
+                    <br>
+                    <label for="escudo">Defesa:</label>
+                    <input type="number" id="escudo" name="escudo" min="0">
+                    <label for="escudoMax">Defesa Max:</label>
+                    <input type="number" id="escudoMax" name="escudoMax" min="0">
+                    <br>
+                    <label for="fortitude">Fortitude:</label>
+                    <input type="number" id="fortitude" name="fortitude" min="0">
+                    <br>
+                    <label for="conhecimento">Conhecimento:</label>
+                    <input type="number" id="conhecimento" name="conhecimento" min="0">
+                    <br>
+                    <label for="espirito">Espirito:</label>
+                    <input type="number" id="espirito" name="espirito" min="0">
+                    <br>
+                    <label for="forca">Força:</label>
+                    <input type="number" id="forca" name="forca" min="0">
+                    <br>
+                    <label for="agilidade">Agilidade:</label>
+                    <input type="number" id="agilidade" name="agilidade" min="0">
+                    <br>
+                    <label for="periciaDestreza">Perícia Destreza:</label>
+                    <input type="number" id="periciaDestreza" name="periciaDestreza" min="0">
+                    <br>
+                    <label for="periciaPontaria">Perícia Pontaria:</label>
+                    <input type="number" id="periciaPontaria" name="periciaPontaria" min="0">
+                    <br>
+                    <label for="periciaTecnica">Perícia Técnica:</label>
+                    <input type="number" id="periciaTecnica" name="periciaTecnica" min="0">
+                    <br>
+                    <label for="periciaFurtividade">Perícia Furtividade:</label>
+                    <input type="number" id="periciaFurtividade" name="periciaFurtividade" min="0">
+                    <br>
+                    <label for="periciaLuta">Perícia Luta:</label>
+                    <input type="number" id="periciaLuta" name="periciaLuta" min="0">
+                    <br>
+                    <label for="periciaMente">Perícia Mente:</label>
+                    <input type="number" id="periciaMente" name="periciaMente" min="0">
+                    <br>
+                    <label for="periciaInteligencia">Perícia Inteligência:</label>
+                    <input type="number" id="periciaInteligencia" name="periciaInteligencia" min="0">
+                    <br>
+                    <label for="periciaIniciativa">Perícia Iniciativa:</label>
+                    <input type="number" id="periciaIniciativa" name="periciaIniciativa" min="0">
+                    <br>
+                    <label for="periciaVigor">Perícia Vigor:</label>
+                    <input type="number" id="periciaVigor" name="periciaVigor" min="0">
+                    <br>
+                    <label for="periciaObservacao">Perícia Observação:</label>
+                    <input type="number" id="periciaObservacao" name="periciaObservacao" min="0">
+                    <br>
+                    <label for="periciaDiplomacia">Perícia Diplomacia:</label>
+                    <input type="number" id="periciaDiplomacia" name="periciaDiplomacia" min="0">
+                    <br>
+                    <label for="periciaSorte">Perícia Sorte:</label>
+                    <input type="number" id="periciaSorte" name="periciaSorte" min="0">
+                    <br>
+                    <label for="periciaMedicina">Perícia Medicina:</label>
+                    <input type="number" id="periciaMedicina" name="periciaMedicina" min="0">
+                    <br>
+                    <label for="periciaVontade">Perícia Vontade:</label>
+                    <input type="number" id="periciaVontade" name="periciaVontade" min="0">
+                    <br>
+                    <label for="tracoRaiz">Traço Raiz:</label>
+                    <input type="text" id="tracoRaiz" name="tracoRaiz">
+                    <br>
+                    <label for="tracoRaca">Traço Raça:</label>
+                    <input type="text" id="tracoRaca" name="tracoRaca">
+                    <br>
+                    <label for="tracoCultura">Traço Cultura:</label>
+                    <input type="text" id="tracoCultura" name="tracoCultura">
+                    <br>
+                    <label for="tracoCorpo">Traço Corpo:</label>
+                    <input type="text" id="tracoCorpo" name="tracoCorpo">
+                    <br>
+                    <label for="tracoDefeitos">Traço Defeitos:</label>
+                    <input type="text" id="tracoDefeitos" name="tracoDefeitos">
+                    <br>
+                    <label for="tracoEfeitos">Traço Efeitos:</label>
+                    <input type="text" id="tracoEfeitos" name="tracoEfeitos">
+                    <br>
+                    <label for="tracoPeso">Traço Peso:</label>
+                    <input type="text" id="tracoPeso" name="tracoPeso">
+                    <br>
+                    <label for="tracoSubraiz">Traço Subraiz:</label>
+                    <input type="text" id="tracoSubraiz" name="tracoSubraiz">
+                    <br>
+                    <label for="tracoHistoria">Traço História:</label>
+                    <textarea id="tracoHistoria" name="tracoHistoria"></textarea>  
+                    <br>
+                    <label for="personagemInicial">Personagem de Inicialização:</label>
+                    <br>
+                    <input type="checkbox" id="personagemInicial" name="personagemInicial">
+                    <br>
+                    <button type="button" onclick="salvarStatus()">Salvar</button>
+                </form>
+                    <h2>Carregar Status</h2>
+                    <label for="nomeCarregar">Nome do Personagem:</label>
+                    <input type="text" id="nomeCarregar" name="nomeCarregar" required>
+                    <br>
+                    <button type="button" onclick="carregarStatus()">Carregar</button>
+                    <h2>Listar Arquivos</h2>
+                    <button type="button" onclick="listarArquivos()">Listar Arquivos Salvos</button>
+            </div>
+            <div id="habilidades1" class="subcontent">
+                <h2>Carregar Habilidades</h2>
+                <div id="toggle-atualizar">
+                    <label class="switch">
+                        <input type="checkbox" id="atualizarhabilidade-checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">Atualizar</span>
+                </div>
+                <label for="nomeCarregarHab">Nome do Personagem:</label>
+                <input type="text" id="nomeCarregarHab" name="nomeCarregarHab" required>
+                <br>
+                <label for="nomeHabilidade">Nome da Habilidade:</label>
+                <input type="text" id="nomeHabilidade" name="nomeHabilidade" required>
+                <br>
             
-            <!-- Seção de Inventário -->
-            <div id="inventory" class="content">
-                <h2>Inventário</h2>
-                <div id="inventory-items">
-                <!-- Os itens serão adicionados dinamicamente aqui -->
-                </div>
-                <button id="open-add-item">Adicionar Item</button>
-                <div id="total-weight"></div>
-            </div>
+                <label for="testeHabilidade">Teste de Habilidade:</label>
+                <div class="teste-habilidade-container">
+                    <div id="toggle-atualizar">
+                        <input type="checkbox" id="toggleHabilidade">
+                    </div>
             
-            <!-- Modal para adicionar novo item -->
-            <div id="add-item-modal" class="modal" style="display: none;">
-                <div class="modal-content">
-                <h3>Adicionar Novo Item</h3>
-                
-                <label for="item-name">Nome:</label>
-                <input type="text" id="item-name" placeholder="Nome do item">
-                
-                <label for="item-icon">Ícone (URL ou caminho):</label>
-                <input type="text" id="item-icon" placeholder="Caminho do ícone">
-                
-                <label for="item-damage">Dano:</label>
-                <input type="text" id="item-damage" placeholder="Dano">
-                
-                <label for="item-description">Descrição:</label>
-                <textarea id="item-description" placeholder="Descrição do item"></textarea>
-                
-                <label for="item-peso">Peso:</label>
-                <input type="number" id="item-peso" placeholder="Peso">
-                
-                <label for="item-quantity">Quantidade:</label>
-                <input type="number" id="item-quantity" placeholder="Quantidade">
-                
-                <label for="item-single-use">Item de Uso Único:</label><br>
-                <input type="checkbox" id="item-single-use">
-
-                <div class="modal-buttons">
-                    <button id="submit-item">Adicionar</button>
-                    <button id="cancel-item">Cancelar</button>
-                </div>
-                </div>
-            </div>
-
-            <!-- Modal para exibir detalhes do item -->
-            <div id="item-details-modal" class="modal" style="display: none;">
-                <div class="modal-content">
-                <h3 id="detail-item-name">Nome do Item</h3>
-                <img id="detail-item-icon" src="" alt="Ícone do Item" class="item-icon">
-                <p><strong>Dano:</strong> <span id="detail-item-damage"></span></p>
-                <p><strong>Descrição:</strong> <span id="detail-item-description"></span></p>
-                <p><strong>Peso:</strong> <span id="detail-item-peso"></span></p>
-                <p><strong>Quantidade:</strong> <span id="detail-item-quantity"></span></p>
-                <div class="modal-buttons">
-                    <button id="use-item-button">Usar</button>
-                    <button id="close-details-button">Fechar</button>
-                </div>
-                </div>
-            </div>
-  
-          
-            <!-- Actions Section with Subtabs -->
-            <div id="actions" class="content">
-              <div class="subtabs">
-                  <div class="subtab active" onclick="openSubtab('actions', 'acoes')">Ações</div>
-                  <div class="subtab" onclick="openSubtab('actions', 'ajustes')">Ajustes</div>
-                  <div class="subtab" onclick="openSubtab('actions', 'testes')">Testes</div>
-                  <div class="subtab" onclick="openSubtab('actions', 'dados')">Dados</div>
-              </div>
-              <div id="acoes" class="subcontent active">
-                    <!-- Pré-visualização do Inventário -->
-                    <div id="inventory-preview" class="inventory-preview">
-                        <h3>Selecione o item para atacar</h3>
-                        <div class="slider-container">
-                        <!-- Os itens do inventário serão inseridos dinamicamente aqui -->
-                        </div>
-                    </div>
-                    <h2>Atacar</h2>
-                    <label for="vantagens-ataque">Número de Vantagens:</label>
-                    <input type="number" id="vantagens-ataque" value="0">
-                    <br>
-                    <label for="modificador-ataque">Modificador:</label>
-                    <input type="number" id="modificador-ataque" value="0">
-                    <br>
-                    <button onclick="executarAtaque()">Executar Ataque</button>
-
-                    <h2>Atirar</h2>
-                    <label for="vantagens-tiro">Número de Vantagens:</label>
-                    <input type="number" id="vantagens-tiro" value="0">
-                    <br>
-                    <label for="modificador-tiro">Modificador:</label>
-                    <input type="number" id="modificador-tiro" value="0">
-                    <br>
-                    <button onclick="executarTiro()">Executar Tiro</button>
-
-                    <h2>Defender</h2>
-                    <label for="vantagens-defesa">Número de Vantagens:</label>
-                    <input type="number" id="vantagens-defesa" value="0">
-                    <br>
-                    <label for="modificador-defesa">Modificador:</label>
-                    <input type="number" id="modificador-defesa" value="0">
-                    <br>
-                    <div id="check-defesa">
-                    <button onclick="executarDefesa()">Executar Defesa</button>
-                        <input type="checkbox" id="checkDefesa" checked>
-                        <label for="checkDefesa">Defesa Total</label>  </div>
-                    
-                    <h2>Esquivar</h2>
-                    <label for="vantagens-esquiva">Número de Vantagens:</label>
-                    <input type="number" id="vantagens-esquiva" value="0">
-                    <br>
-                    <label for="modificador-esquiva">Modificador:</label>
-                    <input type="number" id="modificador-esquiva" value="0">
-                    <br>
-                    <button onclick="executarEsquiva()">Executar Esquiva</button>
-                    
-                    <h2>Contra-Atacar</h2>
-                    <label for="vantagens-contraataque">Número de Vantagens:</label>
-                    <input type="number" id="vantagens-contraataque" value="0">
-                    <br>
-                    <label for="modificador-contraataque">Modificador:</label>
-                    <input type="number" id="modificador-contraataque" value="0">
-                    <br>
-                    <button onclick="executarContraAtaque()">Executar Contra-Ataque</button>
-                </div>
-                <div id="ajustes" class="subcontent">
-                    <h2>Ajuste Alma:</h2>
-                    <input type="text" id="ajuste-alma" />
-                    <button onclick="ajustarAlma(1)">Adicionar Alma</button>
-                    <button onclick="ajustarAlma(-1)">Reduzir Alma</button>
-                    <h2>Ajuste Vida:</h2>
-                    <input type="text" id="ajuste-vida" />
-                    <button onclick="ajustarVida(1)">Adicionar Vida</button>
-                    <button onclick="ajustarVida(-1)">Reduzir Vida</button>
-                    <h2>Ajuste Defesa:</h2>
-                    <input type="text" id="ajuste-escudo" />
-                    <button onclick="ajustarEscudo(1)">Adicionar Defesa</button>
-                    <button onclick="ajustarEscudo(-1)">Reduzir Defesa</button>
-                    <!-- Outros elementos da interface, se houver -->
-                    <h2>Sair:</h2>
-                    <button onclick="sairAjustes()">Sair dos Ajustes</button>
-                </div>
-                <div id="testes" class="subcontent">
-                    <!-- Pré-visualização do Inventário -->
-                    <div id="inventory-preview-testes" class="inventory-preview">
-                        <h3>Selecione o item para atacar</h3>
-                        <div class="slider-container">
-                            <!-- Os itens do inventário serão inseridos dinamicamente aqui -->
-                        </div>
-                    </div>
-                    <label for="atributo">Atributo:</label>
-                    <select id="atributoSelect1">
+                    <select id="atributoSelect">
                         <option value="força">Força</option>
                         <option value="agilidade">Agilidade</option>
                         <option value="conhecimento">Conhecimento</option>
                         <option value="espirito">Espirito</option>
                         <option value="fortitude">Fortitude</option>
                         <!-- Adicione mais opções conforme necessário -->
-                    </select><br><br>
+                    </select>
             
-                    <label for="pericia">Perícia:</label>
-                    <select id="periciaSelect1">
+                    <select id="periciaSelect">
                         <option value="destreza">Destreza</option>
                         <option value="pontaria">Pontaria</option>
                         <option value="tecnica">Técnica</option>
@@ -728,53 +474,285 @@
                         <option value="sorte">Sorte</option>
                         <option value="medicina">Medicina</option>
                         <option value="vontade">Vontade</option>
-                    </select><br><br>
+                    </select>
             
-                    <label for="vantagens">Vantagens:</label>
-                    <input type="number" id="vantagensInput1" value="0"><br><br>
-                
-                    <label for="modificador">Modificador:</label>
-                    <input type="number" id="modificadorInput1" value="0"><br><br>
-                
-                    <button onclick="executarAcao()">Executar Ação</button>
+                    <input type="number" id="vantagensInput" placeholder="Vantagens">
+                    <input type="number" id="modificadorInput" placeholder="Modificador">
                 </div>
-                <div id="dados" class="subcontent">
-                    <h2>Rolagem de Dados</h2>
-                    
-                    <label for="formatoVantagem">Formato de Dados de Vantagem:</label>
-                    <input type="text" id="formatoVantagem" name="formatoVantagem" placeholder="Ex: 4d20" required>
+            
+                <br>
+                <label for="danoHabilidade">Dano:</label>
+                <input type="text" id="danoHabilidade" name="danoHabilidade" required>
+                <br>
+                <label for="cooldownHabilidade">Cooldown:</label>
+                <input type="number" id="cooldownHabilidade" name="cooldownHabilidade" required>
+                <br>
+                <label for="custoHabilidade">Custo:</label>
+                <input type="text" id="custoHabilidade" name="custoHabilidade" required>
+                <br>
+                <label for="custoVida">Custo Vida:</label>
+                <input type="text" id="custoVidaHabilidade" name="custoVida" required>
+                <br>
+                <label for="descricaoHabilidade">Descrição:</label>
+                <textarea id="descricaoHabilidade" name="descricaoHabilidade" required></textarea>
+                <br>
+                <button type="button" onclick="carregarHabilidades2()">Carregar Habilidade</button>
+            
+                <!-- Nova seção para remover habilidade -->
+                <div id="removerHabilidadeContainer" style="margin-top:20px; padding-top:10px; border-top:1px solid #ccc;">
+                    <h3>Remover Habilidade</h3>
+                    <label for="nomeRemoverHab">Nome do Personagem:</label>
+                    <input type="text" id="nomeRemoverHab" name="nomeRemoverHab" required>
                     <br>
-                    
-                    <label for="numTotal">Dados de vantagem:</label>
-                    <input type="number" id="numTotal" name="numTotal" min="1" value="0" required>
+                    <label for="nomeRemoverHabilidade">Nome da Habilidade:</label>
+                    <input type="text" id="nomeRemoverHabilidade" name="nomeRemoverHabilidade" required>
                     <br>
+                    <button type="button" onclick="removerHabilidade()">Remover Habilidade</button>
+                </div>
+            </div>
+            <div id="habilidades2" class="subcontent">
+                <h2>Exportar e Importar Data</h2>
+                <br>
+                <input type="text" id="nomeArquivoExportar" placeholder="Nome do arquivo para exportar">
+                <button type="button" onclick="exportarArquivo()">Exportar Arquivo</button>
+                <br><br>
+                <input type="file" id="inputArquivoImportar">
+                <button type="button" onclick="importarArquivo()">Importar Arquivo</button>
+                <br><br>
+                <input type="text" id="nomeArquivoRemover" placeholder="Nome do arquivo para remover">
+                <button type="button" onclick="removerArquivo()">Remover Arquivo</button>
+                <br><br>
+                <button type="button" onclick="listarArquivos()">Listar Arquivos no LocalStorage</button>
+            </div>  
+            <div id="Google" class="subcontent">
+                <div class="title">Backup To Google Drive</div>
 
-                    <hr>
-                    <br>
-                    
-                    <label for="tipoDado1">Tipo de Dado 1:</label>
-                        <select id="tipoDado1" name="tipoDado1" required>
-                            <option value="">Nenhum</option>
-                            <option value="2">d2</option>
-                            <option value="3">d3</option>
-                            <option value="4">d4</option>
-                            <option value="6">d6</option>
-                            <option value="8">d8</option>
-                            <option value="10">d10</option>
-                            <option value="12">d12</option>
-                            <option value="20">d20</option>
-                        </select>
-                    <label for="numTipoDado1">Número:</label>
-                        <input type="number" id="numTipoDado1" name="numTipoDado1" min="1" value="1" required>
-                    <br>
-                    
+                <div id="loader" class="loader-overlay">
+                    <div class="loader"></div>
+                </div>                
+                
+                <!-- Botões de autenticação -->
+                <div class="auth-buttons">
+                    <button class="signin">Sign In</button>
+                    <button class="signout" style="display: none;">Sign Out</button>
+                </div>
+                
+                <!-- Adicionado: exibição do nome e imagem do usuário -->
+                <div class="user-info" style="display: none; margin-top: 10px;">
+                    <img src="" alt="User Icon" class="user-icon" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 5px;">
+                    <span class="user-name"></span>
+                </div>
+            
+                <!-- Botão de sincronização separado -->
+                <div class="sync-container">
+                    <button class="sync">Sincronizar</button>
+                    <button class="restore">Restaurar backup</button>
+                </div>
+                <p class="last-sync" style="display: none; margin-top: 10px; font-size: 14px; color: #555;"></p>
+            </div>                                                                                                                           
+        </div>            
+            
+        <!-- Seção de Inventário -->
+        <div id="inventory" class="content">
+            <h2>Inventário</h2>
+            <div id="inventory-items">
+            <!-- Os itens serão adicionados dinamicamente aqui -->
+            </div>
+            <button id="open-add-item">Adicionar Item</button>
+            <div id="total-weight"></div>
+        </div>
+        
+        <!-- Modal para adicionar novo item -->
+        <div id="add-item-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+            <h3>Adicionar Novo Item</h3>
+            
+            <label for="item-name">Nome:</label>
+            <input type="text" id="item-name" placeholder="Nome do item">
+            
+            <label for="item-icon">Ícone (URL ou caminho):</label>
+            <input type="text" id="item-icon" placeholder="Caminho do ícone">
+            
+            <label for="item-damage">Dano:</label>
+            <input type="text" id="item-damage" placeholder="Dano">
+            
+            <label for="item-description">Descrição:</label>
+            <textarea id="item-description" placeholder="Descrição do item"></textarea>
+            
+            <label for="item-peso">Peso:</label>
+            <input type="number" id="item-peso" placeholder="Peso">
+            
+            <label for="item-quantity">Quantidade:</label>
+            <input type="number" id="item-quantity" placeholder="Quantidade">
+            
+            <label for="item-single-use">Item de Uso Único:</label><br>
+            <input type="checkbox" id="item-single-use">
 
-                    <hr>
-                    <br>
+            <div class="modal-buttons">
+                <button id="submit-item">Adicionar</button>
+                <button id="cancel-item">Cancelar</button>
+            </div>
+            </div>
+        </div>
 
+        <!-- Modal para exibir detalhes do item -->
+        <div id="item-details-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+            <h3 id="detail-item-name">Nome do Item</h3>
+            <img id="detail-item-icon" src="" alt="Ícone do Item" class="item-icon">
+            <p><strong>Dano:</strong> <span id="detail-item-damage"></span></p>
+            <p><strong>Descrição:</strong> <span id="detail-item-description"></span></p>
+            <p><strong>Peso:</strong> <span id="detail-item-peso"></span></p>
+            <p><strong>Quantidade:</strong> <span id="detail-item-quantity"></span></p>
+            <div class="modal-buttons">
+                <button id="use-item-button">Usar</button>
+                <button id="close-details-button">Fechar</button>
+            </div>
+            </div>
+        </div>
 
-                    <label for="tipoDado2">Tipo de Dado 2 (opcional):</label>
-                    <select id="tipoDado2" name="tipoDado2">
+        
+        <!-- Actions Section with Subtabs -->
+        <div id="actions" class="content">
+            <div class="subtabs">
+                <div class="subtab active" onclick="openSubtab('actions', 'acoes')">Ações</div>
+                <div class="subtab" onclick="openSubtab('actions', 'ajustes')">Ajustes</div>
+                <div class="subtab" onclick="openSubtab('actions', 'testes')">Testes</div>
+                <div class="subtab" onclick="openSubtab('actions', 'dados')">Dados</div>
+            </div>
+            <div id="acoes" class="subcontent active">
+                <!-- Pré-visualização do Inventário -->
+                <div id="inventory-preview" class="inventory-preview">
+                    <h3>Selecione o item para atacar</h3>
+                    <div class="slider-container">
+                    <!-- Os itens do inventário serão inseridos dinamicamente aqui -->
+                    </div>
+                </div>
+                <h2>Atacar</h2>
+                <label for="vantagens-ataque">Número de Vantagens:</label>
+                <input type="number" id="vantagens-ataque" value="0">
+                <br>
+                <label for="modificador-ataque">Modificador:</label>
+                <input type="number" id="modificador-ataque" value="0">
+                <br>
+                <button onclick="executarAtaque()">Executar Ataque</button>
+
+                <h2>Atirar</h2>
+                <label for="vantagens-tiro">Número de Vantagens:</label>
+                <input type="number" id="vantagens-tiro" value="0">
+                <br>
+                <label for="modificador-tiro">Modificador:</label>
+                <input type="number" id="modificador-tiro" value="0">
+                <br>
+                <button onclick="executarTiro()">Executar Tiro</button>
+
+                <h2>Defender</h2>
+                <label for="vantagens-defesa">Número de Vantagens:</label>
+                <input type="number" id="vantagens-defesa" value="0">
+                <br>
+                <label for="modificador-defesa">Modificador:</label>
+                <input type="number" id="modificador-defesa" value="0">
+                <br>
+                <div id="check-defesa">
+                <button onclick="executarDefesa()">Executar Defesa</button>
+                    <input type="checkbox" id="checkDefesa" checked>
+                    <label for="checkDefesa">Defesa Total</label>  </div>
+                
+                <h2>Esquivar</h2>
+                <label for="vantagens-esquiva">Número de Vantagens:</label>
+                <input type="number" id="vantagens-esquiva" value="0">
+                <br>
+                <label for="modificador-esquiva">Modificador:</label>
+                <input type="number" id="modificador-esquiva" value="0">
+                <br>
+                <button onclick="executarEsquiva()">Executar Esquiva</button>
+                
+                <h2>Contra-Atacar</h2>
+                <label for="vantagens-contraataque">Número de Vantagens:</label>
+                <input type="number" id="vantagens-contraataque" value="0">
+                <br>
+                <label for="modificador-contraataque">Modificador:</label>
+                <input type="number" id="modificador-contraataque" value="0">
+                <br>
+                <button onclick="executarContraAtaque()">Executar Contra-Ataque</button>
+            </div>
+            <div id="ajustes" class="subcontent">
+                <h2>Ajuste Alma:</h2>
+                <input type="text" id="ajuste-alma" />
+                <button onclick="ajustarAlma(1)">Adicionar Alma</button>
+                <button onclick="ajustarAlma(-1)">Reduzir Alma</button>
+                <h2>Ajuste Vida:</h2>
+                <input type="text" id="ajuste-vida" />
+                <button onclick="ajustarVida(1)">Adicionar Vida</button>
+                <button onclick="ajustarVida(-1)">Reduzir Vida</button>
+                <h2>Ajuste Defesa:</h2>
+                <input type="text" id="ajuste-escudo" />
+                <button onclick="ajustarEscudo(1)">Adicionar Defesa</button>
+                <button onclick="ajustarEscudo(-1)">Reduzir Defesa</button>
+                <!-- Outros elementos da interface, se houver -->
+                <h2>Sair:</h2>
+                <button onclick="sairAjustes()">Sair dos Ajustes</button>
+            </div>
+            <div id="testes" class="subcontent">
+                <!-- Pré-visualização do Inventário -->
+                <div id="inventory-preview-testes" class="inventory-preview">
+                    <h3>Selecione o item para atacar</h3>
+                    <div class="slider-container">
+                        <!-- Os itens do inventário serão inseridos dinamicamente aqui -->
+                    </div>
+                </div>
+                <label for="atributo">Atributo:</label>
+                <select id="atributoSelect1">
+                    <option value="força">Força</option>
+                    <option value="agilidade">Agilidade</option>
+                    <option value="conhecimento">Conhecimento</option>
+                    <option value="espirito">Espirito</option>
+                    <option value="fortitude">Fortitude</option>
+                    <!-- Adicione mais opções conforme necessário -->
+                </select><br><br>
+        
+                <label for="pericia">Perícia:</label>
+                <select id="periciaSelect1">
+                    <option value="destreza">Destreza</option>
+                    <option value="pontaria">Pontaria</option>
+                    <option value="tecnica">Técnica</option>
+                    <option value="furtividade">Furtividade</option>
+                    <option value="luta">Luta</option>
+                    <option value="mente">Mente</option>
+                    <option value="inteligencia">Inteligência</option>
+                    <option value="iniciativa">Iniciativa</option>
+                    <option value="vigor">Vigor</option>
+                    <option value="observacao">Observação</option>
+                    <option value="diplomacia">Diplomacia</option>
+                    <option value="sorte">Sorte</option>
+                    <option value="medicina">Medicina</option>
+                    <option value="vontade">Vontade</option>
+                </select><br><br>
+        
+                <label for="vantagens">Vantagens:</label>
+                <input type="number" id="vantagensInput1" value="0"><br><br>
+            
+                <label for="modificador">Modificador:</label>
+                <input type="number" id="modificadorInput1" value="0"><br><br>
+            
+                <button onclick="executarAcao()">Executar Ação</button>
+            </div>
+            <div id="dados" class="subcontent">
+                <h2>Rolagem de Dados</h2>
+                
+                <label for="formatoVantagem">Formato de Dados de Vantagem:</label>
+                <input type="text" id="formatoVantagem" name="formatoVantagem" placeholder="Ex: 4d20" required>
+                <br>
+                
+                <label for="numTotal">Dados de vantagem:</label>
+                <input type="number" id="numTotal" name="numTotal" min="1" value="0" required>
+                <br>
+
+                <hr>
+                <br>
+                
+                <label for="tipoDado1">Tipo de Dado 1:</label>
+                    <select id="tipoDado1" name="tipoDado1" required>
                         <option value="">Nenhum</option>
                         <option value="2">d2</option>
                         <option value="3">d3</option>
@@ -785,49 +763,70 @@
                         <option value="12">d12</option>
                         <option value="20">d20</option>
                     </select>
-                    <label for="numTipoDado2">Número:</label>
-                    <input type="number" id="numTipoDado2" name="numTipoDado2" min="0" value="0">
-                    <br>
+                <label for="numTipoDado1">Número:</label>
+                    <input type="number" id="numTipoDado1" name="numTipoDado1" min="1" value="1" required>
+                <br>
+                
+
+                <hr>
+                <br>
 
 
-                    <hr>
-                    <br>
-
-                    
-                    <label for="tipoDado3">Tipo de Dado 3 (opcional):</label>
-                    <select id="tipoDado3" name="tipoDado3">
-                        <option value="">Nenhum</option>
-                        <option value="2">d2</option>
-                        <option value="3">d3</option>
-                        <option value="4">d4</option>
-                        <option value="6">d6</option>
-                        <option value="8">d8</option>
-                        <option value="10">d10</option>
-                        <option value="12">d12</option>
-                        <option value="20">d20</option>
-                    </select>
-                    <label for="numTipoDado3">Número:</label>
-                    <input type="number" id="numTipoDado3" name="numTipoDado3" min="0" value="0">
-                    <br>
-                    
-                    
-                    <hr>
-                    <br>
+                <label for="tipoDado2">Tipo de Dado 2 (opcional):</label>
+                <select id="tipoDado2" name="tipoDado2">
+                    <option value="">Nenhum</option>
+                    <option value="2">d2</option>
+                    <option value="3">d3</option>
+                    <option value="4">d4</option>
+                    <option value="6">d6</option>
+                    <option value="8">d8</option>
+                    <option value="10">d10</option>
+                    <option value="12">d12</option>
+                    <option value="20">d20</option>
+                </select>
+                <label for="numTipoDado2">Número:</label>
+                <input type="number" id="numTipoDado2" name="numTipoDado2" min="0" value="0">
+                <br>
 
 
-                    <label for="somatorio">Somatório ao Número Total:</label>
-                    <input type="number" id="somatorio" name="somatorio" value="0" required>
-                    <br>
-                    
-                    <button type="button" onclick="rolarDados()">Rolar Dados</button>
-                    
-                    <h3>Resultado:</h3>
-                    <div id="resultadoRolagem"></div>
+                <hr>
+                <br>
+
+                
+                <label for="tipoDado3">Tipo de Dado 3 (opcional):</label>
+                <select id="tipoDado3" name="tipoDado3">
+                    <option value="">Nenhum</option>
+                    <option value="2">d2</option>
+                    <option value="3">d3</option>
+                    <option value="4">d4</option>
+                    <option value="6">d6</option>
+                    <option value="8">d8</option>
+                    <option value="10">d10</option>
+                    <option value="12">d12</option>
+                    <option value="20">d20</option>
+                </select>
+                <label for="numTipoDado3">Número:</label>
+                <input type="number" id="numTipoDado3" name="numTipoDado3" min="0" value="0">
+                <br>
+                
+                
+                <hr>
+                <br>
 
 
-                </div> 
-            </div>                                               
+                <label for="somatorio">Somatório ao Número Total:</label>
+                <input type="number" id="somatorio" name="somatorio" value="0" required>
+                <br>
+                
+                <button type="button" onclick="rolarDados()">Rolar Dados</button>
+                
+                <h3>Resultado:</h3>
+                <div id="resultadoRolagem"></div>
+
+
+            </div> 
         </div> 
+    </div>                                               
         <script src="https://apis.google.com/js/api.js" defer></script>
         <script>
             function handleGisLoaded() {
