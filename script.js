@@ -398,6 +398,8 @@ function openSubtab(tabName, subtabName) {
             document.getElementById('texto-nenhuma-habilidade').style.display = 'none';
         }
     }
+
+
 }
 
 // Funcao para verificar e exibir mensagem quando nenhuma habilidade está selecionada
@@ -497,7 +499,14 @@ function openSubtab(tab, subtab) {
 
     document.getElementById(subtab).classList.add('active');
     tabElement.querySelector(`div[onclick="openSubtab('${tab}', '${subtab}')"]`).classList.add('active');
+
+    // Se a aba for "Google", chama a verificação
+    if (subtab === 'Google') {
+        console.log('Acessando aba Google...');
+        verificarValidadeToken();
+    }
 }
+
 
 function limparHabilidades() {
     const escolhaHabilidadesDiv = document.getElementById('escolha-habilidades');
@@ -556,58 +565,85 @@ function atualizarStatus(status) {
     atualizarInfoPersonagem(Personagem)
 }
 
-
 function rolarDano(expressao) {
     let topico = window.topico;
-    // Remover espaços em branco e converter para minúsculas
+    // Remover espaços e converter para minúsculas
     expressao = expressao.replace(/\s/g, '').toLowerCase();
 
-    // Verificar se há um termo 'max' no início
-    let maximo = false;
-    if (expressao.startsWith('max')) {
-        maximo = true;
-        expressao = expressao.slice(3);
-    }
+    // Separar os termos por vírgula
+    const termosOriginais = expressao.split(',');
 
-    // Separar os termos de dano por vírgula
-    const termos = expressao.split(',');
+    let globalModificador = ''; // modificador global (se houver)
+    let termos = [];
 
-    // Preparar para armazenar o resultado total do dano
+    // Separa o modificador global (se presente) de algum termo
+    termosOriginais.forEach(termo => {
+        if (termo.indexOf(')') !== -1) {
+            // Separa o termo em duas partes: antes e depois do ')'
+            const partes = termo.split(')');
+            termos.push(partes[0]);
+            // Se já houver um global definido, concatenamos
+            globalModificador += partes[1];
+        } else {
+            termos.push(termo);
+        }
+    });
+
     let totalDano = 0;
     let rolagensTotais = [];
     let valoresIndividuais = [];
 
-    // Iterar sobre cada termo de dano
+    // Regex para identificar a notação: opcional "max", quantidade (opcional), d, faces, opcional "k", e modificadores
+    const regex = /^(max)?(\d*)d(\d+)(k?)([+-].+)?$/;
+
     termos.forEach(termo => {
-        const indexD = termo.indexOf('d');
-        let quantidade = 1; // Valor padrão
-        let faces = 0;
+        let localMax = false; // indica se para este termo os dados serão maximizados
+
+        const match = termo.match(regex);
+        if (!match) {
+            // Se não bate com o padrão de dados, tenta interpretar como número fixo
+            let valorFixo = parseFloat(termo);
+            if (isNaN(valorFixo)) {
+                throw new Error(`Expressão inválida: ${termo}`);
+            }
+            totalDano += valorFixo;
+            rolagensTotais.push({
+                expressao: termo,
+                rolagens: `${valorFixo}`,
+                totalTermo: valorFixo.toFixed(2)
+            });
+            valoresIndividuais.push(valorFixo);
+            return;
+        }
+
+        // Grupos do regex:
+        // match[1]: "max" (opcional)
+        // match[2]: quantidade (opcional, padrão 1 se vazio)
+        // match[3]: faces
+        // match[4]: "k" (opcional)
+        // match[5]: modificadores (opcional)
+        if (match[1] && match[1] === 'max') {
+            localMax = true;
+        }
+
+        let quantidade = match[2] ? parseInt(match[2]) : 1;
+        let faces = parseInt(match[3]);
+        let keepHighest = (match[4] === 'k');
+        let mods = match[5] || '';
+
+        // Processar modificadores deste termo
         let modificadoresFixos = 0;
         let modificadoresPercentuais = 0;
         let modText = '';
-
-        if (indexD !== -1) {
-            quantidade = parseInt(termo.slice(0, indexD)) || 1;
-            const restante = termo.slice(indexD + 1);
-
-            const match = restante.match(/^(\d+)(([+-]\d+|[+-]\d+%)*)$/);
-            if (match) {
-                faces = parseInt(match[1]) || 0;
-
-                const modificadores = match[2].match(/([+-]\d+%?|[+-]\d+)/g) || [];
-                modificadores.forEach(mod => {
-                    if (mod.endsWith('%')) {
-                        modificadoresPercentuais += parseInt(mod.slice(0, -1)) || 0;
-                        modText += mod;
-                    } else {
-                        modificadoresFixos += parseInt(mod) || 0;
-                        modText += mod;
-                    }
-                });
+        const modMatches = mods.match(/([+-]\d+%?)/g) || [];
+        modMatches.forEach(mod => {
+            modText += mod;
+            if (mod.endsWith('%')) {
+                modificadoresPercentuais += parseFloat(mod.slice(0, -1)) || 0;
+            } else {
+                modificadoresFixos += parseFloat(mod) || 0;
             }
-        } else {
-            faces = parseInt(termo) || 0;
-        }
+        });
 
         if (faces <= 0 || quantidade <= 0) {
             throw new Error(`Expressão inválida: ${termo}`);
@@ -616,43 +652,86 @@ function rolarDano(expressao) {
         let rolagens = [];
         let totalTermo = 0;
 
+        // Rolar os dados para este termo
         for (let i = 0; i < quantidade; i++) {
-            const rolagem = maximo ? faces : Math.floor(Math.random() * faces) + 1;
-            rolagens.push(rolagem);
-            totalTermo += rolagem;
-            valoresIndividuais.push(rolagem);
+            let valor;
+            // Se "max" foi especificado para este termo, usa o valor máximo para cada dado
+            if (localMax) {
+                valor = faces;
+            } else {
+                valor = Math.floor(Math.random() * faces) + 1;
+            }
+            rolagens.push(valor);
+            valoresIndividuais.push(valor);
+            // Se não for "keep highest", soma cada valor individualmente
+            if (!keepHighest) {
+                totalTermo += valor;
+            }
         }
 
-        totalTermo += modificadoresFixos;
+        // Se "k" foi utilizado, utiliza apenas o maior valor dentre os lançamentos
+        if (keepHighest) {
+            totalTermo = Math.max(...rolagens);
+        }
 
+        // Aplicar modificadores fixos e percentuais para o termo
+        totalTermo += modificadoresFixos;
         if (modificadoresPercentuais !== 0) {
-            const bonusPercentual = Math.floor(totalTermo * (modificadoresPercentuais / 100));
+            // O bônus percentual é calculado e somado ao total deste termo
+            const bonusPercentual = totalTermo * (modificadoresPercentuais / 100);
             totalTermo += bonusPercentual;
         }
+        // Arredonda o total do termo para 2 casas decimais
+        totalTermo = parseFloat(totalTermo.toFixed(2));
 
         totalDano += totalTermo;
-
         rolagensTotais.push({
-            expressao: `${quantidade}d${faces}${modText}`,
+            expressao: `${(match[2] ? match[2] : '1')}d${faces}${(keepHighest ? 'k' : '')}${modText}`,
             rolagens: rolagens.join(', '),
-            totalTermo: totalTermo
+            totalTermo: totalTermo.toFixed(2)
         });
     });
 
+    // Variáveis para armazenar os modificadores globais
+    let globalFixos = 0;
+    let globalPercentuais = 0;
+
+    // Aplicar modificador global, se houver
+    if (globalModificador) {
+        const globalMods = globalModificador.match(/([+-]?\d+%?)/g) || [];
+        globalMods.forEach(mod => {
+            if (mod.includes('%')) {
+                globalPercentuais += parseFloat(mod.replace('%', '')) || 0;
+            } else {
+                globalFixos += parseFloat(mod) || 0;
+            }
+        });
+        totalDano += globalFixos;
+        if (globalPercentuais !== 0) {
+            const bonusGlobal = totalDano * (globalPercentuais / 100);
+            totalDano += bonusGlobal;
+        }
+    }
+
+    // Arredonda o dano total para baixo (soma final)
+    const danoFinal = Math.floor(totalDano);
+
+    // Montar a mensagem final
     let mensagem = '';
     rolagensTotais.forEach(termo => {
-        mensagem += `Dano rolado (${termo.expressao}): ${termo.totalTermo} (${termo.rolagens})\n`;
+        mensagem += `Dado rolado (${termo.expressao}): ${termo.totalTermo} [(${termo.rolagens})]\n`;
     });
+    if (globalModificador) {
+        mensagem += `Modificadores globais aplicados: fixos = ${globalFixos}, percentuais = ${globalPercentuais}%\n`;
+    }
+    mensagem += "Dano total: " + danoFinal;
 
     if (typeof mostrarMensagem === 'function') {
         mostrarMensagem(mensagem);
     }
-
-    enviarFeedback(topico, totalDano, valoresIndividuais, expressao);
-
-    return mensagem + "Dano total: " + totalDano;
+    enviarFeedback(topico, danoFinal, valoresIndividuais, expressao);
+    return mensagem;
 }
-
 
 function rolarDadosSimples(expressao) {
     // Remover espaços em branco e converter para minúsculas

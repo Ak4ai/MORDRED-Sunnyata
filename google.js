@@ -477,5 +477,30 @@ function downloadFilesFromDrive() {
     });
 }
 
+function verificarValidadeToken() {
+    console.log('Verificando validade do token...');
+    const savedToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+    if (!savedToken) {
+        console.log('Nenhum token salvo encontrado. Usuário não está logado.');
+        return;
+    }
+
+    fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { 'Authorization': 'Bearer ' + savedToken }
+    })
+    .then(response => {
+        if (!response.ok) {
+            // Token inválido (ex: expirado ou revogado)
+            mostrarMensagem('Sua sessão do Google expirou. Por favor, clique em "Sign Out" e entre novamente.');
+        } else {
+            console.log('Token válido. Tudo está funcionando corretamente.');
+        }
+    })
+    .catch(err => {
+        console.error('Erro ao validar token do Google:', err);
+    });
+}
+
+
 
 
