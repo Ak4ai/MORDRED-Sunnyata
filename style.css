@@ -435,6 +435,7 @@ button:active {
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.553)52591; /* Cor de fundo da barra de título */
 }
+
 .dialog-container {
   border: 1px solid #999999;
   border-radius: 0.5rem;
@@ -447,13 +448,13 @@ button:active {
   transition: all ease 0.5s;
   width: 80vw; /* Largura igual a 80% da largura da tela */
   max-width: 600px; /* Largura máxima para manter o tamanho controlado */
-  height: 155px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: fixed; /* Fixa o container na tela */
-  top: 70%; /* Ajusta a distância do topo para 70% da altura da tela */
+  top: 65%; /* Ajusta a distância do topo para 70% da altura da tela */
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000; /* Garante que o diálogo fique acima de outros elementos */
@@ -464,7 +465,7 @@ button:active {
   margin-bottom: 20px;
   text-align: center;
   overflow-y: auto; /* Permite rolagem vertical se o texto ultrapassar o limite */
-  max-height: 80px; /* Define uma altura máxima para a área de texto */
+  max-height: 110px; /* Define uma altura máxima para a área de texto */
   width: 100%; /* Garante que o texto use toda a largura disponível */
   padding: 5px; /* Adiciona algum preenchimento interno */
   box-sizing: border-box; /* Inclui o padding e border no cálculo da largura e altura */
