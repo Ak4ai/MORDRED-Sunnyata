@@ -194,10 +194,19 @@ select:focus option:checked {
 }
 
 /* Ajuste para dispositivos móveis */
+@media (max-width: 400px) {
+  .tab, .subtab {
+    padding: 8px;
+    font-size: 11px !important;
+    max-width: 100%;
+  }
+}
+
+/* Ajuste para dispositivos móveis */
 @media (max-width: 768px) {
   .tab, .subtab {
     padding: 8px;
-    font-size: 14px;
+    font-size: 13px;
     max-width: 100%;
   }
 }
@@ -607,18 +616,188 @@ textarea:focus {
   display: none;
 }
 
-/* Apenas para desktop */
-@media (min-width: 1024px) {
+#pull-up-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  border:#24243e solid 2px;
+  height: 30px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.4);
+  z-index: 9999;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#black-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.518); /* preto semi-transparente */
+  backdrop-filter: blur(8px); /* aplica o desfoque */
+  -webkit-backdrop-filter: blur(8px); /* suporte para Safari */
+  z-index: 998;
+  display: none;
+}
+
+
+
+@media (max-width: 1023px) {
+  #essential-info,
+  #essential-info2 {
+    position: fixed;
+    left: 5vw !important;
+    box-shadow: 0 -2px 10px rgba(255, 255, 255, 0.2);
+    padding: 16px;
+    z-index: 999;
+    display: none;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(100%) !important;
+    max-width: none; /* remover limite anterior */
+    width: auto;
+  }
+
+  .abas-mostradas #black-overlay {
+    display: block;
+  }  
+
+  html, body {
+    height: auto;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Aba superior (posicionada com distâncias iguais à esquerda, direita e topo) */
   #essential-info {
-      display: block;
+    flex-direction: column !important;
+    align-items: center;
+    top: 1vh !important;
+    left: 5vw;
+    right: 6vw;
+    height: auto;
+    z-index: 1001;
+    width: auto; /* auto para respeitar os limites de left/right */
+  }
+
+  /* Aba inferior (mesma esquerda e direita, distância inferior igual ao topo do #essential-info) */
+  #essential-info2 {
+    position: fixed;
+    top: calc(1vh + 250px) !important;
+    left: 5vw;
+    right: 6vw;
+    bottom: 5vh;
+    max-height: none; /* <<< importante para evitar conflito */
+    height: calc(100vh - (8vh + 250px) - 8vh);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(100%) !important;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  } 
+
+  .textarea-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  #anotacoes {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    padding: 12px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    outline: none;
+    overflow-y: auto; /* Scroll interno */
+    max-height: 75%;
+    height: 100%;
+  }
+
+  #status-img {
+    height: 50%;
+    width: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.222);
+    border-radius: 3vw;
+  }
+
+  #essential-info .top-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  #essential-info img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  #essential-info .text-section {
+    flex: 1;
+  }
+
+  #essential-info h2 {
+    margin: 0;
+    font-size: 2.1em;
+  }
+
+  #essential-info h4 {
+    margin: 4px 0 0;
+    font-size: 1.5em;
+    font-weight: normal;
+  }
+
+  .status-item {
+    margin-bottom: 10px;
+  }
+
+  .status-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7em;
+  }
+
+  .status-bar {
+    width: 100%;
+    height: 10px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+
+  .abas-mostradas #essential-info,
+  .abas-mostradas #essential-info2 {
+    display: block;
+    transform: translateY(0) !important;
+    opacity: 1;
   }
 }
 
-@media (min-width: 1024px) {
-  #essential-info2 {
-      display: block;
-  }
-}
 
 .item-icon {
   width: 50px;

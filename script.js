@@ -218,6 +218,7 @@ function atualizarInfoPersonagem(Personagem) {
     if (imgElement) {
         imgElement.src = personagem.img || ''; // Define a URL da imagem ou uma string vazia
         window.imgpersonagem = personagem.img || ''; // Armazena a URL da imagem na variável global
+        atualizarIconeIndicador();
     } else {
         console.error('Elemento com ID "status-img" não encontrado no DOM.');
     }
@@ -1751,6 +1752,7 @@ async function carregarStatus() {
     mostrarMensagem(nome);
 
     window.imgpersonagem = document.getElementById('img').value.trim();
+    atualizarIconeIndicador();
     mostrarMensagem(window.imgpersonagem || 'Imagem do Personagem');
     console.log('MyAppLog: Imagem do personagem:', window.imgpersonagem);
 
@@ -2284,3 +2286,76 @@ document.getElementById('clear-data-btn').addEventListener('click', function() {
     // Forçar Hard Refresh (recarregar sem cache)
     location.reload(true);
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  let startY = 0;
+  let isAtBottom = false;
+  const indicator = document.getElementById('pull-up-indicator');
+
+  if (!indicator) return; // Evita erro se ainda assim não encontrar
+
+  window.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+    const windowHeight = window.innerHeight;
+    const scrollY = window.scrollY;
+    const bodyHeight = document.body.offsetHeight;
+    isAtBottom = (windowHeight + scrollY + 80) >= bodyHeight;
+
+    if (isAtBottom) {
+      indicator.style.opacity = '1';
+    }
+  });
+
+  window.addEventListener('touchmove', (e) => {
+    if (!isAtBottom) return;
+    const currentY = e.touches[0].clientY;
+    const distance = startY - currentY;
+    if (distance > 0 && distance < 100) {
+      indicator.style.transform = `translateX(-50%) translateY(${-distance / 2}px) scale(${1 + distance / 200})`;
+      indicator.style.opacity = `${Math.min(1, distance / 50)}`;
+    }
+  });
+
+  window.addEventListener('touchend', (e) => {
+    const endY = e.changedTouches[0].clientY;
+    const swipeDistance = startY - endY;
+
+    indicator.style.opacity = '0';
+    indicator.style.transform = 'translateX(-50%) scale(0.8)';
+
+    if (isAtBottom && swipeDistance > 280) {
+      document.body.classList.add('abas-mostradas');
+    }
+  });
+});
+
+
+
+// Fechar abas ao clicar fora
+document.addEventListener('click', function (event) {
+  const aba1 = document.getElementById('essential-info');
+  const aba2 = document.getElementById('essential-info2');
+
+  const clicouFora =
+    !aba1.contains(event.target) &&
+    !aba2.contains(event.target) &&
+    document.body.classList.contains('abas-mostradas');
+
+  if (clicouFora) {
+    document.body.classList.remove('abas-mostradas');
+  }
+});
+
+const indicador = document.getElementById('pull-up-indicator');
+
+// Define a imagem do personagem ou usa a imagem padrão
+const imagemPersonagem = window.imgpersonagem || 'https://i.pinimg.com/736x/cb/b1/ef/cbb1ef1ee0bf43d633393d7203a4d497.jpg';
+indicador.style.backgroundImage = `url('${imagemPersonagem}')`;
+
+function atualizarIconeIndicador() {
+    const indicador = document.getElementById('pull-up-indicator');
+    const imagemPersonagem = window.imgpersonagem || 'https://i.pinimg.com/736x/cb/b1/ef/cbb1ef1ee0bf43d633393d7203a4d497.jpg';
+    indicador.style.backgroundImage = `url('${imagemPersonagem}')`;
+}
+  

@@ -3,7 +3,7 @@
   <head>
       <link rel="icon" type="image/png" href="android-icon-192x192.png">
       <link rel="manifest" href="manifest.json">
-      <link rel="stylesheet" href="style.css?v=1.0.5">
+      <link rel="stylesheet" href="style.css?v=1.0.6">
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>M.O.R.D.R.E.D-Sunnyata</title>
@@ -48,41 +48,51 @@
             <button id="dialog-ok-button">OK</button>
         </div>
     </div>
+    <div id="pull-up-indicator"></div>
+    <div id="black-overlay"></div>
     <div id="essential-info" class="hidden">
-        <img id="status-img" alt="Essential Info Image">
-        <h2 id="status-nome"></h2>
-        <h4>Status Base:</h4>
+        <div class="top-section">
+          <img id="status-img" alt="Essential Info Image">
+          <div class="text-section">
+            <h2 id="status-nome"></h2>
+            <h4>Status Base:</h4>
+          </div>
+        </div>
+      
         <div class="status-item">
-            <div class="status-label">
-                <label>Vida:</label>
-                <span id="status-vida1">0 / 100</span>
-            </div>
-            <div class="status-bar">
-                <div class="status-bar-fill" id="status-bar-vida1" style="width: 0%;"></div>
-            </div>
+          <div class="status-label">
+            <label>Vida:</label>
+            <span id="status-vida1">0 / 100</span>
+          </div>
+          <div class="status-bar">
+            <div class="status-bar-fill" id="status-bar-vida1" style="width: 0%;"></div>
+          </div>
         </div>
         <div class="status-item">
-            <div class="status-label">
-                <label>Alma:</label>
-                <span id="status-alma1">0 / 100</span>
-            </div>
-            <div class="status-bar">
-                <div class="status-bar-fill" id="status-bar-alma1" style="width: 0%;"></div>
-            </div>
+          <div class="status-label">
+            <label>Alma:</label>
+            <span id="status-alma1">0 / 100</span>
+          </div>
+          <div class="status-bar">
+            <div class="status-bar-fill" id="status-bar-alma1" style="width: 0%;"></div>
+          </div>
         </div>
         <div class="status-item">
-            <div class="status-label">
-                <label>Defesa:</label>
-                <span id="status-escudo1">0 / 100</span>
-            </div>
-            <div class="status-bar">
-                <div class="status-bar-fill" id="status-bar-escudo1" style="width: 0%;"></div>
-            </div>
+          <div class="status-label">
+            <label>Defesa:</label>
+            <span id="status-escudo1">0 / 100</span>
+          </div>
+          <div class="status-bar">
+            <div class="status-bar-fill" id="status-bar-escudo1" style="width: 0%;"></div>
+          </div>
         </div>
-    </div>    
+    </div>         
     <div id="essential-info2" class="hidden">
         <h3>Anotações:</h3>
-        <textarea id="anotacoes" cols="120" placeholder="Escreva suas anotações aqui..." onchange="salvarAnotacoes()"></textarea>    </div>    
+        <div class="textarea-wrapper">
+          <textarea id="anotacoes" placeholder="Escreva suas anotações aqui..." onchange="salvarAnotacoes()"></textarea>
+        </div>
+    </div>         
     <div id="deviceready" class="blink"></div>
     <div class="container">
         <div class="tabs">
@@ -848,7 +858,7 @@
         </script>
         <script src="google.js?v=1.0.11" defer></script>
         <script src="https://accounts.google.com/gsi/client" async defer onload="handleGisLoaded()"></script>        
-        <script src="script.js?v=1.0.8" defer></script>
+        <script src="script.js?v=1.0.9" defer></script>
         <script src="inventario.js?=1.0.2" defer></script>      
         <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>  
     </body>
