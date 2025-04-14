@@ -1,31 +1,64 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <link rel="icon" type="image/png" href="android-icon-192x192.png">
-      <link rel="manifest" href="manifest.json">
-      <link rel="stylesheet" href="style.css?v=1.0.6">
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>M.O.R.D.R.E.D-Sunnyata</title>
-      <meta name="theme-color" content="#29243e"> <!-- Android -->
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- iOS -->
-      <style>
-          body {
-              font-family: 'Open Sans', sans-serif;
-          }
-          .container {
-              max-width: 600px;
-              margin: 0 auto;
-          }
-      </style>
-      <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self'; 
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://apis.google.com https://www.gstatic.com https://accounts.google.com https://cdn.jsdelivr.net; 
-      style-src 'self' 'unsafe-inline'; 
-      connect-src https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com ws://127.0.0.1:5501 https://backmordred.vercel.app https://apis.google.com https://www.google.com; 
-      img-src 'self' https://i.pinimg.com https://csi.gstatic.com https://lh3.googleusercontent.com https://media.discordapp.net data:; 
-      frame-src https://accounts.google.com https://content.googleapis.com https://content-people.googleapis.com;">
-        </head>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <link rel="icon" type="image/png" href="android-icon-192x192.png">
+        <link rel="manifest" href="manifest.json">
+        <link rel="stylesheet" href="style.css?v=1.0.6">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>M.O.R.D.R.E.D-Sunnyata</title>
+        <meta name="theme-color" content="#29243e"> <!-- Android -->
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- iOS -->
+        <style>
+            body {
+                font-family: 'Open Sans', sans-serif;
+            }
+        </style>
+        <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://apis.google.com https://www.gstatic.com https://accounts.google.com https://cdn.jsdelivr.net https://www.youtube.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        font-src 'self' https://cdnjs.cloudflare.com;
+        connect-src https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com ws://127.0.0.1:5501 https://backmordred.vercel.app https://apis.google.com https://www.google.com https://firestore.googleapis.com;
+        img-src 'self' https://i.pinimg.com https://csi.gstatic.com https://lh3.googleusercontent.com https://media.discordapp.net https://i.ytimg.com data:;
+        frame-src https://accounts.google.com https://content.googleapis.com https://content-people.googleapis.com https://www.youtube.com https://www.youtube-nocookie.com;">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+        <!-- Firebase App -->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+            // e continue seu código aqui
+        </script>
+        <!-- Firestore -->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+            import {
+              getFirestore, doc, setDoc, updateDoc, onSnapshot
+            } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";        </script>
+        <!-- Firebase Archive -->
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+        
+        <script>
+          const firebaseConfig = {
+            apiKey: "AIzaSyBTqNSXSGTD0uA7GtjdF-6oQsETq61YgUs",
+            authDomain: "mordred-f7ea1.firebaseapp.com",
+            projectId: "mordred-f7ea1",
+            storageBucket: "mordred-f7ea1.firebasestorage.app",
+            messagingSenderId: "248130349710",
+            appId: "1:248130349710:web:b2b3b0af3528627de7f7df",
+            measurementId: "G-GC5Z4S28R2"
+          };
+        
+          const app = firebase.initializeApp(firebaseConfig);
+          const db = firebase.firestore();
+          const videoDocRef = db.collection("sync").doc("videoStatus"); // Compatível com compat
+          console.log("Firebase (compat) carregado com sucesso!");
+          
+        </script>
+        <script src="https://www.youtube.com/iframe_api"></script>
+    </head>
   <body>
     <script>
       if ('serviceWorker' in navigator) {
@@ -50,6 +83,44 @@
     </div>
     <div id="pull-up-indicator"></div>
     <div id="black-overlay"></div>
+    <div id="mapa-container">
+        <div id="tabuleiro-wrapper">
+            <div id="tabuleiro-inner">
+                <div id="tabuleiro-bg"></div> <!-- A imagem de fundo vem ANTES da grid -->
+                <div id="tabuleiro"></div> <!-- Apenas a grid -->
+                <div id="token-layer"></div> <!-- Tokens ficam aqui -->
+            </div>
+        </div>
+    </div>      
+    <button id="toggle-container"><i class="fa-solid fa-arrows-to-eye"></i></button>
+    <!-- Container da barra de fichas -->
+    <div id="barra-fichas"></div>
+    <div id="zoom-controls">
+        <button id="zoom-in"><i class="fa-solid fa-plus"></i></button>
+        <button id="zoom-out"><i class="fa-solid fa-minus"></i></button>
+    </div>      
+    <div class="player-container">
+        <div id="togglevideoPlayer" class="togglevideo-button"><i class="fa-solid fa-chevron-down"></i></div>
+    
+        <!-- Novo agrupamento -->
+        <div class="link-and-button">
+            <input type="text" id="youtubeLink" placeholder="Cole o link do YouTube aqui" />
+            <button id="loadVideo"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+    
+        <div id="youtubePlayer"></div>
+    
+        <!-- Controles -->
+        <div id="controls">
+            <button id="playPauseButton"><i class="fa-solid fa-play"></i></button>
+            <button id="skipButton"><i class="fa-solid fa-forward-step"></i></button>
+            <button id="unskipButton"><i class="fa-solid fa-backward-step"></i></button>
+        </div>
+    
+        <div id="volumeContainer">
+            <input type="range" id="volumeControl" min="0" max="100" step="1" value="100" />
+        </div>
+    </div>    
     <div id="essential-info" class="hidden">
         <div class="top-section">
           <img id="status-img" alt="Essential Info Image">
@@ -856,9 +927,12 @@
                     }
             }
         </script>
+        <script src="https://www.youtube.com/iframe_api"></script>
         <script src="google.js?v=1.0.11" defer></script>
+        <script src="youtube.js?v=1.0.11" defer></script>
         <script src="https://accounts.google.com/gsi/client" async defer onload="handleGisLoaded()"></script>        
         <script src="script.js?v=1.0.9" defer></script>
+        <script src="map.js?v=1.0.2" defer></script>
         <script src="inventario.js?=1.0.2" defer></script>      
         <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>  
     </body>

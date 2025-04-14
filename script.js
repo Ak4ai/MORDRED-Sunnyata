@@ -207,6 +207,20 @@ class Personagem {
     }
 }
 
+function atualizarBarra(id, valor, max) {
+    const barra = document.getElementById(id);
+    const barraContainer = barra.parentElement;
+    const percentual = (valor / max) * 100;
+  
+    if (barraContainer.classList.contains('vertical')) {
+      barra.style.height = percentual + '%';
+      barra.style.width = '100%';
+    } else {
+      barra.style.width = percentual + '%';
+      barra.style.height = '100%';
+    }
+}
+
 function atualizarInfoPersonagem(Personagem) {
     if (!personagem) {
         console.error('O objeto "personagem" está indefinido ou nulo.');
@@ -235,12 +249,14 @@ function atualizarInfoPersonagem(Personagem) {
     document.getElementById('status-agilidade').innerText = personagem.agilidade;
 
     // Dentro de atualizarInfoPersonagem(Personagem)
-    document.getElementById('status-bar-vida1').style.width = (personagem.vida / personagem.vidaMax) * 100 + '%';
-    document.getElementById('status-bar-vida').style.width = (personagem.vida / personagem.vidaMax) * 100 + '%';
-    document.getElementById('status-bar-alma1').style.width = (personagem.alma / personagem.almaMax) * 100 + '%';
-    document.getElementById('status-bar-alma').style.width = (personagem.alma / personagem.almaMax) * 100 + '%';
-    document.getElementById('status-bar-escudo1').style.width = (personagem.escudo / personagem.escudoMax) * 100 + '%';
-    document.getElementById('status-bar-escudo').style.width = (personagem.escudo / personagem.escudoMax) * 100 + '%';
+    atualizarBarra('status-bar-vida1', personagem.vida, personagem.vidaMax);
+    atualizarBarra('status-bar-vida', personagem.vida, personagem.vidaMax);
+    
+    atualizarBarra('status-bar-alma1', personagem.alma, personagem.almaMax);
+    atualizarBarra('status-bar-alma', personagem.alma, personagem.almaMax);
+    
+    atualizarBarra('status-bar-escudo1', personagem.escudo, personagem.escudoMax);
+    atualizarBarra('status-bar-escudo', personagem.escudo, personagem.escudoMax);    
 
     const pericias = personagem.getPericias();
     document.getElementById('status-pericia-destreza').innerText = pericias.destreza;
@@ -1771,6 +1787,43 @@ async function carregarStatus() {
         console.error('MyAppLog: Erro ao carregar status do personagem:', JSON.stringify(error));
         mostrarMensagem('Erro ao carregar status do personagem.');
     }
+
+    carregarFichasNaBarra();
+}
+
+async function carregarStatusPorNome(nome) {
+    if (!nome) {
+        alert('Nome inválido do personagem.');
+        return;
+    }
+
+    window.nomepersonagem = nome;
+    document.getElementById('status-nome').textContent = window.nomepersonagem || 'Nome do Personagem';
+
+    try {
+        const data = localStorage.getItem(`${nome}-personagem`);
+        if (data) {
+            const personagemData = JSON.parse(data);
+            personagem = new Personagem(personagemData);
+
+            window.imgpersonagem = personagemData.img || '';
+            document.getElementById('img').value = window.imgpersonagem;
+
+            atualizarIconeIndicador();
+            console.log('MyAppLog: Imagem do personagem:', window.imgpersonagem);
+
+            atualizarInfoPersonagem(personagem); // Atualiza a interface com os dados do personagem
+            carregarHabilidades(nome); // Carrega habilidades
+        } else {
+            throw new Error('Dados não encontrados.');
+        }
+    } catch (error) {
+        console.error('MyAppLog: Erro ao carregar status do personagem:', JSON.stringify(error));
+        mostrarMensagem('Erro ao carregar status do personagem.');
+    }
+
+    carregarFichasNaBarra(); // Atualiza a barra após carregar
+    toggleButton.click();
 }
 
 
@@ -1947,9 +2000,9 @@ async function carregarHabilidades(nomePersonagem) {
         if (data) {
             habilidadesData = await carregarDados(key);
             exibirHabilidades(habilidadesData);
-            mostrarMensagem('Dados das habilidades recebidos.');
+            //mostrarMensagem('Dados das habilidades recebidos.');
             console.log('Dados das habilidades recebidos:', habilidadesData);
-            mostrarMensagem(JSON.stringify(habilidadesData, null, 2));
+            //mostrarMensagem(JSON.stringify(habilidadesData, null, 2));
         } else {
             throw new Error('Dados não encontrados.');
         }
@@ -2130,14 +2183,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Executa a função no carregamento e no redimensionamento da janela
     checkWindowSize();
     window.addEventListener("resize", checkWindowSize);
-
-    // Define a posição inicial no meio da tela
-    function setInitialPosition() {
-        essentialInfo2.style.position = 'fixed';
-        essentialInfo2.style.top = '50%';
-        essentialInfo2.style.transform = 'translateY(-50%)';
-        essentialInfo2.style.transition = 'none'; // Sem transição inicial
-    }
 
     setInitialPosition();
 
@@ -2358,4 +2403,72 @@ function atualizarIconeIndicador() {
     const imagemPersonagem = window.imgpersonagem || 'https://i.pinimg.com/736x/cb/b1/ef/cbb1ef1ee0bf43d633393d7203a4d497.jpg';
     indicador.style.backgroundImage = `url('${imagemPersonagem}')`;
 }
+  
+function carregarFichasNaBarra() {
+    const barra = document.getElementById('barra-fichas');
+    barra.innerHTML = ''; // Limpa
+  
+    let fichaCheckada = null;
+    const outrasFichas = [];
+  
+    // Busca fichas válidas
+    for (let i = 0; i < localStorage.length; i++) {
+      const chave = localStorage.key(i);
+      if (chave.includes('-personagem')) {
+        const dados = JSON.parse(localStorage.getItem(chave));
+        if (dados.check === 1 && !fichaCheckada) {
+          fichaCheckada = { chave, dados };
+        } else {
+          outrasFichas.push({ chave, dados });
+        }
+      }
+    }
+  
+    window.totalFichas = (fichaCheckada ? 1 : 0) + outrasFichas.length;
+  
+    if (totalFichas < 2) {
+      barra.style.display = 'none';
+      return;
+    }
+  
+    barra.style.display = 'none';
+  
+    let iconesAdicionados = 0;
+  
+    // Adiciona ficha marcada com check: 1
+    if (fichaCheckada) {
+      const nome = fichaCheckada.chave.replace('-personagem', '');
+      const img = document.createElement('img');
+      img.src = fichaCheckada.dados.img;
+      img.alt = nome;
+      img.className = 'ficha-icone';
+      img.addEventListener('click', () => {
+        carregarStatusPorNome(nome);
+      });
+      barra.appendChild(img);
+    }
+  
+    // Adiciona divisor se necessário
+    if (fichaCheckada && outrasFichas.length) {
+      const divisor = document.createElement('div');
+      divisor.className = 'divisor-vertical';
+      barra.appendChild(divisor);
+    }
+  
+    // Adiciona outras fichas
+    for (let i = 0; i < outrasFichas.length; i++) {
+      const { chave, dados } = outrasFichas[i];
+      const nome = chave.replace('-personagem', '');
+      const img = document.createElement('img');
+      img.src = dados.img || 'https://via.placeholder.com/48';
+      img.alt = nome;
+      img.className = 'ficha-icone';
+      img.addEventListener('click', () => {
+        carregarStatusPorNome(nome);
+      });
+      barra.appendChild(img);
+    }
+}
+  
+window.addEventListener('DOMContentLoaded', carregarFichasNaBarra);
   

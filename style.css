@@ -1,9 +1,10 @@
 html, body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: #24243e; /* Cor de fundo */
   overflow-x: hidden; /* Evita o scroll horizontal */
+  overflow-y: hidden;
 }
 
 body {
@@ -15,21 +16,26 @@ body {
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  overflow: hidden;
 }
 
 .container {
-  border: 1px solid #999;
+  position:absolute;
   color: #c9c9da;
-  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
-  padding: 20px;
+  top: 1vh;
+  bottom: 1vh;
+  box-shadow: 2px 2px 5px rg  ba(255, 255, 255, 0.3);
+  padding: 25px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.222);
   background-color: #29254091;
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   transition: all ease .2s;
   max-width: 600px;
-  width: 80%;
-  margin: 20px;
+  width: 80vw;
+  overflow-y: auto; /* Permite rolagem vertical se o conteúdo ultrapassar a altura máxima */
+  overflow-x: hidden;
 }
 
 
@@ -426,24 +432,31 @@ button:active {
 /* Estilos para a barra de rolagem */
 ::-webkit-scrollbar {
   width: 8px; /* Largura da barra de rolagem */
+  height: 8px;
   background-color: #2b254091; /* Cor de fundo da barra de título */
 }
 
 /* Track (parte de fundo da barra de rolagem) */
 ::-webkit-scrollbar-track {
+  border-radius: 8px;;
   background-color: #29254091; /* Cor de fundo da barra de título */
 }
 
 /* Thumb (parte deslizante da barra de rolagem) */
 ::-webkit-scrollbar-thumb {
-  background-color: #25254091; /* Cor de fundo da barra de título */
-  border-radius: 4px; /* Borda arredondada do thumb */
+  background-color: #6e6e9891; /* Cor de fundo da barra de título */
+  border-radius: 43px; /* Borda arredondada do thumb */
 }
 
 /* Hover state do thumb */
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.553)52591; /* Cor de fundo da barra de título */
 }
+/* Estiliza o canto onde o scroll horizontal e vertical se encontram */
+::-webkit-scrollbar-corner {
+  background-color: #29254091; /* Mesma cor do track ou do fundo */
+}
+
 
 .dialog-container {
   border: 1px solid #999999;
@@ -532,8 +545,9 @@ textarea:focus {
 
 /* Estilos para a aba de informações essenciais */
 #essential-info {
-  left: 6%; /* Centraliza horizontalmente */
+  right: 6%; /* Centraliza horizontalmente */
   transform: translate(-50%, -50%); /* Ajusta para centralizar corretamente */
+  transition: top 0.5s ease, opacity 0.5s ease;
   position: fixed;
   top: 50%; /* Posição inicial no meio da tela */
   padding: 20px;
@@ -541,8 +555,8 @@ textarea:focus {
   z-index: 998;
   display: block;
   border: 1px solid rgba(255, 255, 255, 0.222);
+  border-radius: 8px;
   color: #c9c9da;
-  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
   background-color: #2b254091;
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
@@ -550,6 +564,104 @@ textarea:focus {
   max-width: 200px;
   width: 50%;
   margin: 20px;
+}
+
+/* Container geral vertical */
+#essential-info.vertical {
+  position: fixed;
+  top: 0;
+  left: 7px; /* Isso garante que gruda na borda esquerda */
+  margin: 0; /* Remove qualquer espaçamento externo */
+  padding: 0; /* Remove qualquer espaçamento interno */  height: auto;
+  width: 4vw; /* ou use 5vw se quiser responsivo */
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10px;
+  z-index: 999;
+  overflow: hidden;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  box-shadow: none;
+}
+
+/* Imagem do personagem */
+#essential-info.vertical #status-img {
+  height: 3.5vw;
+  width: 3.5vw;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  border: #ffffff solid 2px;
+}
+
+#essential-info.vertical #status-img img {
+  height: 100%;
+  width: 100%;
+  border-radius: 5px;
+  border:#ffffff solid 3px;
+}
+
+/* Esconde a seção de texto padrão */
+#essential-info.vertical .text-section {
+  display: none;
+}
+
+/* Item de status (cada vida/alma/escudo) */
+#essential-info.vertical .status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#essential-info.vertical .status-label label {
+  display: none;
+}
+
+/* Label vertical */
+#essential-info.vertical .status-label {
+  text-align: center;
+  margin-bottom: 8px;
+  color: white;
+  font-weight: bold;
+}
+
+/* Barra de status vertical */
+.status-bar.vertical {
+  width: 14px;
+  height: 100px;
+  border: 1px solid white;
+  background-color: #444;
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* Preenchimento da barra */
+.status-bar.vertical .status-bar-fill {
+  width: 100%;
+  height: 0%;
+  transition: height 0.3s ease;
+}
+
+.status-bar.vertical #status-bar-vida1 {
+  background-color: #40253591;
+}
+
+.status-bar.vertical #status-bar-alma1 {
+  background-color: #25403a91;
+}
+
+.status-bar.vertical #status-bar-escudo1 {
+  background-color: #29254091;
 }
 
 .teste-habilidade-container {
@@ -574,25 +686,48 @@ textarea:focus {
 
 /* Estilos para a aba de informações essenciais */
 #essential-info2 {
-  left: 71.5%; /* Centraliza horizontalmente */
+  border-radius: 8px;
+  left: 1rem; /* Centraliza horizontalmente */
+  bottom: 1rem;
   text-align: center;
-  transform: translate(-50%, -50%); /* Ajusta para centralizar corretamente */
   position: fixed;
-  top: 50%; /* Posição inicial no meio da tela */
-  padding: 20px;
+  padding: 1rem;
   overflow-y: auto;
   z-index: 998;
   display: block;
   border: 1px solid rgba(255, 255, 255, 0.222);
   color: #c9c9da;
-  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  box-shadow: 2px 2px 5px rgba(41, 35, 35, 0.3);
   background-color: #2b254091;
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   transition: top 0.5s ease; /* Adiciona uma transição suave para a propriedade 'top' */
-  max-width: 350px;
-  width: 50%;
-  margin: 20px;
+  width: 25vw;
+}
+
+#essential-info2 textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  background-color: #26243e80;
+  color: #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  resize: vertical;
+  height: auto;
+  max-height: calc(54vh + 5vh);
+  min-height: calc(54vh + 5vh);
+  overflow-y: auto;
+}
+
+#essential-info2 textarea:focus {
+  border: 1px solid rgb(255, 255, 255);
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 #status-img {
@@ -672,29 +807,46 @@ textarea:focus {
 
   html, body {
     height: auto;
-    overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
+  }
+
+  #essential-info2 textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.222);
+    background-color: #26243e80;
+    color: #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    resize: vertical;
+    height: auto;
+    max-height: 35vh !important;
+    min-height: 0px !important;
+    overflow-y: auto;
   }
 
   /* Aba superior (posicionada com distâncias iguais à esquerda, direita e topo) */
   #essential-info {
     flex-direction: column !important;
     align-items: center;
-    top: 1vh !important;
-    left: 5vw;
-    right: 6vw;
+    top: 6vh !important;
+    left: 6vw !important;
+    right: 6vw !important;
     height: auto;
     z-index: 1001;
-    width: auto; /* auto para respeitar os limites de left/right */
+    margin: 0 !important;  
   }
 
   /* Aba inferior (mesma esquerda e direita, distância inferior igual ao topo do #essential-info) */
   #essential-info2 {
     position: fixed;
-    top: calc(1vh + 250px) !important;
-    left: 5vw;
-    right: 6vw;
-    bottom: 5vh;
+    margin: 0 !important;
+    left: 6vw !important;
+    right: 6vw !important;
+    bottom: 2vh;
     max-height: none; /* <<< importante para evitar conflito */
     height: calc(100vh - (8vh + 250px) - 8vh);
     display: flex;
@@ -1173,4 +1325,451 @@ textarea:focus {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+#zoom-controls {
+  position: fixed;
+  bottom: 1rem;
+  right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+}
+
+#zoom-controls button {
+  padding: 8px 12px;
+  font-size: 1vw;
+  background-color: #292540b6;
+  border: #fff 3px solid;
+  backdrop-filter: blur(20px);
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#toggle-container {
+  position: fixed;
+  top: 1rem;
+  right: 0.5vw;
+  z-index: 50;
+  background-color: #292540b6;
+  backdrop-filter: blur(20px);
+  color: #fff;
+  border: #fff 3px solid;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.25vw;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+#toggle-container:hover {
+  opacity: 1;
+}
+
+#toggle-container:active {
+  transform: scale(0.95);
+  background-color: #7d76a6b8;
+}
+
+#mapa-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  background-color: #1b1b1bb6;
+  z-index: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#token-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
+  border: #0F9D58 solid 2px;
+}
+
+#tabuleiro-wrapper {
+  position: absolute;
+  top: 3vh;
+  bottom: 3vh;
+  right: 5vw;
+  left: 5vw;
+  overflow: auto;
+  background-color: #312f2f;
+  box-shadow: 0 0 10px #000;
+  border: #363441 solid 10px;
+}
+
+#tabuleiro-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(64px * 50);
+  height: calc(64px * 50);
+  transform-origin: top left;
+}
+
+/* Imagem solta no fundo */
+#tabuleiro-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: #ffffff solid 2px;
+  background-image: url('https://i.pinimg.com/736x/92/78/8c/92788cbbeb2a6d4a944737b4fc45155d.jpg');
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: contain;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Apenas a grid */
+#tabuleiro {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(50, 64px);
+  grid-template-rows: repeat(50, 64px);
+  will-change: transform;
+}
+
+#tabuleiro > div {
+  width: 64px;
+  height: 64px;
+  background-color: #2a2a2a00;
+  border: 1px solid #444;
+}
+
+#token-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+  touch-action: none;
+}
+
+
+.token {
+  border: #ccc solid 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #000;
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  pointer-events: auto;
+  transition: all 0.05s ease;
+}
+
+.token-wrapper {
+  position: absolute;
+  border: 1px dashed rgba(0, 0, 0, 0.3);
+  transform-origin: center;
+}
+
+.token.selected::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: inherit;
+  border-radius: inherit;
+  filter: drop-shadow(0 0 4px white) drop-shadow(0 0 8px white);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.token.selected:has(.resize-handle) {
+  border: white solid 1px;
+}
+
+.resize-handle {
+  width: 10px;
+  height: 10px;
+  background: white;
+  border: 2px solid black;
+  position: absolute;
+  z-index: 10;
+}
+
+.resize-handle.top-left {
+  top: -5px;
+  left: -5px;
+  cursor: nwse-resize;
+}
+
+.resize-handle.top-right {
+  top: -5px;
+  right: -5px;
+  cursor: nesw-resize;
+}
+
+.resize-handle.bottom-left {
+  bottom: -5px;
+  left: -5px;
+  cursor: nesw-resize;
+}
+
+.resize-handle.bottom-right {
+  bottom: -5px;
+  right: -5px;
+  cursor: nwse-resize;
+}
+
+.context-menu {
+  background-color: #27243e80;
+  backdrop-filter: blur(20px);
+  border: 1px solid #ccc;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-radius: 4px;
+}
+.context-menu ul {
+  margin: 0;
+  padding: 10px;
+  list-style: none;
+}
+.context-menu li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.context-menu li:hover {
+  background-color: #27243e80;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+
+
+
+
+
+.player-container {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 25vw;
+  z-index: 1000;
+  background-color: #27243e80;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  border-radius: 8px;
+  padding: 1rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 1023px) {
+  .player-container {
+    display: none !important;
+  }
+}
+
+#youtubeLink {
+  padding: 8px;
+  font-size: 0.9rem;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #1e1e1e;
+  color: white;
+  height: 4vh;
+}
+
+#loadVideo {
+  padding: 8px;
+  font-size: 0.9rem;
+  width: 20%;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #1e1e1e;
+  color: white;
+  margin: 0;
+  height: 4vh;
+
+}
+
+.link-and-button {
+  display: flex;
+  margin-bottom: -10px;
+  gap: 5px;
+  
+} 
+
+#loadVideo:hover {
+  background-color: #27243e80;
+}
+
+#youtubePlayer {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  border : 1px solid #ffffff;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.togglevideo-button {
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.5rem;
+  background-color: #27243e80;
+  border: #9390ad3f solid 2px;
+  border-radius: 4px;
+  width: 100%;
+  height: 5px;
+  color: white;
+  padding-bottom: 5px;
+  transition: transform 0.2s ease;
+}
+
+.player-hidden #youtubePlayer {
+  display: none;
+}
+
+#controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#playPauseButton, #skipButton, #unskipButton {
+  background-color: #27243e80;
+  color: white;
+  border: none;
+  width: 100%;
+  margin : 0;
+  gap: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#playPauseButton:hover, #skipButton:hover, #unskipButton:hover {
+  background-color: #9390ad3f;
+}
+
+#volumeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+#volumeControl {
+  width: 100%;
+  border: #ffffff solid 1px;
+  appearance: none;
+  height: 3px;
+  max-height: 4px;
+  border-radius: 15px;
+  background-color: rgb(151, 147, 175);
+}
+
+#volumeControl::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+#volumeControl::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #67628b;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#volumeControl::-webkit-slider-thumb:hover {
+  background: #ccc;
+}
+
+#volumeControl::-moz-range-thumb {
+  width: 4px;
+  height: 4px;
+  background: #27243e;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#volumeControl::-moz-range-thumb:hover {
+  background: #fbfbfb;
+}
+
+#volumeControl:focus {
+  background: #ffffffb4;
+}
+
+#barra-fichas {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #27243e88;
+  backdrop-filter: blur(5px);
+  border: #ccc solid 3px;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  align-items: center;
+  max-width: 80vw;
+  overflow-x: auto;
+  overflow-y: hidden; /* Garante que só tenha rolagem horizontal */
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.ficha-icone {
+  width: 48px;
+  height: 48px;
+  border-radius: 1rem;
+  border: 2px solid #ccc;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.ficha-icone:hover {
+  transform: scale(1.1);
+}
+
+.divisor-vertical {
+  width: 2px;
+  height: 48px;
+  background-color: #ccc;
+  display: inline-block;
+  border-radius: 28%;
+  margin: 0 0.5rem;
+  flex-shrink: 0;
+}
+
+
+#barra-fichas::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
