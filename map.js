@@ -23,7 +23,7 @@ const essentialInfo = document.getElementById('essential-info');
 const playerContainer = document.querySelector('.player-container');
 const barrafichas = document.getElementById('barra-fichas');
 let hidden = false;
-
+let backgroundChecked = true; // ← Essa flag deve ser controlada por algum checkbox ou opção no menu.
 
 toggleButton.addEventListener('click', () => {
     hidden = !hidden;
@@ -91,73 +91,77 @@ const cellSize = 100; // ← Adicione esta linha
 
   
 document.addEventListener('mousemove', (e) => {
-    if (resizing && selectedToken && currentHandle) {
-        const dx = (e.clientX - initialMouseX) / zoomLevel;
-        const dy = (e.clientY - initialMouseY) / zoomLevel;
-  
+  if (resizing && selectedToken && currentHandle) {
+      // Calcula os deltas convertendo para coordenadas lógicas
+      const dx = (e.clientX - initialMouseX) / zoomLevel;
+      const dy = (e.clientY - initialMouseY) / zoomLevel;
+
       let newWidth = initialWidth;
       let newHeight = initialHeight;
       let newLeft = initialLeft;
       let newTop = initialTop;
-  
+
       if (currentHandle.classList.contains('bottom-right')) {
-        newWidth += dx;
-        newHeight += dy;
+          newWidth += dx;
+          newHeight += dy;
       } else if (currentHandle.classList.contains('bottom-left')) {
-        newWidth -= dx;
-        newHeight += dy;
-        newLeft += dx;
+          newWidth -= dx;
+          newHeight += dy;
+          newLeft += dx;
       } else if (currentHandle.classList.contains('top-right')) {
-        newWidth += dx;
-        newHeight -= dy;
-        newTop += dy;
+          newWidth += dx;
+          newHeight -= dy;
+          newTop += dy;
       } else if (currentHandle.classList.contains('top-left')) {
-        newWidth -= dx;
-        newHeight -= dy;
-        newLeft += dx;
-        newTop += dy;
+          newWidth -= dx;
+          newHeight -= dy;
+          newLeft += dx;
+          newTop += dy;
       }
-  
-      // Aplicar novas dimensões e posição
+
+      // Aplicar novas dimensões e posição sem multiplicar pelo zoom novamente
       selectedToken.style.width = `${newWidth}px`;
-      selectedToken.style.height = `${newHeight}px`;
+      selectedToken.style.height = `${newHeight}px`;      
       selectedToken.style.left = `${newLeft}px`;
-      selectedToken.style.top = `${newTop}px`;
+      selectedToken.style.top = `${newTop}px`;      
       selectedToken.style.lineHeight = `${newHeight}px`; // manter emoji centralizado
-    } else if (selectedToken && !resizing) {
+  } else if (selectedToken && !resizing) {
       // Movimento padrão
       const wrapperRect = tokenLayer.getBoundingClientRect();
       const x = (e.clientX - wrapperRect.left) / zoomLevel - offsetX;
       const y = (e.clientY - wrapperRect.top) / zoomLevel - offsetY;      
-  
+
       selectedToken.style.left = `${x}px`;
       selectedToken.style.top = `${y}px`;
-    }
+  }
 });
+
   
   
 // Selecionar token ao clicar nele
 tokenLayer.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('token')) return;
+  // Verifica se o clique foi num token ou num background
+  if (!e.target.classList.contains('token') && !e.target.classList.contains('background-img')) return;
   
-    // Remover seleção de outros tokens e âncoras
-    const tokens = document.querySelectorAll('.token');
-    tokens.forEach(t => {
-      t.classList.remove('selected');
-      const handles = t.querySelectorAll('.resize-handle');
-      handles.forEach(h => h.remove());
-    });
-  
-    // Adicionar seleção ao token clicado
-    e.target.classList.add('selected');
-  
-    // Criar âncoras visuais (apenas 4 cantos)
-    ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(pos => {
-      const handle = document.createElement('div');
-      handle.classList.add('resize-handle', pos);
-      e.target.appendChild(handle);
-    });
+  // Remove a seleção de todos os tokens e backgrounds, removendo também seus handles
+  const selecionados = tokenLayer.querySelectorAll('.token.selected, .background-img.selected');
+  selecionados.forEach(el => {
+    el.classList.remove('selected');
+    const handles = el.querySelectorAll('.resize-handle');
+    handles.forEach(handle => handle.remove());
+  });
+
+  // Adiciona a classe de seleção ao elemento clicado
+  e.target.classList.add('selected');
+
+  // Cria âncoras (handles) para redimensionamento para os 4 cantos
+  ['top-left', 'top-right', 'bottom-left', 'bottom-right'].forEach(pos => {
+    const handle = document.createElement('div');
+    handle.classList.add('resize-handle', pos);
+    e.target.appendChild(handle);
+  });
 });
+
   
 tokenLayer.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains('resize-handle')) {
@@ -172,8 +176,8 @@ tokenLayer.addEventListener('mousedown', (e) => {
   
       initialMouseX = e.clientX;
       initialMouseY = e.clientY;
-      initialWidth = rect.width;
-      initialHeight = rect.height;
+      initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
+      initialTop = (rect.top - wrapperRect.top) / zoomLevel;
       initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
       initialTop = (rect.top - wrapperRect.top) / zoomLevel;
   
@@ -357,94 +361,15 @@ tokenLayer.addEventListener('mousedown', (e) => {
 
     initialMouseX = e.clientX;
     initialMouseY = e.clientY;
-    initialWidth = rect.width;
-    initialHeight = rect.height;
+    initialWidth = rect.width / zoomLevel;
+    initialHeight = rect.height / zoomLevel;    
     initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
     initialTop = (rect.top - wrapperRect.top) / zoomLevel;
   }
 });
+const tabuleiroBG = document.getElementById('tabuleiro-bg'); // importante garantir que esse ID está certo
 
-
-document.addEventListener('DOMContentLoaded', (event) => {
-  const wrapper = document.getElementById('tabuleiro-wrapper');
-  
-  if (!wrapper) {
-    console.error('Elemento "tabuleiro-wrapper" não encontrado.');
-    return;
-  }
-  
-
-  let isDragging = false;
-  let startX, startY, scrollLeft, scrollTop;
-  const zoomLevel = parseFloat(wrapper.style.zoom) || 1;  // Obtém o nível de zoom, se existir
-
-  // Início do arraste
-  wrapper.addEventListener('mousedown', (e) => {
-    console.log('mousedown:', e); // Verificando o clique inicial
-
-    isDragging = true;
-    wrapper.style.cursor = 'grabbing';
-
-    // Ajuste do início do movimento para considerar o zoom e o deslocamento correto
-    const rect = wrapper.getBoundingClientRect();
-    startX = (e.clientX - rect.left) / zoomLevel; // Posição inicial considerando o zoom
-    startY = (e.clientY - rect.top) / zoomLevel; // Posição inicial considerando o zoom
-
-    scrollLeft = wrapper.scrollLeft;
-    scrollTop = wrapper.scrollTop;
-
-    console.log('Iniciado o arraste');
-  });
-
-  // Movimento durante o arraste
-  wrapper.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-
-    console.log('mousemove:', e); // Verificando movimento do mouse
-
-    const rect = wrapper.getBoundingClientRect();
-    
-    // Cálculo da posição levando em conta o zoom e a posição atual
-    const x = (e.clientX - rect.left) / zoomLevel;
-    const y = (e.clientY - rect.top) / zoomLevel;
-
-    // Calcular a diferença do movimento
-    const moveX = x - startX;
-    const moveY = y - startY;
-
-    // Atualiza o scroll com a diferença do movimento
-    wrapper.scrollLeft = scrollLeft - moveX;
-    wrapper.scrollTop = scrollTop - moveY;
-
-    console.log('Movendo...', 'scrollLeft:', wrapper.scrollLeft, 'scrollTop:', wrapper.scrollTop);
-  });
-
-  // Fim do arraste
-  wrapper.addEventListener('mouseup', () => {
-    if (!isDragging) return;
-
-    console.log('mouseup: Terminado o arraste');
-
-    isDragging = false;
-    wrapper.style.cursor = 'grab';
-  });
-
-  // Caso o mouse saia da área do wrapper
-  wrapper.addEventListener('mouseleave', () => {
-    if (isDragging) {
-      console.log('mouseleave: Arraste cancelado');
-    }
-
-    isDragging = false;
-    wrapper.style.cursor = 'grab';
-  });
-});
-
-
-// Adicionando o menu de contexto para células
-tabuleiro.addEventListener('contextmenu', (e) => {
-  if (!e.target.classList.contains('cell')) return;
-
+tabuleiroBG.addEventListener('contextmenu', (e) => {
   e.preventDefault(); // Impede o menu padrão do navegador
 
   // Fecha qualquer menu de contexto anterior
@@ -453,21 +378,24 @@ tabuleiro.addEventListener('contextmenu', (e) => {
     contextMenuOpen = null;
   }
 
-  // Criar o novo menu de contexto
+  // Criar o novo menu de contexto com duas opções
   const menu = document.createElement('div');
   menu.classList.add('context-menu');
-  menu.innerHTML = `<ul><li id="criar-personagem">Criar Personagem</li></ul>`;
+  menu.innerHTML = `
+    <ul>
+      <li id="criar-personagem">Criar Personagem</li>
+      <li id="criar-background">Criar Background</li>
+    </ul>`;
 
   // Posicionar o menu na posição do clique
   menu.style.position = 'absolute';
   menu.style.left = `${e.clientX}px`;
   menu.style.top = `${e.clientY}px`;
 
-  // Adicionar ao body
   document.body.appendChild(menu);
   contextMenuOpen = menu;
 
-  // Ação de "Criar Personagem"
+  // Ações dos botões do menu
   document.getElementById('criar-personagem').addEventListener('click', () => {
     const wrapperRect = tokenLayer.getBoundingClientRect();
     const posX = (e.clientX - wrapperRect.left) / zoomLevel;
@@ -479,7 +407,18 @@ tabuleiro.addEventListener('contextmenu', (e) => {
     contextMenuOpen = null;
   });
 
-  // Fechar o menu ao clicar fora
+  document.getElementById('criar-background').addEventListener('click', () => {
+    const wrapperRect = tokenLayer.getBoundingClientRect();
+    const posX = (e.clientX - wrapperRect.left) / zoomLevel;
+    const posY = (e.clientY - wrapperRect.top) / zoomLevel;
+
+    criarBackground({ x: posX, y: posY });
+
+    document.body.removeChild(menu);
+    contextMenuOpen = null;
+  });
+
+  // Fecha ao clicar fora
   document.addEventListener('click', () => {
     if (contextMenuOpen) {
       document.body.removeChild(contextMenuOpen);
@@ -487,7 +426,7 @@ tabuleiro.addEventListener('contextmenu', (e) => {
     }
   }, { once: true });
 
-  // Fechar ao sair com o mouse
+  // Fecha ao sair com o mouse
   menu.addEventListener('mouseleave', () => {
     if (contextMenuOpen) {
       document.body.removeChild(contextMenuOpen);
@@ -496,6 +435,53 @@ tabuleiro.addEventListener('contextmenu', (e) => {
   });
 });
 
+function criarBackground({ x, y }) {
+  const modal = document.createElement('div');
+  modal.classList.add('token-modal');
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h3>Criar Background</h3>
+      <label>Imagem (URL):</label>
+      <input type="text" id="bg-img-url" placeholder="https://..." required />
+
+      <label>Tamanho (em células):</label>
+      <input type="number" id="bg-size" placeholder="1" min="1" />
+
+      <div class="modal-buttons">
+        <button id="confirmar-bg">Criar</button>
+        <button id="cancelar-bg">Cancelar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  document.getElementById('cancelar-bg').addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
+
+  document.getElementById('confirmar-bg').addEventListener('click', () => {
+    const image = document.getElementById('bg-img-url').value.trim();
+    const sizeInCells = parseInt(document.getElementById('bg-size').value) || 1;
+
+    if (!image) {
+      alert("Por favor, insira o link da imagem.");
+      return;
+    }
+
+    const pixelSize = sizeInCells * cellSize;
+
+    const bgData = {
+      x,
+      y,
+      size: pixelSize,
+      image,
+      timestamp: Date.now()
+    };
+
+    db.collection('backgrounds').add(bgData).catch(console.error);
+    document.body.removeChild(modal);
+  });
+}
 
 
 // ------------------------ //
@@ -504,12 +490,11 @@ tabuleiro.addEventListener('contextmenu', (e) => {
 
 tokenLayer.addEventListener('touchstart', (e) => {
   const touch = e.touches[0];
-  const target = document.elementFromPoint(touch.clientX, touch.clientY);
 
-  if (target.classList.contains('resize-handle')) {
+  if (e.target.classList.contains('resize-handle')) {
     e.stopPropagation();
     resizing = true;
-    currentHandle = target;
+    currentHandle = e.target;
     selectedToken = currentHandle.parentElement;
 
     const rect = selectedToken.getBoundingClientRect();
@@ -517,21 +502,21 @@ tokenLayer.addEventListener('touchstart', (e) => {
 
     initialMouseX = touch.clientX;
     initialMouseY = touch.clientY;
-    initialWidth = rect.width;
-    initialHeight = rect.height;
     initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
     initialTop = (rect.top - wrapperRect.top) / zoomLevel;
-
-  } else if (target.classList.contains('token')) {
-    selectedToken = target;
+    initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
+    initialTop = (rect.top - wrapperRect.top) / zoomLevel;
+  } else if (e.target.classList.contains('token')) {
+    selectedToken = e.target;
     const rect = selectedToken.getBoundingClientRect();
     const wrapperRect = tokenLayer.getBoundingClientRect();
 
     offsetX = (touch.clientX - rect.left) / zoomLevel;
     offsetY = (touch.clientY - rect.top) / zoomLevel;
+
     selectedToken.style.cursor = 'grabbing';
   }
-});
+}, { passive: false });
 
 document.addEventListener('touchmove', (e) => {
   if (!selectedToken) return;
@@ -565,10 +550,10 @@ document.addEventListener('touchmove', (e) => {
       newTop += dy;
     }
 
-    selectedToken.style.width = `${newWidth}px`;
-    selectedToken.style.height = `${newHeight}px`;
-    selectedToken.style.left = `${newLeft}px`;
-    selectedToken.style.top = `${newTop}px`;
+    selectedToken.style.width = `${newWidth * zoomLevel}px`;
+    selectedToken.style.height = `${newHeight * zoomLevel}px`;    
+    selectedToken.style.left = `${newLeft * zoomLevel}px`;
+    selectedToken.style.top = `${newTop * zoomLevel}px`;    
     selectedToken.style.lineHeight = `${newHeight}px`; // para centralizar o emoji
 
   } else {
@@ -701,6 +686,46 @@ db.collection('tokens').onSnapshot((snapshot) => {
         token.style.backgroundImage = `url('${data.image}')`;
       }
     }
+    db.collection('backgrounds').onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const bgId = change.doc.id;
+        const data = change.doc.data();
+    
+        if (change.type === 'added') {
+          if (!document.querySelector(`[data-bg-id="${bgId}"]`)) {
+            const bg = document.createElement('div');
+            bg.classList.add('background-img');
+            bg.setAttribute('data-bg-id', bgId);
+    
+            bg.style.backgroundImage = `url('${data.image}')`;
+            bg.style.backgroundSize = 'cover';
+            bg.style.backgroundPosition = 'center';
+            bg.style.backgroundRepeat = 'no-repeat';
+    
+            bg.style.position = 'absolute';
+            bg.style.left = `${data.x}px`;
+            bg.style.top = `${data.y}px`;
+            bg.style.width = `${data.size}px`;
+            bg.style.height = `${data.size}px`;
+            bg.style.zIndex = '0';
+    
+            tokenLayer.appendChild(bg);
+          }
+        } else if (change.type === 'removed') {
+          const bg = document.querySelector(`[data-bg-id="${bgId}"]`);
+          if (bg) bg.remove();
+        } else if (change.type === 'modified') {
+          const bg = document.querySelector(`[data-bg-id="${bgId}"]`);
+          if (bg) {
+            bg.style.left = `${data.x}px`;
+            bg.style.top = `${data.y}px`;
+            bg.style.width = `${data.size}px`;
+            bg.style.height = `${data.size}px`;
+            bg.style.backgroundImage = `url('${data.image}')`;
+          }
+        }
+      });
+    });         
   });
 });
 
@@ -820,4 +845,108 @@ tabuleiro.addEventListener('drop', (e) => {
 
   // Adiciona o token ao Firestore
   db.collection('tokens').add(tokenData).catch(console.error);
+});
+
+//funcoes de background//
+
+// Função para deletar o background
+function deletarBackground(id) {
+  // Remover o background do Firestore
+  db.collection('backgrounds').doc(id).delete().catch(console.error);
+
+  // Remover o background do DOM
+  const bgElement = document.querySelector(`[data-bg-id="${id}"]`);
+  if (bgElement) {
+    bgElement.remove();
+  }
+}
+
+// Evento de menu de contexto no tokenLayer
+tokenLayer.addEventListener('contextmenu', (e) => {
+  e.preventDefault(); // Impede o menu de contexto padrão do navegador
+
+  // Se o clique for sobre um token
+  if (e.target.classList.contains('token')) {
+    // Fechar menu de contexto anterior, se houver
+    if (contextMenuOpen) {
+      document.body.removeChild(contextMenuOpen);
+      contextMenuOpen = null;
+    }
+
+    // Criar menu para deletar token
+    const menu = document.createElement('div');
+    menu.classList.add('context-menu');
+    menu.innerHTML = `<ul><li id="delete-token">Deletar Token</li></ul>`;
+    menu.style.position = 'absolute';
+    menu.style.left = `${e.clientX}px`;
+    menu.style.top = `${e.clientY}px`;
+
+    document.body.appendChild(menu);
+    contextMenuOpen = menu;
+
+    // Ação para deletar token
+    document.getElementById('delete-token').addEventListener('click', () => {
+      const tokenId = e.target.getAttribute('data-id'); // ou use: e.target.dataset.id
+      deletarToken(tokenId);
+      document.body.removeChild(menu);
+      contextMenuOpen = null;
+    });
+
+    // Fechar ao clicar fora e ao sair com o mouse
+    document.addEventListener('click', () => {
+      if (contextMenuOpen) {
+        document.body.removeChild(contextMenuOpen);
+        contextMenuOpen = null;
+      }
+    }, { once: true });
+
+    menu.addEventListener('mouseleave', () => {
+      if (contextMenuOpen) {
+        document.body.removeChild(contextMenuOpen);
+        contextMenuOpen = null;
+      }
+    });
+
+  // Se o clique for sobre um background (classe "background-img")
+  } else if (e.target.classList.contains('background-img')) {
+    if (contextMenuOpen) {
+      document.body.removeChild(contextMenuOpen);
+      contextMenuOpen = null;
+    }
+
+    const menu = document.createElement('div');
+    menu.classList.add('context-menu');
+    // Usamos um ID diferente para o item de deletar background
+    menu.innerHTML = `<ul><li id="delete-background">Deletar Background</li></ul>`;
+    menu.style.position = 'absolute';
+    menu.style.left = `${e.clientX}px`;
+    menu.style.top = `${e.clientY}px`;
+
+    document.body.appendChild(menu);
+    contextMenuOpen = menu;
+
+    // Ação para deletar background
+    document.getElementById('delete-background').addEventListener('click', () => {
+      const bgId = e.target.getAttribute('data-bg-id') || e.target.closest('[data-bg-id]').getAttribute('data-bg-id');
+      deletarBackground(bgId);
+      document.body.removeChild(menu);
+      contextMenuOpen = null;
+    });
+
+    // Fechar o menu ao clicar fora
+    document.addEventListener('click', () => {
+      if (contextMenuOpen) {
+        document.body.removeChild(contextMenuOpen);
+        contextMenuOpen = null;
+      }
+    }, { once: true });
+
+    // Fechar o menu ao tirar o mouse de cima
+    menu.addEventListener('mouseleave', () => {
+      if (contextMenuOpen) {
+        document.body.removeChild(contextMenuOpen);
+        contextMenuOpen = null;
+      }
+    });
+  }
 });

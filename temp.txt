@@ -1,3 +1,5 @@
+
+
 document.addEventListener('DOMContentLoaded', (event) => {
   const wrapper = document.getElementById('tabuleiro-wrapper');
   
@@ -5,6 +7,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     console.error('Elemento "tabuleiro-wrapper" não encontrado.');
     return;
   }
+  
 
   let isDragging = false;
   let startX, startY, scrollLeft, scrollTop;

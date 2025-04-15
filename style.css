@@ -546,11 +546,10 @@ textarea:focus {
 /* Estilos para a aba de informações essenciais */
 #essential-info {
   top: 50vh;
-  right: 6%; /* Centraliza horizontalmente */
-  transform: translate(-50%, -50%); /* Ajusta para centralizar corretamente */
+  right: 5vh; /* Centraliza horizontalmente */
+  transform: translate(0%, -50%); /* Ajusta para centralizar corretamente */
   transition: top 0.5s ease, opacity 0.5s ease;
   position: fixed;
-  top: 50%; /* Posição inicial no meio da tela */
   padding: 20px;
   overflow-y: auto;
   z-index: 998;
@@ -564,7 +563,6 @@ textarea:focus {
   transition: top 0.5s ease; /* Adiciona uma transição suave para a propriedade 'top' */
   max-width: 200px;
   width: 50%;
-  margin: 20px;
 }
 
 #essential-info #status-token{
@@ -575,7 +573,7 @@ textarea:focus {
 #essential-info.vertical {
   top: 50vh;
   position: fixed;
-  left: 2.45vw; /* Isso garante que gruda na borda esquerda */
+  left: 0.5vw; /* Isso garante que gruda na borda esquerda */
   margin: 0; /* Remove qualquer espaçamento externo */
   padding: 0; /* Remove qualquer espaçamento interno */  height: auto;
   width: 4vw; /* ou use 5vw se quiser responsivo */
@@ -1398,15 +1396,6 @@ textarea:focus {
   align-items: center;
 }
 
-#token-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  pointer-events: none;
-  border: #0F9D58 solid 2px;
-}
-
 #tabuleiro-wrapper {
   position: absolute;
   top: 3vh;
@@ -1417,8 +1406,8 @@ textarea:focus {
   background-color: #312f2f;
   box-shadow: 0 0 10px #000;
   border: #363441 solid 10px;
-  cursor: grabbing;
 }
+
 #tabuleiro-wrapper:active {
   cursor: grabbing;
 }
@@ -1440,18 +1429,15 @@ textarea:focus {
   width: 100%;
   height: 100%;
   border: #ffffff solid 2px;
-  background-image: url('https://i.pinimg.com/736x/92/78/8c/92788cbbeb2a6d4a944737b4fc45155d.jpg');
-  background-repeat: no-repeat;
-  background-position: top left;
-  background-size: contain;
-  z-index: 0;
-  pointer-events: none;
+  z-index: 0 !important;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 /* Apenas a grid */
 #tabuleiro {
   position: relative;
-  z-index: 1;
+  z-index: 11;
   display: grid;
   grid-template-columns: repeat(50, 64px);
   grid-template-rows: repeat(50, 64px);
@@ -1463,13 +1449,13 @@ textarea:focus {
   height: 64px;
   background-color: #2a2a2a00;
   border: 1px solid #444;
+  z-index: 11;
 }
 
 #token-layer {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 10;
   pointer-events: none;
   touch-action: none;
 }
@@ -1485,6 +1471,7 @@ textarea:focus {
   user-select: none;
   pointer-events: auto;
   transition: 0.15s ease;
+  z-index: 15 !important;
 }
 
 .token-wrapper {
@@ -1493,6 +1480,32 @@ textarea:focus {
   transform-origin: center;
 }
 
+#tabuleiro,
+#tabuleiro > div {
+  pointer-events: none;
+}
+
+.background-img {
+  position: absolute;
+  pointer-events: auto; /* Evita interferir com tokens por enquanto */
+  z-index: 9 !important;
+}
+
+.background-img.selected::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0 !important;
+  background: inherit;
+  border-radius: inherit;
+  filter: drop-shadow(0 0 4px white) drop-shadow(0 0 8px white);
+}
+
+.background-img.selected:has(.resize-handle) {
+  border: white solid 1px;
+}
+
+
 .token.selected::before {
   content: '';
   position: absolute;
@@ -1500,8 +1513,7 @@ textarea:focus {
   background: inherit;
   border-radius: inherit;
   filter: drop-shadow(0 0 4px white) drop-shadow(0 0 8px white);
-  z-index: -1;
-  pointer-events: none;
+  z-index: 3;
 }
 
 .token.selected:has(.resize-handle) {
@@ -1540,6 +1552,25 @@ textarea:focus {
   right: -5px;
   cursor: nwse-resize;
 }
+
+.background.selected {
+  outline: 2px dashed #00aaff;
+  outline-offset: -2px;
+  z-index: 0;
+}
+
+.resize-handle {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border: 2px solid #00aaff;
+  position: absolute;
+}
+
+.resize-handle.top-left { top: -4px; left: -4px; cursor: nwse-resize; }
+.resize-handle.top-right { top: -4px; right: -4px; cursor: nesw-resize; }
+.resize-handle.bottom-left { bottom: -4px; left: -4px; cursor: nesw-resize; }
+.resize-handle.bottom-right { bottom: -4px; right: -4px; cursor: nwse-resize; }
 
 .context-menu {
   background-color: #27243e80;
@@ -1696,7 +1727,7 @@ textarea:focus {
   height: 3px;
   max-height: 4px;
   border-radius: 15px;
-  background-color: rgb(151, 147, 175);
+  background-color: rgba(151, 147, 175, 0);
 }
 
 #volumeControl::-webkit-slider-runnable-track {

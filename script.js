@@ -2220,25 +2220,32 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function enviarFeedback(topico, resultado, valores, formula) {
+    // Verifica se o modo administrador está ativado
+    if (window.admincheck) {
+        console.log("Modo administrador ativado. Feedback não será enviado.");
+        return;
+    }
+
     const payload = {
-      topico,
-      resultado,
-      valores,
-      formula,
-      nomepersonagem: window.nomepersonagem, // Certifique-se que essa variável está definida
-      imagemURL: window.imgpersonagem // Agora enviando a URL da imagem como parte do payload
+        topico,
+        resultado,
+        valores,
+        formula,
+        nomepersonagem: window.nomepersonagem, // Certifique-se de que essa variável está definida
+        imagemURL: window.imgpersonagem // Envia a URL da imagem como parte do payload
     };
-  
+
     // Use o URL completo do endpoint do Vercel
     fetch("https://backmordred.vercel.app/api/enviarFeedback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
     })
-      .then(response => response.json())
-      .then(data => console.log("Feedback enviado!", data))
-      .catch(error => console.error("Erro ao enviar feedback:", error));
-}  
+    .then(response => response.json())
+    .then(data => console.log("Feedback enviado!", data))
+    .catch(error => console.error("Erro ao enviar feedback:", error));
+}
+
 
 function atualizarDescricaoHabilidade(descricaoMarkdown) {
     const md = window.markdownit({
@@ -2445,11 +2452,15 @@ if (fichaCheckada) {
     img.setAttribute('draggable', true);
     
     img.addEventListener('dragstart', (e) => {
-      // Para identificar qual ficha está sendo arrastada
-      e.dataTransfer.setData('text/plain', nome);
-      // Se necessário, você também pode armazenar a URL da imagem ou outras informações
-      e.dataTransfer.setData('image', fichaCheckada.dados.img);
+        e.dataTransfer.setData('text/plain', nome);
+        e.dataTransfer.setData('image', fichaCheckada.dados.img);
+        document.getElementById('tabuleiro').style.pointerEvents = 'auto';
     });
+      
+    img.addEventListener('dragend', () => {
+        document.getElementById('tabuleiro').style.pointerEvents = 'none';
+    });
+      
     
     img.addEventListener('click', () => {
       carregarStatusPorNome(nome);
@@ -2484,3 +2495,42 @@ if (fichaCheckada) {
   
 window.addEventListener('DOMContentLoaded', carregarFichasNaBarra);
   
+const senhaCorreta = "mordred123"; // Altere a senha como desejar
+
+function ativarAdmin() {
+    const senha = document.getElementById("senhaAdmin").value;
+    if (senha === senhaCorreta) {
+        window.admincheck = true;
+        localStorage.setItem("admincheck", "true");
+        atualizarStatusAdmin();
+    } else {
+        document.getElementById("adminStatus").textContent = "Senha incorreta.";
+        document.getElementById("adminStatus").style.color = "red";
+    }
+}
+
+function desativarAdmin() {
+    window.admincheck = false;
+    localStorage.setItem("admincheck", "false");
+    atualizarStatusAdmin();
+}
+
+function atualizarStatusAdmin() {
+    const status = window.admincheck;
+    const statusText = document.getElementById("adminStatus");
+
+    if (status) {
+        statusText.textContent = "Modo administrador ativado!";
+        statusText.style.color = "green";
+    } else {
+        statusText.textContent = "Modo administrador desativado.";
+        statusText.style.color = "black";
+    }
+}
+
+// Carregar status do admin ao iniciar a página
+window.addEventListener("DOMContentLoaded", () => {
+    const savedStatus = localStorage.getItem("admincheck");
+    window.admincheck = savedStatus === "true";
+    atualizarStatusAdmin();
+});

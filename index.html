@@ -123,7 +123,7 @@
             <ul id="videoQueueList"></ul>
         </div>          
         <div id="volumeContainer">
-            <input type="range" id="volumeControl" min="0" max="100" step="1" value="100" />
+            <input type="range" id="volumeControl" min="0" max="100" step="1" value="0" />
         </div>
     </div>    
     <div id="essential-info" class="hidden">
@@ -623,6 +623,13 @@
                 Aviso: ele vai apagar seus dados entao tenha certeza de fazer um backup antes.<br>
                 <br>
                 <button id="clear-data-btn">Apagar Dados e Recarregar</button>
+                <hr><br>
+                <!-- Seção para ativar/desativar modo Admin -->
+                <h2>Modo Administrador</h2>
+                <input type="password" id="senhaAdmin" placeholder="Digite a senha de admin">
+                <button type="button" onclick="ativarAdmin()">Ativar Admin</button>
+                <button type="button" onclick="desativarAdmin()">Desativar Admin</button>
+                <p id="adminStatus" style="color: green;"></p>
             </div>  
             <div id="Google" class="subcontent">
                 <div class="title">Backup To Google Drive</div>

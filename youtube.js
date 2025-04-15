@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
           videoId: videoId,
           events: {
             'onReady': (event) => {
+              event.target.setVolume(0); // Inicia com volume zerado
               const curTime = event.target.getCurrentTime();
               if (Math.abs(curTime - targetTime) > 1) {
                 isSeeking = true;
