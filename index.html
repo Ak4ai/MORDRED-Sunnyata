@@ -19,9 +19,11 @@
         script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://apis.google.com https://www.gstatic.com https://accounts.google.com https://cdn.jsdelivr.net https://www.youtube.com;
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
         font-src 'self' https://cdnjs.cloudflare.com;
-        connect-src https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com ws://127.0.0.1:5501 https://backmordred.vercel.app https://apis.google.com https://www.google.com https://firestore.googleapis.com;
-        img-src 'self' https://i.pinimg.com https://csi.gstatic.com https://lh3.googleusercontent.com https://media.discordapp.net https://i.ytimg.com data:;
-        frame-src https://accounts.google.com https://content.googleapis.com https://content-people.googleapis.com https://www.youtube.com https://www.youtube-nocookie.com;">
+        connect-src https://www.googleapis.com https://accounts.google.com https://oauth2.googleapis.com ws://127.0.0.1:5501 https://backmordred.vercel.app https://apis.google.com https://www.google.com https://firestore.googleapis.com https://www.youtube.com;
+        img-src 'self' https://i.pinimg.com https://csi.gstatic.com https://lh3.googleusercontent.com https://media.discordapp.net https://i.ytimg.com https://via.placeholder.com data:;
+        frame-src https://accounts.google.com https://content.googleapis.com https://content-people.googleapis.com https://www.youtube.com https://www.youtube-nocookie.com;
+        ">
+
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -116,7 +118,10 @@
             <button id="skipButton"><i class="fa-solid fa-forward-step"></i></button>
             <button id="unskipButton"><i class="fa-solid fa-backward-step"></i></button>
         </div>
-    
+        <div id="videoQueueDisplay" class="queue-container">
+            <h4>Fila de Vídeos:</h4>
+            <ul id="videoQueueList"></ul>
+        </div>          
         <div id="volumeContainer">
             <input type="range" id="volumeControl" min="0" max="100" step="1" value="100" />
         </div>
@@ -124,6 +129,7 @@
     <div id="essential-info" class="hidden">
         <div class="top-section">
           <img id="status-img" alt="Essential Info Image">
+          <img id="status-token" alt="Essentia Info Token">
           <div class="text-section">
             <h2 id="status-nome"></h2>
             <h4>Status Base:</h4>
@@ -398,6 +404,9 @@
                     <br>
                     <label for="img">Imagem do Personagem:</label>
                     <input type="text" id="img" name="imagem" required>
+                    <br>
+                    <label for="token">Token do Personagem:</label>
+                    <input type="text" id="token" name="token" required>
                     <br>
                     <label for="vida">Vida:</label>
                     <input type="number" id="vida" name="vida" min="0">

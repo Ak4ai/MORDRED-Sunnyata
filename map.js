@@ -336,6 +336,111 @@ function criarToken({ x, y }) {
   });
 }
 
+tokenLayer.addEventListener('mousedown', (e) => {
+  if (e.target.classList.contains('token')) {
+    e.stopPropagation(); // Impede que o evento alcance o wrapper
+    // Código de início do drag do token...
+    selectedToken = e.target;
+    offsetX = e.offsetX;
+    offsetY = e.offsetY;
+    selectedToken.style.cursor = 'grabbing';
+  }
+  // Verifica se é uma âncora de redimensionamento e trata, se necessário.
+  if (e.target.classList.contains('resize-handle')) {
+    e.stopPropagation(); // Evitar conflito com o drag do tabuleiro
+    resizing = true;
+    currentHandle = e.target;
+    selectedToken = currentHandle.parentElement;
+
+    const rect = selectedToken.getBoundingClientRect();
+    const wrapperRect = tokenLayer.getBoundingClientRect();
+
+    initialMouseX = e.clientX;
+    initialMouseY = e.clientY;
+    initialWidth = rect.width;
+    initialHeight = rect.height;
+    initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
+    initialTop = (rect.top - wrapperRect.top) / zoomLevel;
+  }
+});
+
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  const wrapper = document.getElementById('tabuleiro-wrapper');
+  
+  if (!wrapper) {
+    console.error('Elemento "tabuleiro-wrapper" não encontrado.');
+    return;
+  }
+  
+
+  let isDragging = false;
+  let startX, startY, scrollLeft, scrollTop;
+  const zoomLevel = parseFloat(wrapper.style.zoom) || 1;  // Obtém o nível de zoom, se existir
+
+  // Início do arraste
+  wrapper.addEventListener('mousedown', (e) => {
+    console.log('mousedown:', e); // Verificando o clique inicial
+
+    isDragging = true;
+    wrapper.style.cursor = 'grabbing';
+
+    // Ajuste do início do movimento para considerar o zoom e o deslocamento correto
+    const rect = wrapper.getBoundingClientRect();
+    startX = (e.clientX - rect.left) / zoomLevel; // Posição inicial considerando o zoom
+    startY = (e.clientY - rect.top) / zoomLevel; // Posição inicial considerando o zoom
+
+    scrollLeft = wrapper.scrollLeft;
+    scrollTop = wrapper.scrollTop;
+
+    console.log('Iniciado o arraste');
+  });
+
+  // Movimento durante o arraste
+  wrapper.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    console.log('mousemove:', e); // Verificando movimento do mouse
+
+    const rect = wrapper.getBoundingClientRect();
+    
+    // Cálculo da posição levando em conta o zoom e a posição atual
+    const x = (e.clientX - rect.left) / zoomLevel;
+    const y = (e.clientY - rect.top) / zoomLevel;
+
+    // Calcular a diferença do movimento
+    const moveX = x - startX;
+    const moveY = y - startY;
+
+    // Atualiza o scroll com a diferença do movimento
+    wrapper.scrollLeft = scrollLeft - moveX;
+    wrapper.scrollTop = scrollTop - moveY;
+
+    console.log('Movendo...', 'scrollLeft:', wrapper.scrollLeft, 'scrollTop:', wrapper.scrollTop);
+  });
+
+  // Fim do arraste
+  wrapper.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+
+    console.log('mouseup: Terminado o arraste');
+
+    isDragging = false;
+    wrapper.style.cursor = 'grab';
+  });
+
+  // Caso o mouse saia da área do wrapper
+  wrapper.addEventListener('mouseleave', () => {
+    if (isDragging) {
+      console.log('mouseleave: Arraste cancelado');
+    }
+
+    isDragging = false;
+    wrapper.style.cursor = 'grab';
+  });
+});
+
+
 // Adicionando o menu de contexto para células
 tabuleiro.addEventListener('contextmenu', (e) => {
   if (!e.target.classList.contains('cell')) return;
@@ -390,6 +495,7 @@ tabuleiro.addEventListener('contextmenu', (e) => {
     }
   });
 });
+
 
 
 // ------------------------ //
@@ -684,3 +790,34 @@ function criarScrollCustomizado() {
 }
 
 criarScrollCustomizado();
+
+// arrastar da barra //
+// Permite que o tabuleiro receba o drop
+tabuleiro.addEventListener('dragover', (e) => {
+  e.preventDefault(); // Necessário para habilitar o drop
+});
+
+tabuleiro.addEventListener('drop', (e) => {
+  e.preventDefault();
+
+  // Recupera os dados enviados no dragstart
+  const imageUrl = e.dataTransfer.getData('image');
+  const fichaNome = e.dataTransfer.getData('text/plain'); // Caso queira usar o nome para outros fins
+
+  // Obtém a posição do drop relativa ao tabuleiro
+  const tabuleiroRect = tabuleiro.getBoundingClientRect();
+  const posX = (e.clientX - tabuleiroRect.left) / zoomLevel;
+  const posY = (e.clientY - tabuleiroRect.top) / zoomLevel;
+  
+  // Cria o objeto com dados do token (dimensão fixa de 1 célula)
+  const tokenData = {
+    x: posX,
+    y: posY,
+    size: cellSize, // Dimensão fixa, 1 célula (1:1)
+    image: imageUrl,
+    timestamp: Date.now()
+  };
+
+  // Adiciona o token ao Firestore
+  db.collection('tokens').add(tokenData).catch(console.error);
+});

@@ -80,6 +80,7 @@ function carregarDados(key) {
 class Personagem {
     constructor(data) {
         this.img = data.img;
+        this.token = data.token;
         this.vida = data.vida;
         this.vidaMax = data.vidaMax;
         this.alma = data.alma;
@@ -235,6 +236,13 @@ function atualizarInfoPersonagem(Personagem) {
         atualizarIconeIndicador();
     } else {
         console.error('Elemento com ID "status-img" não encontrado no DOM.');
+    }
+    // Atualiza o token do personagem
+    const tokenElement = document.getElementById('status-token');
+    if (tokenElement) {
+        tokenElement.src = personagem.token || ''; // Define a URL da imagem ou uma string vazia
+    } else {
+        console.error('Elemento com ID "status-token" não encontrado no DOM.');
     }
     document.getElementById('status-vida1').innerText = personagem.vida;
     document.getElementById('status-vida').innerText = personagem.vida;
@@ -1607,6 +1615,7 @@ async function salvarStatus() {
         const updatedData = {
           check: document.getElementById('personagemInicial').checked ? 1 : 0,
           img: document.getElementById('img').value.trim(),
+          token: document.getElementById('token').value.trim(),
           vida: parseInt(document.getElementById('vida').value),
           vidaMax: parseInt(document.getElementById('vidaMax').value),
           alma: parseInt(document.getElementById('alma').value),
@@ -1669,6 +1678,7 @@ async function salvarStatus() {
         const updatedData = {
           check: document.getElementById('personagemInicial').checked ? 1 : 0,
           img: getStringValue('img'),
+          token: getStringValue('token'),
           vida: getNumberValue('vida'),
           vidaMax: getNumberValue('vidaMax'),
           alma: getNumberValue('alma'),
@@ -2123,16 +2133,6 @@ document.addEventListener("DOMContentLoaded", () => {
     checkWindowSize();
     window.addEventListener("resize", checkWindowSize);
 
-    // Define a posição inicial no meio da tela
-    function setInitialPosition() {
-        essentialInfo.style.position = 'fixed';
-        essentialInfo.style.top = '50%';
-        essentialInfo.style.transform = 'translateY(-50%)';
-        essentialInfo.style.transition = 'none'; // Sem transição inicial
-    }
-
-    setInitialPosition();
-
     let lastScrollTop = 0; // Armazena a posição do último scroll
     let isScrolling; // Variável para verificar se o scroll ainda está em andamento
 
@@ -2183,8 +2183,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Executa a função no carregamento e no redimensionamento da janela
     checkWindowSize();
     window.addEventListener("resize", checkWindowSize);
-
-    setInitialPosition();
 
     let lastScrollTop = 0; // Armazena a posição do último scroll
     let isScrolling; // Variável para verificar se o scroll ainda está em andamento
@@ -2435,39 +2433,53 @@ function carregarFichasNaBarra() {
   
     let iconesAdicionados = 0;
   
-    // Adiciona ficha marcada com check: 1
-    if (fichaCheckada) {
-      const nome = fichaCheckada.chave.replace('-personagem', '');
-      const img = document.createElement('img');
-      img.src = fichaCheckada.dados.img;
-      img.alt = nome;
-      img.className = 'ficha-icone';
-      img.addEventListener('click', () => {
-        carregarStatusPorNome(nome);
-      });
-      barra.appendChild(img);
-    }
+// Adiciona ficha marcada com check: 1
+if (fichaCheckada) {
+    const nome = fichaCheckada.chave.replace('-personagem', '');
+    const img = document.createElement('img');
+    img.src = fichaCheckada.dados.img;
+    img.alt = nome;
+    img.className = 'ficha-icone';
+    
+    // Torna o ícone arrastável
+    img.setAttribute('draggable', true);
+    
+    img.addEventListener('dragstart', (e) => {
+      // Para identificar qual ficha está sendo arrastada
+      e.dataTransfer.setData('text/plain', nome);
+      // Se necessário, você também pode armazenar a URL da imagem ou outras informações
+      e.dataTransfer.setData('image', fichaCheckada.dados.img);
+    });
+    
+    img.addEventListener('click', () => {
+      carregarStatusPorNome(nome);
+    });
+    barra.appendChild(img);
+  }
   
-    // Adiciona divisor se necessário
-    if (fichaCheckada && outrasFichas.length) {
-      const divisor = document.createElement('div');
-      divisor.className = 'divisor-vertical';
-      barra.appendChild(divisor);
-    }
+  // Adiciona as outras fichas da mesma forma
+  for (let i = 0; i < outrasFichas.length; i++) {
+    const { chave, dados } = outrasFichas[i];
+    const nome = chave.replace('-personagem', '');
+    const img = document.createElement('img');
+    img.src = dados.img || 'https://media.discordapp.net/attachments/1164311440224702526/1361559378695688232/dfy9prk-fd124c1f-81f6-4ecb-935e-e994799c6b5f.png?ex=67ff327c&is=67fde0fc&hm=316bace3c2ec013775631ccb7ae51781072936e089449bfbc696bac56fa28fc0&=&format=webp&quality=lossless&width=433&height=648';
+    img.alt = nome;
+    img.className = 'ficha-icone';
+    
+    // Torna o ícone arrastável
+    img.setAttribute('draggable', true);
+    
+    img.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', nome);
+      e.dataTransfer.setData('image', dados.token || 'https://media.discordapp.net/attachments/1164311440224702526/1361559378695688232/dfy9prk-fd124c1f-81f6-4ecb-935e-e994799c6b5f.png?ex=67ff327c&is=67fde0fc&hm=316bace3c2ec013775631ccb7ae51781072936e089449bfbc696bac56fa28fc0&=&format=webp&quality=lossless&width=433&height=648');
+    });
+    
+    img.addEventListener('click', () => {
+      carregarStatusPorNome(nome);
+    });
+    barra.appendChild(img);
+  }
   
-    // Adiciona outras fichas
-    for (let i = 0; i < outrasFichas.length; i++) {
-      const { chave, dados } = outrasFichas[i];
-      const nome = chave.replace('-personagem', '');
-      const img = document.createElement('img');
-      img.src = dados.img || 'https://via.placeholder.com/48';
-      img.alt = nome;
-      img.className = 'ficha-icone';
-      img.addEventListener('click', () => {
-        carregarStatusPorNome(nome);
-      });
-      barra.appendChild(img);
-    }
 }
   
 window.addEventListener('DOMContentLoaded', carregarFichasNaBarra);

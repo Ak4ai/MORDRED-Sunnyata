@@ -545,6 +545,7 @@ textarea:focus {
 
 /* Estilos para a aba de informações essenciais */
 #essential-info {
+  top: 50vh;
   right: 6%; /* Centraliza horizontalmente */
   transform: translate(-50%, -50%); /* Ajusta para centralizar corretamente */
   transition: top 0.5s ease, opacity 0.5s ease;
@@ -566,11 +567,15 @@ textarea:focus {
   margin: 20px;
 }
 
+#essential-info #status-token{
+  display: none;
+}
+
 /* Container geral vertical */
 #essential-info.vertical {
+  top: 50vh;
   position: fixed;
-  top: 0;
-  left: 7px; /* Isso garante que gruda na borda esquerda */
+  left: 2.45vw; /* Isso garante que gruda na borda esquerda */
   margin: 0; /* Remove qualquer espaçamento externo */
   padding: 0; /* Remove qualquer espaçamento interno */  height: auto;
   width: 4vw; /* ou use 5vw se quiser responsivo */
@@ -598,6 +603,10 @@ textarea:focus {
   justify-content: center;
   border-radius: 15px;
   border: #ffffff solid 2px;
+}
+
+#essential-info.vertical #status-token {
+  display: none;
 }
 
 #essential-info.vertical #status-img img {
@@ -1408,6 +1417,10 @@ textarea:focus {
   background-color: #312f2f;
   box-shadow: 0 0 10px #000;
   border: #363441 solid 10px;
+  cursor: grabbing;
+}
+#tabuleiro-wrapper:active {
+  cursor: grabbing;
 }
 
 #tabuleiro-inner {
@@ -1461,9 +1474,7 @@ textarea:focus {
   touch-action: none;
 }
 
-
 .token {
-  border: #ccc solid 1px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1473,7 +1484,7 @@ textarea:focus {
   cursor: grab;
   user-select: none;
   pointer-events: auto;
-  transition: all 0.05s ease;
+  transition: 0.15s ease;
 }
 
 .token-wrapper {
@@ -1723,6 +1734,48 @@ textarea:focus {
   background: #ffffffb4;
 }
 
+.queue-container {
+  margin-top: 0px;
+  display: block;
+  text-align: center;
+  padding: 1px;
+  background-color: #27243e8a;
+  border:#9390ad3f 3px solid;
+  border-radius: 8px;
+  color: white;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.queue-hidden{
+  display: none;
+}
+
+.queue-container ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.queue-container li {
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.queue-container li.current {
+  font-weight: bold;
+  color: #fcd34d;
+}
+
+.current {
+  font-weight: bold;
+  color: #4caf50;
+}
+
+
+/*-----------------*/
+/* BARRA DE FICHAS */
+/*----------------*/
+
 #barra-fichas {
   position: fixed;
   bottom: 1rem;
@@ -1751,7 +1804,7 @@ textarea:focus {
   border-radius: 1rem;
   border: 2px solid #ccc;
   object-fit: cover;
-  cursor: pointer;
+  cursor: grab;
   transition: transform 0.2s ease;
 }
 
