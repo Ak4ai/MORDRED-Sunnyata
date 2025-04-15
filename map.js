@@ -194,25 +194,46 @@ document.addEventListener('mouseup', () => {
   if (selectedToken && !resizing) {
     selectedToken.style.cursor = 'grab';
 
-    // Atualizar posição no Firestore
-    const id = selectedToken.getAttribute('data-id');
-    if (id) {
-      db.collection('tokens').doc(id).update({
-        x: parseFloat(selectedToken.style.left),
-        y: parseFloat(selectedToken.style.top)
-      }).catch(console.error);
+    // Atualiza no Firestore conforme o tipo do elemento
+    if (selectedToken.classList.contains('token')) {
+      const id = selectedToken.getAttribute('data-id');
+      if (id) {
+        db.collection('tokens').doc(id).update({
+          x: parseFloat(selectedToken.style.left),
+          y: parseFloat(selectedToken.style.top)
+        }).catch(console.error);
+      }
+    } else if (selectedToken.classList.contains('background-img')) {
+      const bgId = selectedToken.getAttribute('data-bg-id');
+      if (bgId) {
+        db.collection('backgrounds').doc(bgId).update({
+          x: parseFloat(selectedToken.style.left),
+          y: parseFloat(selectedToken.style.top)
+        }).catch(console.error);
+      }
     }
   }
 
   if (selectedToken && resizing) {
-    // Atualizar posição e tamanho no Firestore após resize
-    const id = selectedToken.getAttribute('data-id');
-    if (id) {
-      db.collection('tokens').doc(id).update({
-        x: parseFloat(selectedToken.style.left),
-        y: parseFloat(selectedToken.style.top),
-        size: parseFloat(selectedToken.style.width)
-      }).catch(console.error);
+    // Atualiza posição e tamanho após o redimensionamento
+    if (selectedToken.classList.contains('token')) {
+      const id = selectedToken.getAttribute('data-id');
+      if (id) {
+        db.collection('tokens').doc(id).update({
+          x: parseFloat(selectedToken.style.left),
+          y: parseFloat(selectedToken.style.top),
+          size: parseFloat(selectedToken.style.width)
+        }).catch(console.error);
+      }
+    } else if (selectedToken.classList.contains('background-img')) {
+      const bgId = selectedToken.getAttribute('data-bg-id');
+      if (bgId) {
+        db.collection('backgrounds').doc(bgId).update({
+          x: parseFloat(selectedToken.style.left),
+          y: parseFloat(selectedToken.style.top),
+          size: parseFloat(selectedToken.style.width)
+        }).catch(console.error);
+      }
     }
   }
 
@@ -220,6 +241,7 @@ document.addEventListener('mouseup', () => {
   currentHandle = null;
   selectedToken = null;
 });
+
 
 
 // Função para deletar o token
@@ -635,20 +657,19 @@ aplicarZoom();
 // FUNÇÕES FIREBASE //
 // ------------------------ //
 // Escuta em tempo real para novos tokens
+// Primeiro: escuta os tokens normalmente
 db.collection('tokens').onSnapshot((snapshot) => {
   snapshot.docChanges().forEach((change) => {
     const tokenId = change.doc.id;
     const data = change.doc.data();
 
     if (change.type === 'added') {
-      // Verifica se o token já existe no DOM
       if (!document.querySelector(`[data-id="${tokenId}"]`)) {
         const token = document.createElement('div');
         token.classList.add('token');
         token.setAttribute('data-id', tokenId);
-        token.setAttribute('tabindex', '0'); // Permite o foco
+        token.setAttribute('tabindex', '0');
         
-        // Define a imagem de fundo
         token.style.backgroundImage = `url('${data.image}')`;
         token.style.backgroundSize = 'contain';
         token.style.backgroundPosition = 'center';
@@ -666,14 +687,10 @@ db.collection('tokens').onSnapshot((snapshot) => {
 
         tokenLayer.appendChild(token);
       }
-
     } else if (change.type === 'removed') {
       const token = document.querySelector(`[data-id="${tokenId}"]`);
       if (token) token.remove();
-    }
-
-    // Se quiser lidar com updates no futuro:
-    else if (change.type === 'modified') {
+    } else if (change.type === 'modified') {
       const token = document.querySelector(`[data-id="${tokenId}"]`);
       if (token) {
         token.style.left = `${data.x}px`;
@@ -681,53 +698,54 @@ db.collection('tokens').onSnapshot((snapshot) => {
         token.style.width = `${data.size}px`;
         token.style.height = `${data.size}px`;
         token.textContent = data.emoji;
-
-        // Atualiza a imagem de fundo
         token.style.backgroundImage = `url('${data.image}')`;
       }
     }
-    db.collection('backgrounds').onSnapshot((snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        const bgId = change.doc.id;
-        const data = change.doc.data();
-    
-        if (change.type === 'added') {
-          if (!document.querySelector(`[data-bg-id="${bgId}"]`)) {
-            const bg = document.createElement('div');
-            bg.classList.add('background-img');
-            bg.setAttribute('data-bg-id', bgId);
-    
-            bg.style.backgroundImage = `url('${data.image}')`;
-            bg.style.backgroundSize = 'cover';
-            bg.style.backgroundPosition = 'center';
-            bg.style.backgroundRepeat = 'no-repeat';
-    
-            bg.style.position = 'absolute';
-            bg.style.left = `${data.x}px`;
-            bg.style.top = `${data.y}px`;
-            bg.style.width = `${data.size}px`;
-            bg.style.height = `${data.size}px`;
-            bg.style.zIndex = '0';
-    
-            tokenLayer.appendChild(bg);
-          }
-        } else if (change.type === 'removed') {
-          const bg = document.querySelector(`[data-bg-id="${bgId}"]`);
-          if (bg) bg.remove();
-        } else if (change.type === 'modified') {
-          const bg = document.querySelector(`[data-bg-id="${bgId}"]`);
-          if (bg) {
-            bg.style.left = `${data.x}px`;
-            bg.style.top = `${data.y}px`;
-            bg.style.width = `${data.size}px`;
-            bg.style.height = `${data.size}px`;
-            bg.style.backgroundImage = `url('${data.image}')`;
-          }
-        }
-      });
-    });         
   });
 });
+
+// Agora: escuta os backgrounds separadamente e apenas uma vez
+db.collection('backgrounds').onSnapshot((snapshot) => {
+  snapshot.docChanges().forEach((change) => {
+    const bgId = change.doc.id;
+    const data = change.doc.data();
+
+    if (change.type === 'added') {
+      if (!document.querySelector(`[data-bg-id="${bgId}"]`)) {
+        const bg = document.createElement('div');
+        bg.classList.add('background-img');
+        bg.setAttribute('data-bg-id', bgId);
+
+        bg.style.backgroundImage = `url('${data.image}')`;
+        bg.style.backgroundSize = 'cover';
+        bg.style.backgroundPosition = 'center';
+        bg.style.backgroundRepeat = 'no-repeat';
+
+        bg.style.position = 'absolute';
+        bg.style.left = `${data.x}px`;
+        bg.style.top = `${data.y}px`;
+        bg.style.width = `${data.size}px`;
+        bg.style.height = `${data.size}px`;
+        bg.style.zIndex = '0';
+
+        tokenLayer.appendChild(bg);
+      }
+    } else if (change.type === 'removed') {
+      const bg = document.querySelector(`[data-bg-id="${bgId}"]`);
+      if (bg) bg.remove();
+    } else if (change.type === 'modified') {
+      const bg = document.querySelector(`[data-bg-id="${bgId}"]`);
+      if (bg) {
+        bg.style.left = `${data.x}px`;
+        bg.style.top = `${data.y}px`;
+        bg.style.width = `${data.size}px`;
+        bg.style.height = `${data.size}px`;
+        bg.style.backgroundImage = `url('${data.image}')`;
+      }
+    }
+  });
+});
+
 
 // ------------------------ //
 // FUNÇÕES DE ANIMAÇÃO //
