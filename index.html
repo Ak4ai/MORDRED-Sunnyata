@@ -126,6 +126,13 @@
             <input type="range" id="volumeControl" min="0" max="100" step="1" value="0" />
         </div>
     </div>    
+    <div id="chat-container">
+        <div id="chat-mensagens"></div>
+        <div id="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Digite sua mensagem...">
+            <button id="chat-enviar"><i class="fa-solid fa-play"></i></button>
+        </div>
+    </div>      
     <div id="essential-info" class="hidden">
         <div class="top-section">
           <img id="status-img" alt="Essential Info Image">
@@ -947,9 +954,10 @@
         <script src="google.js?v=1.0.11" defer></script>
         <script src="youtube.js?v=1.0.11" defer></script>
         <script src="https://accounts.google.com/gsi/client" async defer onload="handleGisLoaded()"></script>        
-        <script src="script.js?v=1.0.9" defer></script>
+        <script src="script.js?v=1.0.9" defer></script>  <!-- Carregar script.js antes de chat.js -->
         <script src="map.js?v=1.0.2" defer></script>
-        <script src="inventario.js?=1.0.2" defer></script>      
+        <script src="inventario.js?=1.0.2" defer></script> 
+        <script src="chat.js?v=1.0.2" defer></script>  <!-- Carregar chat.js depois -->
         <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>  
     </body>
   </html>
