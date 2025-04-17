@@ -805,6 +805,7 @@ textarea:focus {
     transition: transform 0.3s ease, opacity 0.3s ease;
     transform: translateY(100%) !important;
     max-width: none; /* remover limite anterior */
+    transition: top 0.5s ease; /* Adiciona uma transição suave para a propriedade 'top' */
     width: auto;
   }
 
@@ -1337,22 +1338,26 @@ textarea:focus {
 #zoom-controls {
   position: fixed;
   bottom: 1rem;
-  right: 0.5rem;
+  right: 0.5vw;
   display: flex;
   flex-direction: column;
   gap: 8px;
   z-index: 10;
+  margin: 0;
 }
 
 #zoom-controls button {
-  padding: 8px 12px;
-  font-size: 1vw;
+  z-index: 50;
   background-color: #292540b6;
-  border: #fff 3px solid;
   backdrop-filter: blur(20px);
   color: #fff;
+  border: #fff 3px solid;
+  padding: 8px 14.5px;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 1.25vh;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
 }
 
 #toggle-container {
@@ -1363,13 +1368,19 @@ textarea:focus {
   background-color: #292540b6;
   backdrop-filter: blur(20px);
   color: #fff;
+  width: 4vw;
   border: #fff 3px solid;
-  padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1.25vw;
+  font-size: 1.25vh;
   opacity: 0.8;
   transition: opacity 0.3s ease;
+
+  /* Alinhamento com flex */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 #toggle-container:hover {
@@ -1379,6 +1390,73 @@ textarea:focus {
 #toggle-container:active {
   transform: scale(0.95);
   background-color: #7d76a6b8;
+}
+
+#toggle-bg-interaction {
+  position: fixed;
+  top: 4rem;
+  right: 0.5vw;
+  z-index: 50;
+  width: 4vw;
+  background-color: #292540b6;
+  backdrop-filter: blur(20px);
+  color: #fff;
+  border: #fff 3px solid;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.25vh;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+
+  /* Alinhamento com flex */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#toggle-bg-interaction:hover {
+  opacity: 1;
+}
+
+#toggle-bg-interaction:active {
+  transform: scale(0.95);
+  background-color: #76a676b8;
+}
+
+#toggle-barreira-opacity {
+  position: fixed;
+  width: 4vw;
+  top: 7rem;
+  right: 0.5vw;
+  z-index: 50;
+  background-color: #292540b6;
+  backdrop-filter: blur(20px);
+  color: #fff;
+  border: #fff 3px solid;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.25vh;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  /* Alinhamento com flex */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#toggle-barreira-opacity:hover {
+  opacity: 1;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#toggle-barreira-opacity:active {
+  transform: scale(0.95);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: #76a676b8;
 }
 
 #mapa-container {
@@ -1442,6 +1520,7 @@ textarea:focus {
   grid-template-columns: repeat(50, 64px);
   grid-template-rows: repeat(50, 64px);
   will-change: transform;
+  pointer-events: none;
 }
 
 #tabuleiro > div {
@@ -1487,8 +1566,9 @@ textarea:focus {
 
 .background-img {
   position: absolute;
-  pointer-events: auto; /* Evita interferir com tokens por enquanto */
+  pointer-events: none; /* Evita interferir com tokens por enquanto */
   z-index: 9 !important;
+  transition: opacity 0.3s ease, color 0.3s ease;
 }
 
 .background-img.selected::before {
@@ -1932,6 +2012,46 @@ textarea:focus {
   border: 1px solid rgba(255, 255, 255, 0.222);
   border-radius: 8px;
   padding: 15px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 999;
+  transition: max-height ease 0.25s;
+}
+
+#chat-container:hover {
+  position: fixed;
+  right: 2vw;
+  bottom: 2vh;
+  width: 350px;
+  max-height: 40vh;
+  background-color: #29254091;
+  color: #c9c9da;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  border-radius: 8px;
+  padding: 15px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 999;
+  transition: all ease 0.25s;
+}
+
+#chat-container.map {
+  position: fixed;
+  right: 7vw;
+  bottom: 2vh;
+  width: 350px;
+  max-height: 10vh;
+  background-color: #29254091;
+  color: #c9c9da;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  border-radius: 8px;
+  padding: 15px;
   box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
@@ -1942,6 +2062,35 @@ textarea:focus {
   /* Degradê de opacidade: transparente (0%) no topo até opaco (100%) no fundo */
   -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 40%);
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0,0,0,1) 40%);
+}
+
+#chat-container.map:hover {
+  position: fixed;
+  right: 7vw;
+  bottom: 2vh;
+  width: 350px;
+  max-height: 40vh;
+  background-color: #29254091;
+  color: #c9c9da;
+  border: 1px solid rgba(255, 255, 255, 0.222);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 999;
+  /* Degradê de opacidade: transparente (0%) no topo até opaco (100%) no fundo */
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 40%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0,0,0,1) 40%);
+}
+
+@media (max-width: 1148px) {
+  #chat-container {
+    display: none !important;
+  }
 }
 
 #chat-mensagens {

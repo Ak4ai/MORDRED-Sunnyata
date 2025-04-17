@@ -22,6 +22,9 @@ const anotacoes = document.getElementById('essential-info2');
 const essentialInfo = document.getElementById('essential-info');
 const playerContainer = document.querySelector('.player-container');
 const barrafichas = document.getElementById('barra-fichas');
+const toggleBgBtn = document.getElementById('toggle-bg-interaction');
+const chat = document.getElementById("chat-container");
+
 let hidden = false;
 let backgroundChecked = true; // ← Essa flag deve ser controlada por algum checkbox ou opção no menu.
 
@@ -46,6 +49,7 @@ toggleButton.addEventListener('click', () => {
     // Tornar vertical apenas em dispositivos não móveis
     if (!isMobile) {
       essentialInfo.classList.toggle('vertical');
+      chat.classList.toggle('map');
     }
   
     // IDs das barras de preenchimento
@@ -138,7 +142,7 @@ document.addEventListener('mousemove', (e) => {
 
   
   
-// Selecionar token ao clicar nele
+// Selecionar token ao clicar nele (dentro do tokenLayer)
 tokenLayer.addEventListener('click', (e) => {
   // Verifica se o clique foi num token ou num background
   if (!e.target.classList.contains('token') && !e.target.classList.contains('background-img')) return;
@@ -162,10 +166,24 @@ tokenLayer.addEventListener('click', (e) => {
   });
 });
 
+// Adicionar um listener global para detectar cliques fora dos tokens e backgrounds
+document.addEventListener('click', (e) => {
+  // Se o clique ocorreu dentro de um elemento que possua as classes 'token' ou 'background-img', não faz nada
+  if (e.target.closest('.token') || e.target.closest('.background-img')) return;
+
+  // Caso contrário, deseleciona todos os tokens e backgrounds presentes no tokenLayer
+  const selecionados = tokenLayer.querySelectorAll('.token.selected, .background-img.selected');
+  selecionados.forEach(el => {
+    el.classList.remove('selected');
+    const handles = el.querySelectorAll('.resize-handle');
+    handles.forEach(handle => handle.remove());
+  });
+});
+
   
 tokenLayer.addEventListener('mousedown', (e) => {
-    if (e.target.classList.contains('resize-handle')) {
-      // Começar resize
+  if (e.target.classList.contains('resize-handle')) {
+      // Inicia o redimensionamento (para tokens e backgrounds)
       e.stopPropagation(); // Evita conflito com drag
       resizing = true;
       currentHandle = e.target;
@@ -178,23 +196,21 @@ tokenLayer.addEventListener('mousedown', (e) => {
       initialMouseY = e.clientY;
       initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
       initialTop = (rect.top - wrapperRect.top) / zoomLevel;
-      initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
-      initialTop = (rect.top - wrapperRect.top) / zoomLevel;
-  
-    } else if (e.target.classList.contains('token')) {
-      // Começar drag
+  } else if (e.target.classList.contains('token') || e.target.classList.contains('background-img')) {
+      // Inicia o drag para tokens e backgrounds
+      e.stopPropagation(); // Opcional, para evitar conflitos caso o clique também seja manipulado por outro listener
       selectedToken = e.target;
       offsetX = e.offsetX;
       offsetY = e.offsetY;
       selectedToken.style.cursor = 'grabbing';
-    }
+  }
 });
+
   
 document.addEventListener('mouseup', () => {
   if (selectedToken && !resizing) {
     selectedToken.style.cursor = 'grab';
 
-    // Atualiza no Firestore conforme o tipo do elemento
     if (selectedToken.classList.contains('token')) {
       const id = selectedToken.getAttribute('data-id');
       if (id) {
@@ -208,14 +224,15 @@ document.addEventListener('mouseup', () => {
       if (bgId) {
         db.collection('backgrounds').doc(bgId).update({
           x: parseFloat(selectedToken.style.left),
-          y: parseFloat(selectedToken.style.top)
+          y: parseFloat(selectedToken.style.top),
+          width: parseFloat(selectedToken.style.width),
+          height: parseFloat(selectedToken.style.height)
         }).catch(console.error);
       }
     }
   }
 
   if (selectedToken && resizing) {
-    // Atualiza posição e tamanho após o redimensionamento
     if (selectedToken.classList.contains('token')) {
       const id = selectedToken.getAttribute('data-id');
       if (id) {
@@ -231,7 +248,8 @@ document.addEventListener('mouseup', () => {
         db.collection('backgrounds').doc(bgId).update({
           x: parseFloat(selectedToken.style.left),
           y: parseFloat(selectedToken.style.top),
-          size: parseFloat(selectedToken.style.width)
+          width: parseFloat(selectedToken.style.width),
+          height: parseFloat(selectedToken.style.height)
         }).catch(console.error);
       }
     }
@@ -241,6 +259,7 @@ document.addEventListener('mouseup', () => {
   currentHandle = null;
   selectedToken = null;
 });
+
 
 
 
@@ -400,14 +419,16 @@ tabuleiroBG.addEventListener('contextmenu', (e) => {
     contextMenuOpen = null;
   }
 
-  // Criar o novo menu de contexto com duas opções
+  // Criar o novo menu de contexto com três opções
   const menu = document.createElement('div');
   menu.classList.add('context-menu');
   menu.innerHTML = `
     <ul>
       <li id="criar-personagem">Criar Personagem</li>
       <li id="criar-background">Criar Background</li>
-    </ul>`;
+      <li id="criar-barreira">Criar Barreira Escura</li>
+    </ul>
+  `;
 
   // Posicionar o menu na posição do clique
   menu.style.position = 'absolute';
@@ -440,6 +461,18 @@ tabuleiroBG.addEventListener('contextmenu', (e) => {
     contextMenuOpen = null;
   });
 
+  // Novo: Ação para criar barreira escura
+  document.getElementById('criar-barreira').addEventListener('click', () => {
+    const wrapperRect = tokenLayer.getBoundingClientRect();
+    const posX = (e.clientX - wrapperRect.left) / zoomLevel;
+    const posY = (e.clientY - wrapperRect.top) / zoomLevel;
+
+    criarBarreira({ x: posX, y: posY });
+
+    document.body.removeChild(menu);
+    contextMenuOpen = null;
+  });
+
   // Fecha ao clicar fora
   document.addEventListener('click', () => {
     if (contextMenuOpen) {
@@ -457,6 +490,23 @@ tabuleiroBG.addEventListener('contextmenu', (e) => {
   });
 });
 
+function criarBarreira({ x, y }) {
+  const cellCount = 10; // 10 células para largura e altura
+  const pixelDimension = cellCount * cellSize; // Calcula a dimensão em pixels
+  
+  const bgData = {
+    x,
+    y,
+    width: pixelDimension,
+    height: pixelDimension,
+    image: 'https://i.pinimg.com/736x/be/3d/c7/be3dc7398dcbbf4f296c92aa9f540575.jpg',
+    barrier: true, // campo para identificar que é barreira
+    timestamp: Date.now()
+  };
+
+  db.collection('backgrounds').add(bgData).catch(console.error);
+}
+
 function criarBackground({ x, y }) {
   const modal = document.createElement('div');
   modal.classList.add('token-modal');
@@ -466,8 +516,11 @@ function criarBackground({ x, y }) {
       <label>Imagem (URL):</label>
       <input type="text" id="bg-img-url" placeholder="https://..." required />
 
-      <label>Tamanho (em células):</label>
-      <input type="number" id="bg-size" placeholder="1" min="1" />
+      <label>Largura (em células):</label>
+      <input type="number" id="bg-width" placeholder="1" min="1" />
+
+      <label>Altura (em células):</label>
+      <input type="number" id="bg-height" placeholder="1" min="1" />
 
       <div class="modal-buttons">
         <button id="confirmar-bg">Criar</button>
@@ -483,19 +536,22 @@ function criarBackground({ x, y }) {
 
   document.getElementById('confirmar-bg').addEventListener('click', () => {
     const image = document.getElementById('bg-img-url').value.trim();
-    const sizeInCells = parseInt(document.getElementById('bg-size').value) || 1;
+    const widthInCells = parseInt(document.getElementById('bg-width').value) || 1;
+    const heightInCells = parseInt(document.getElementById('bg-height').value) || 1;
 
     if (!image) {
       alert("Por favor, insira o link da imagem.");
       return;
     }
 
-    const pixelSize = sizeInCells * cellSize;
+    const pixelWidth = widthInCells * cellSize;
+    const pixelHeight = heightInCells * cellSize;
 
     const bgData = {
       x,
       y,
-      size: pixelSize,
+      width: pixelWidth,
+      height: pixelHeight,
       image,
       timestamp: Date.now()
     };
@@ -512,30 +568,29 @@ function criarBackground({ x, y }) {
 
 tokenLayer.addEventListener('touchstart', (e) => {
   const touch = e.touches[0];
-
+  
   if (e.target.classList.contains('resize-handle')) {
     e.stopPropagation();
     resizing = true;
     currentHandle = e.target;
     selectedToken = currentHandle.parentElement;
-
+  
     const rect = selectedToken.getBoundingClientRect();
     const wrapperRect = tokenLayer.getBoundingClientRect();
-
+  
     initialMouseX = touch.clientX;
     initialMouseY = touch.clientY;
     initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
     initialTop = (rect.top - wrapperRect.top) / zoomLevel;
-    initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
-    initialTop = (rect.top - wrapperRect.top) / zoomLevel;
-  } else if (e.target.classList.contains('token')) {
+  } else if (e.target.classList.contains('token') || e.target.classList.contains('background-img')) {
+    // Inicia o drag para tokens e backgrounds via toque
     selectedToken = e.target;
     const rect = selectedToken.getBoundingClientRect();
     const wrapperRect = tokenLayer.getBoundingClientRect();
-
+  
     offsetX = (touch.clientX - rect.left) / zoomLevel;
     offsetY = (touch.clientY - rect.top) / zoomLevel;
-
+  
     selectedToken.style.cursor = 'grabbing';
   }
 }, { passive: false });
@@ -714,6 +769,10 @@ db.collection('backgrounds').onSnapshot((snapshot) => {
       if (!document.querySelector(`[data-bg-id="${bgId}"]`)) {
         const bg = document.createElement('div');
         bg.classList.add('background-img');
+        // Se for barreira, adiciona a classe 'barreira'
+        if (data.barrier) {
+          bg.classList.add('barreira');
+        }
         bg.setAttribute('data-bg-id', bgId);
 
         bg.style.backgroundImage = `url('${data.image}')`;
@@ -724,8 +783,8 @@ db.collection('backgrounds').onSnapshot((snapshot) => {
         bg.style.position = 'absolute';
         bg.style.left = `${data.x}px`;
         bg.style.top = `${data.y}px`;
-        bg.style.width = `${data.size}px`;
-        bg.style.height = `${data.size}px`;
+        bg.style.width = `${data.width}px`;
+        bg.style.height = `${data.height}px`;
         bg.style.zIndex = '0';
 
         tokenLayer.appendChild(bg);
@@ -738,14 +797,13 @@ db.collection('backgrounds').onSnapshot((snapshot) => {
       if (bg) {
         bg.style.left = `${data.x}px`;
         bg.style.top = `${data.y}px`;
-        bg.style.width = `${data.size}px`;
-        bg.style.height = `${data.size}px`;
+        bg.style.width = `${data.width}px`;
+        bg.style.height = `${data.height}px`;
         bg.style.backgroundImage = `url('${data.image}')`;
       }
     }
   });
 });
-
 
 // ------------------------ //
 // FUNÇÕES DE ANIMAÇÃO //
@@ -967,4 +1025,130 @@ tokenLayer.addEventListener('contextmenu', (e) => {
       }
     });
   }
+});
+
+function atualizarCorDoBotao(novoEstado) {
+  // Se o estado for "auto", coloca o botão com fundo verde; caso contrário, volta à cor padrão
+  toggleBgBtn.style.backgroundColor = novoEstado === 'auto' ? 'green' : '';
+}
+
+// Adiciona o evento de clique no botão
+toggleBgBtn.addEventListener('click', () => {
+  // Seleciona todos os elementos com classe 'background-img'
+  const backgrounds = document.querySelectorAll('.background-img');
+  
+  // Define o novo estado: se o primeiro background tiver pointerEvents 'none', mudar para 'auto';
+  // caso contrário, mudar para 'none'. Se não houver backgrounds, define o novo estado como 'auto'.
+  let novoEstado;
+  if (backgrounds.length > 0) {
+    // Se o primeiro estiver com pointerEvents 'none', inverte para 'auto'; senão, para 'none'
+    novoEstado = backgrounds[0].style.pointerEvents === 'auto' ? 'none' : 'auto';
+  } else {
+    novoEstado = 'auto';
+  }
+  
+  // Atualiza o pointerEvents de todos os backgrounds para o novo estado
+  backgrounds.forEach(bg => {
+    bg.style.pointerEvents = novoEstado;
+  });
+  
+  // Atualiza a cor do botão com base no novo estado
+  atualizarCorDoBotao(novoEstado);
+});
+
+const toggleBarreiraOpacityBtn = document.getElementById('toggle-barreira-opacity');
+let barreiraOpaca = false; // false: opacidade 100%, true: opacidade 50%
+
+toggleBarreiraOpacityBtn.addEventListener('click', () => {
+  const barriers = document.querySelectorAll('.background-img.barreira');
+  const novaOpacidade = barreiraOpaca ? '1' : '0.5';
+
+  barriers.forEach(barrier => {
+    barrier.style.opacity = novaOpacidade;
+  });
+
+  // Alterna o estado
+  barreiraOpaca = !barreiraOpaca;
+
+  toggleBarreiraOpacityBtn.style.backgroundColor = barreiraOpaca ? 'green' : '';
+  toggleBarreiraOpacityBtn.style.color = barreiraOpaca ? 'white' : '';
+});
+
+// movimentacao de arraste //
+
+
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  const wrapper = document.getElementById('tabuleiro-wrapper');
+  
+  if (!wrapper) {
+    console.error('Elemento "tabuleiro-wrapper" não encontrado.');
+    return;
+  }
+  
+
+  let isDragging = false;
+  let startX, startY, scrollLeft, scrollTop;
+  const zoomLevel = parseFloat(wrapper.style.zoom) || 1;  // Obtém o nível de zoom, se existir
+
+  // Início do arraste
+  wrapper.addEventListener('mousedown', (e) => {
+    console.log('mousedown:', e); // Verificando o clique inicial
+
+    isDragging = true;
+    wrapper.style.cursor = 'grabbing';
+
+    // Ajuste do início do movimento para considerar o zoom e o deslocamento correto
+    const rect = wrapper.getBoundingClientRect();
+    startX = (e.clientX - rect.left) / zoomLevel; // Posição inicial considerando o zoom
+    startY = (e.clientY - rect.top) / zoomLevel; // Posição inicial considerando o zoom
+
+    scrollLeft = wrapper.scrollLeft;
+    scrollTop = wrapper.scrollTop;
+
+    console.log('Iniciado o arraste');
+  });
+
+  // Movimento durante o arraste
+  wrapper.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    console.log('mousemove:', e); // Verificando movimento do mouse
+
+    const rect = wrapper.getBoundingClientRect();
+    
+    // Cálculo da posição levando em conta o zoom e a posição atual
+    const x = (e.clientX - rect.left) / zoomLevel;
+    const y = (e.clientY - rect.top) / zoomLevel;
+
+    // Calcular a diferença do movimento
+    const moveX = x - startX;
+    const moveY = y - startY;
+
+    // Atualiza o scroll com a diferença do movimento
+    wrapper.scrollLeft = scrollLeft - moveX;
+    wrapper.scrollTop = scrollTop - moveY;
+
+    console.log('Movendo...', 'scrollLeft:', wrapper.scrollLeft, 'scrollTop:', wrapper.scrollTop);
+  });
+
+  // Fim do arraste
+  wrapper.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+
+    console.log('mouseup: Terminado o arraste');
+
+    isDragging = false;
+    wrapper.style.cursor = 'grab';
+  });
+
+  // Caso o mouse saia da área do wrapper
+  wrapper.addEventListener('mouseleave', () => {
+    if (isDragging) {
+      console.log('mouseleave: Arraste cancelado');
+    }
+
+    isDragging = false;
+    wrapper.style.cursor = 'grab';
+  });
 });

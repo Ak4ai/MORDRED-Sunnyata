@@ -2339,75 +2339,89 @@ document.getElementById('clear-data-btn').addEventListener('click', function() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  let startY = 0;
-  let isAtBottom = false;
-  const indicator = document.getElementById('pull-up-indicator');
-
-  if (!indicator) return; // Evita erro se ainda assim não encontrar
-
-  window.addEventListener('touchstart', (e) => {
-    startY = e.touches[0].clientY;
-    const windowHeight = window.innerHeight;
-    const scrollY = window.scrollY;
-    const bodyHeight = document.body.offsetHeight;
-    isAtBottom = (windowHeight + scrollY + 80) >= bodyHeight;
-
-    if (isAtBottom) {
-      indicator.style.opacity = '1';
+    let startY = 0;
+    let isAtBottom = false;
+    const indicator = document.getElementById('pull-up-indicator');
+  
+    if (!indicator) return; // Evita erro se ainda assim não encontrar
+  
+    window.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+      const windowHeight = window.innerHeight;
+      // Define a área da parte de baixo. Neste exemplo, os últimos 20% da tela.
+      const bottomThreshold = windowHeight * 0.8; 
+      // Se o toque não for na parte de baixo, ignoramos o pull-up
+      if (startY < bottomThreshold) {
+        isAtBottom = false;
+        indicator.style.opacity = '0';
+        return;
+      }
+      
+      // Se o toque for na região inferior, verifica se a página está no final
+      const scrollY = window.scrollY;
+      const bodyHeight = document.body.offsetHeight;
+      isAtBottom = (windowHeight + scrollY + 80) >= bodyHeight;
+  
+      if (isAtBottom) {
+        indicator.style.opacity = '1';
+      }
+    });
+  
+    window.addEventListener('touchmove', (e) => {
+      if (!isAtBottom) return;
+      const currentY = e.touches[0].clientY;
+      const distance = startY - currentY;
+      if (distance > 0 && distance < 100) {
+        indicator.style.transform = `translateX(-50%) translateY(${-distance / 2}px) scale(${1 + distance / 200})`;
+        indicator.style.opacity = `${Math.min(1, distance / 50)}`;
+      }
+    });
+  
+    window.addEventListener('touchend', (e) => {
+      const endY = e.changedTouches[0].clientY;
+      const swipeDistance = startY - endY;
+  
+      indicator.style.opacity = '0';
+      indicator.style.transform = 'translateX(-50%) scale(0.8)';
+  
+      if (isAtBottom && swipeDistance > 280) {
+        document.body.classList.add('abas-mostradas');
+      }
+    });
+  });
+  
+  
+  // Fechar abas ao clicar fora
+  document.addEventListener('click', function (event) {
+    const aba1 = document.getElementById('essential-info');
+    const aba2 = document.getElementById('essential-info2');
+  
+    const clicouFora =
+      !aba1.contains(event.target) &&
+      !aba2.contains(event.target) &&
+      document.body.classList.contains('abas-mostradas');
+  
+    if (clicouFora) {
+      document.body.classList.remove('abas-mostradas');
     }
   });
-
-  window.addEventListener('touchmove', (e) => {
-    if (!isAtBottom) return;
-    const currentY = e.touches[0].clientY;
-    const distance = startY - currentY;
-    if (distance > 0 && distance < 100) {
-      indicator.style.transform = `translateX(-50%) translateY(${-distance / 2}px) scale(${1 + distance / 200})`;
-      indicator.style.opacity = `${Math.min(1, distance / 50)}`;
-    }
-  });
-
-  window.addEventListener('touchend', (e) => {
-    const endY = e.changedTouches[0].clientY;
-    const swipeDistance = startY - endY;
-
-    indicator.style.opacity = '0';
-    indicator.style.transform = 'translateX(-50%) scale(0.8)';
-
-    if (isAtBottom && swipeDistance > 280) {
-      document.body.classList.add('abas-mostradas');
-    }
-  });
-});
-
-
-
-// Fechar abas ao clicar fora
-document.addEventListener('click', function (event) {
-  const aba1 = document.getElementById('essential-info');
-  const aba2 = document.getElementById('essential-info2');
-
-  const clicouFora =
-    !aba1.contains(event.target) &&
-    !aba2.contains(event.target) &&
-    document.body.classList.contains('abas-mostradas');
-
-  if (clicouFora) {
-    document.body.classList.remove('abas-mostradas');
+  
+  const indicador = document.getElementById('pull-up-indicator');
+  
+  // Define a imagem do personagem ou usa a imagem padrão
+  const imagemPersonagem = window.imgpersonagem || 'https://i.pinimg.com/736x/cb/b1/ef/cbb1ef1ee0bf43d633393d7203a4d497.jpg';
+  indicador.style.backgroundImage = `url('${imagemPersonagem}')`;
+  
+  function atualizarIconeIndicador() {
+      const indicador = document.getElementById('pull-up-indicator');
+      const imagemPersonagem = window.imgpersonagem || 'https://i.pinimg.com/736x/cb/b1/ef/cbb1ef1ee0bf43d633393d7203a4d497.jpg';
+      indicador.style.backgroundImage = `url('${imagemPersonagem}')`;
   }
-});
+  
 
-const indicador = document.getElementById('pull-up-indicator');
 
-// Define a imagem do personagem ou usa a imagem padrão
-const imagemPersonagem = window.imgpersonagem || 'https://i.pinimg.com/736x/cb/b1/ef/cbb1ef1ee0bf43d633393d7203a4d497.jpg';
-indicador.style.backgroundImage = `url('${imagemPersonagem}')`;
 
-function atualizarIconeIndicador() {
-    const indicador = document.getElementById('pull-up-indicator');
-    const imagemPersonagem = window.imgpersonagem || 'https://i.pinimg.com/736x/cb/b1/ef/cbb1ef1ee0bf43d633393d7203a4d497.jpg';
-    indicador.style.backgroundImage = `url('${imagemPersonagem}')`;
-}
+
   
 function carregarFichasNaBarra() {
     const barra = document.getElementById('barra-fichas');
@@ -2456,7 +2470,10 @@ if (fichaCheckada) {
         e.dataTransfer.setData('image', fichaCheckada.dados.token);
         document.getElementById('tabuleiro').style.pointerEvents = 'auto';
     });
-      
+    
+    img.addEventListener('dragend', () => {
+        document.getElementById('tabuleiro').style.pointerEvents = 'none';
+    });
     
     img.addEventListener('click', () => {
       carregarStatusPorNome(nome);
@@ -2479,6 +2496,11 @@ if (fichaCheckada) {
     img.addEventListener('dragstart', (e) => {
       e.dataTransfer.setData('text/plain', nome);
       e.dataTransfer.setData('image', dados.token || 'https://media.discordapp.net/attachments/1164311440224702526/1361559378695688232/dfy9prk-fd124c1f-81f6-4ecb-935e-e994799c6b5f.png?ex=67ff327c&is=67fde0fc&hm=316bace3c2ec013775631ccb7ae51781072936e089449bfbc696bac56fa28fc0&=&format=webp&quality=lossless&width=433&height=648');
+      document.getElementById('tabuleiro').style.pointerEvents = 'auto';
+    });
+
+    img.addEventListener('dragend', () => {
+        document.getElementById('tabuleiro').style.pointerEvents = 'none';
     });
     
     img.addEventListener('click', () => {
@@ -2486,12 +2508,6 @@ if (fichaCheckada) {
     });
     barra.appendChild(img);
   }
-  
-      
-  img.addEventListener('dragend', () => {
-    document.getElementById('tabuleiro').style.pointerEvents = 'none';
-  });
-  
 }
   
 window.addEventListener('DOMContentLoaded', carregarFichasNaBarra);
