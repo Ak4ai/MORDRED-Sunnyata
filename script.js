@@ -2486,7 +2486,7 @@ if (fichaCheckada) {
     const { chave, dados } = outrasFichas[i];
     const nome = chave.replace('-personagem', '');
     const img = document.createElement('img');
-    img.src = dados.token || 'https://media.discordapp.net/attachments/1164311440224702526/1361559378695688232/dfy9prk-fd124c1f-81f6-4ecb-935e-e994799c6b5f.png?ex=67ff327c&is=67fde0fc&hm=316bace3c2ec013775631ccb7ae51781072936e089449bfbc696bac56fa28fc0&=&format=webp&quality=lossless&width=433&height=648';
+    img.src = dados.img || 'https://media.discordapp.net/attachments/1164311440224702526/1361559378695688232/dfy9prk-fd124c1f-81f6-4ecb-935e-e994799c6b5f.png?ex=67ff327c&is=67fde0fc&hm=316bace3c2ec013775631ccb7ae51781072936e089449bfbc696bac56fa28fc0&=&format=webp&quality=lossless&width=433&height=648';
     img.alt = nome;
     img.className = 'ficha-icone';
     

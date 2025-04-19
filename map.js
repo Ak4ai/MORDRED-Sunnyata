@@ -564,116 +564,140 @@ function criarBackground({ x, y }) {
 
 // ------------------------ //
 // FUNÇÕES DE Celular //
-// ------------------------ //
+// ------------------------ //  
 
 tokenLayer.addEventListener('touchstart', (e) => {
   const touch = e.touches[0];
-  
-  if (e.target.classList.contains('resize-handle')) {
+  const target = e.target;
+
+  // RESIZE
+  if (target.classList.contains('resize-handle')) {
     e.stopPropagation();
-    resizing = true;
-    currentHandle = e.target;
-    selectedToken = currentHandle.parentElement;
-  
-    const rect = selectedToken.getBoundingClientRect();
+    resizing      = true;
+    currentHandle = target;
+    selectedToken = target.parentElement;
+
+    const rect       = selectedToken.getBoundingClientRect();
+    const wrapperRect= tokenLayer.getBoundingClientRect();
+
+    initialMouseX  = touch.clientX;
+    initialMouseY  = touch.clientY;
+    initialWidth   = rect.width  / zoomLevel;   // ← aqui
+    initialHeight  = rect.height / zoomLevel;   // ← e aqui
+    initialLeft    = (rect.left - wrapperRect.left) / zoomLevel;
+    initialTop     = (rect.top  - wrapperRect.top)  / zoomLevel;
+
+  // DRAG
+  } else if (target.classList.contains('token')
+          || target.classList.contains('background-img')) {
+    selectedToken = target;
+    const rect        = selectedToken.getBoundingClientRect();
     const wrapperRect = tokenLayer.getBoundingClientRect();
-  
-    initialMouseX = touch.clientX;
-    initialMouseY = touch.clientY;
-    initialLeft = (rect.left - wrapperRect.left) / zoomLevel;
-    initialTop = (rect.top - wrapperRect.top) / zoomLevel;
-  } else if (e.target.classList.contains('token') || e.target.classList.contains('background-img')) {
-    // Inicia o drag para tokens e backgrounds via toque
-    selectedToken = e.target;
-    const rect = selectedToken.getBoundingClientRect();
-    const wrapperRect = tokenLayer.getBoundingClientRect();
-  
+
+    // calcula o offset exato, igual ao mouse
     offsetX = (touch.clientX - rect.left) / zoomLevel;
-    offsetY = (touch.clientY - rect.top) / zoomLevel;
-  
+    offsetY = (touch.clientY - rect.top)  / zoomLevel;
+
     selectedToken.style.cursor = 'grabbing';
   }
 }, { passive: false });
 
 document.addEventListener('touchmove', (e) => {
   if (!selectedToken) return;
-
   const touch = e.touches[0];
 
   if (resizing && currentHandle) {
+    // deltas lógicos
     const dx = (touch.clientX - initialMouseX) / zoomLevel;
     const dy = (touch.clientY - initialMouseY) / zoomLevel;
 
-    let newWidth = initialWidth;
+    let newWidth  = initialWidth;
     let newHeight = initialHeight;
-    let newLeft = initialLeft;
-    let newTop = initialTop;
+    let newLeft   = initialLeft;
+    let newTop    = initialTop;
 
     if (currentHandle.classList.contains('bottom-right')) {
-      newWidth += dx;
+      newWidth  += dx;
       newHeight += dy;
     } else if (currentHandle.classList.contains('bottom-left')) {
-      newWidth -= dx;
+      newWidth  -= dx;
       newHeight += dy;
-      newLeft += dx;
+      newLeft   += dx;
     } else if (currentHandle.classList.contains('top-right')) {
-      newWidth += dx;
+      newWidth  += dx;
       newHeight -= dy;
-      newTop += dy;
+      newTop    += dy;
     } else if (currentHandle.classList.contains('top-left')) {
-      newWidth -= dx;
+      newWidth  -= dx;
       newHeight -= dy;
-      newLeft += dx;
-      newTop += dy;
+      newLeft   += dx;
+      newTop    += dy;
     }
 
-    selectedToken.style.width = `${newWidth * zoomLevel}px`;
-    selectedToken.style.height = `${newHeight * zoomLevel}px`;    
-    selectedToken.style.left = `${newLeft * zoomLevel}px`;
-    selectedToken.style.top = `${newTop * zoomLevel}px`;    
-    selectedToken.style.lineHeight = `${newHeight}px`; // para centralizar o emoji
+    // **sem** multiplicar pelo zoom de novo:
+    selectedToken.style.width      = `${newWidth}px`;
+    selectedToken.style.height     = `${newHeight}px`;
+    selectedToken.style.left       = `${newLeft}px`;
+    selectedToken.style.top        = `${newTop}px`;
+    selectedToken.style.lineHeight = `${newHeight}px`;
 
   } else {
+    // DRAG normal, mesma conta do mouse
     const wrapperRect = tokenLayer.getBoundingClientRect();
     const x = (touch.clientX - wrapperRect.left) / zoomLevel - offsetX;
-    const y = (touch.clientY - wrapperRect.top) / zoomLevel - offsetY;
+    const y = (touch.clientY - wrapperRect.top)  / zoomLevel - offsetY;
 
     selectedToken.style.left = `${x}px`;
-    selectedToken.style.top = `${y}px`;
+    selectedToken.style.top  = `${y}px`;
   }
 
-  e.preventDefault(); // Evita rolagem da página
+  e.preventDefault(); // trava scroll nativo
 }, { passive: false });
 
 document.addEventListener('touchend', () => {
-  if (selectedToken && !resizing) {
-    selectedToken.style.cursor = 'grab';
+  if (!selectedToken) return;
+  selectedToken.style.cursor = 'grab';
 
-    const id = selectedToken.getAttribute('data-id');
-    if (id) {
-      db.collection('tokens').doc(id).update({
-        x: parseFloat(selectedToken.style.left),
-        y: parseFloat(selectedToken.style.top)
-      }).catch(console.error);
+  // dados básicos de posição
+  const x = parseFloat(selectedToken.style.left);
+  const y = parseFloat(selectedToken.style.top);
+
+  // TOKEN?
+  if (selectedToken.classList.contains('token')) {
+    const id = selectedToken.dataset.id;
+    if (!id) return;
+
+    // monta o objeto de update
+    const updateData = { x, y };
+    // se veio de um resize, também salva o size
+    if (resizing) {
+      updateData.size = parseFloat(selectedToken.style.width);
     }
+
+    db.collection('tokens').doc(id)
+      .update(updateData)
+      .catch(console.error);
+
+  // BACKGROUND?
+  } else if (selectedToken.classList.contains('background-img')) {
+    const bgId = selectedToken.dataset.bgId;
+    if (!bgId) return;
+
+    const updateData = { x, y };
+    // independente de resize ou não, para bg faz sentido salvar largura/altura
+    updateData.width  = parseFloat(selectedToken.style.width);
+    updateData.height = parseFloat(selectedToken.style.height);
+
+    db.collection('backgrounds').doc(bgId)
+      .update(updateData)
+      .catch(console.error);
   }
 
-  if (selectedToken && resizing) {
-    const id = selectedToken.getAttribute('data-id');
-    if (id) {
-      db.collection('tokens').doc(id).update({
-        x: parseFloat(selectedToken.style.left),
-        y: parseFloat(selectedToken.style.top),
-        size: parseFloat(selectedToken.style.width)
-      }).catch(console.error);
-    }
-  }
-
-  resizing = false;
+  // limpa estado
+  resizing      = false;
   currentHandle = null;
   selectedToken = null;
 });
-
 
 // ------------------------ //
 // ZOOM: Tamanho das células //
@@ -681,8 +705,8 @@ document.addEventListener('touchend', () => {
 
 let zoomLevel = 1;
 const zoomStep = 0.1;
-const maxZoom = 2;
-const minZoom = 0.5;
+const maxZoom = 4;
+const minZoom = 0.1;
 
 const tabuleiroInner = document.getElementById('tabuleiro-inner');
 
@@ -1027,34 +1051,27 @@ tokenLayer.addEventListener('contextmenu', (e) => {
   }
 });
 
+// 1) Estado global de pointer-events:
+let bgPointerState = 'none';  // valor inicial
+
+// 2) Função de atualização de cor (já existente)
 function atualizarCorDoBotao(novoEstado) {
-  // Se o estado for "auto", coloca o botão com fundo verde; caso contrário, volta à cor padrão
   toggleBgBtn.style.backgroundColor = novoEstado === 'auto' ? 'green' : '';
 }
 
-// Adiciona o evento de clique no botão
+// 3) No clique, invertemos o estado e aplicamos a todos, SEM IF de length
 toggleBgBtn.addEventListener('click', () => {
-  // Seleciona todos os elementos com classe 'background-img'
-  const backgrounds = document.querySelectorAll('.background-img');
-  
-  // Define o novo estado: se o primeiro background tiver pointerEvents 'none', mudar para 'auto';
-  // caso contrário, mudar para 'none'. Se não houver backgrounds, define o novo estado como 'auto'.
-  let novoEstado;
-  if (backgrounds.length > 0) {
-    // Se o primeiro estiver com pointerEvents 'none', inverte para 'auto'; senão, para 'none'
-    novoEstado = backgrounds[0].style.pointerEvents === 'auto' ? 'none' : 'auto';
-  } else {
-    novoEstado = 'auto';
-  }
-  
-  // Atualiza o pointerEvents de todos os backgrounds para o novo estado
-  backgrounds.forEach(bg => {
-    bg.style.pointerEvents = novoEstado;
-  });
-  
-  // Atualiza a cor do botão com base no novo estado
-  atualizarCorDoBotao(novoEstado);
+  // inverte o estado
+  bgPointerState = bgPointerState === 'none' ? 'auto' : 'none';
+
+  // aplica a todos os backgrounds (se nenhum existir, o forEach só não faz nada)
+  document.querySelectorAll('.background-img')
+    .forEach(bg => bg.style.pointerEvents = bgPointerState);
+
+  // atualiza a cor do botão
+  atualizarCorDoBotao(bgPointerState);
 });
+
 
 const toggleBarreiraOpacityBtn = document.getElementById('toggle-barreira-opacity');
 let barreiraOpaca = false; // false: opacidade 100%, true: opacidade 50%
@@ -1152,3 +1169,63 @@ document.addEventListener('DOMContentLoaded', (event) => {
     wrapper.style.cursor = 'grab';
   });
 });
+
+//-----------------//
+// IOS //
+//-----------------//
+
+/**
+ * Habilita long-press → contextmenu em touch devices (iOS/Android).
+ * @param {Element} el O elemento que dispara o menu de contexto.
+ * @param {number} [delay=600] Tempo em ms para considerar um long-press.
+ */
+function enableLongPressContext(el, delay = 600) {
+  let timer = null;
+  let startX = 0, startY = 0;
+
+  el.addEventListener('touchstart', e => {
+    // não bloqueie aqui: passive:true
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+
+    timer = setTimeout(() => {
+      // só agora intercepta o callout nativo
+      e.preventDefault();
+      const evt = new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        screenX: touch.screenX,
+        screenY: touch.screenY
+      });
+      e.target.dispatchEvent(evt);
+    }, delay);
+  }, { passive: true });
+
+  el.addEventListener('touchmove', e => {
+    if (!timer) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    if (Math.hypot(dx, dy) > 10) {
+      clearTimeout(timer);
+      timer = null;
+    }
+  }, { passive: true });
+
+  el.addEventListener('touchend', () => {
+    clearTimeout(timer);
+    timer = null;
+  });
+  el.addEventListener('touchcancel', () => {
+    clearTimeout(timer);
+    timer = null;
+  });
+}
+
+// reaplique apenas aos layers de contexto
+enableLongPressContext(tokenLayer);
+enableLongPressContext(tabuleiroBG);
